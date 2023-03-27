@@ -216,8 +216,6 @@ border-radius: 5px; */
 padding: 0px 10px;
 }
 
-
-
 .right-sidebar {
 background-color: #ffffff;
 grid-area: rightBar;
@@ -320,9 +318,14 @@ margin-top: 12px;
 margin-top: 6px;
 }
 
-.tool-icon-position {
+.signature-tool-icon-position {
 position: absolute;
 top: 10px;
+}
+
+.textbox-tool-icon-position, .datebox-tool-icon-position{
+  position: absolute;
+top: 6px;
 }
 
 .resize-circle {
