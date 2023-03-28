@@ -11,17 +11,19 @@ import { MdOutlineAlternateEmail, MdDelete } from "react-icons/md";
 import DragTool from "../components/drag-tool";
 import ProgressIndicator from "../components/progress-indicator";
 import CustomSelect from "../components/custom-select";
+import {page} from "../components/page";
 import { useSearchParams } from "react-router-dom";
+import { Container, Grid, Button, Segment } from "semantic-ui-react";
 
 export default function Home() {
   // Temporary
   const colors = ["rgba(28, 95, 156, 0.5)", "rgba(255, 110, 49, 0.5)", "rgba(33, 255, 255, 0.5)", "rgba(64, 66, 88, 0.5)", "rgba(60, 207, 78, 0.5)"];
-  const [options, setOptions] = React.useState([
-    { id: 12, bgColor: colors[0], value: "sudip", label: "Sudip"},
-    { id: 13, bgColor: colors[1], value: "krunal", label: "Krunal"},
-    { id: 14, bgColor: colors[2], value: "haresh", label: "Haresh" },
-    { id: 15, bgColor: colors[3], value: "jayant", label: "Jayant" }
-  ]);
+  const [options, setOptions] = React.useState([]);
+  //   { id: 12, bgColor: colors[0], value: "sudip", label: "Sudip"},
+  //   { id: 13, bgColor: colors[1], value: "krunal", label: "Krunal"},
+  //   { id: 14, bgColor: colors[2], value: "haresh", label: "Haresh" },
+  //   { id: 15, bgColor: colors[3], value: "jayant", label: "Jayant" }
+  // ]);
   const [selectedEleUserDefaultValue, setSelectedEleUserDefaultValue] = React.useState(options[0]);
   const [searchParams] = useSearchParams();
 
@@ -91,6 +93,17 @@ export default function Home() {
 
         // TODO: Add all elements which were saved by user previously.
         let data = response.data;
+        if(data.signatoryList.length>0) {
+          let signatoryList = [];
+          data.signatoryList.forEach((signatory, index) => {
+            signatory.bgColor = colors[index];
+            signatory.value = signatory.name;
+            signatory.label = signatory.name;
+            signatoryList.push(signatory);
+          })
+          console.log('###'+JSON.stringify(signatoryList));
+          setOptions(signatoryList);
+        }
         if (data.cordinatesData.length > 0) {
           let tempSignElems = [];
           data.cordinatesData.forEach((coord, index) => {
@@ -198,7 +211,10 @@ export default function Home() {
         alert(JSON.stringify(signElems.filter((ele) => ele.eleId !== selectedElement.eleId)));
 
         setSignElems(
-          signElems.filter((ele) => ele.eleId !== selectedElement.eleId)
+          signElems.filter((ele) => {
+            alert('@@@ ele: '+ JSON.stringify(ele));
+            if(ele.eleId !== selectedElement.eleId) return ele;
+          })
         );
         break;
       }
@@ -223,10 +239,9 @@ export default function Home() {
       default: {
         break;
       }
-
     }
-    console.log("@@@ signElems: AFTER DELETE " + JSON.stringify(signElems));
     changeMode({}, false);
+    console.log("@@@ signElems: AFTER DELETE " + JSON.stringify(signElems));
   }
 
   function handleSelectedEleNameChange(event) {
@@ -260,7 +275,7 @@ export default function Home() {
     return {
       bgColor: colors[0],
       field_id: fieldId,
-      signatory_id: 12,
+      signatory_id: options[0].id,
       name: name,
       eleId: eleId,
       pageId: activePage,
@@ -377,6 +392,7 @@ export default function Home() {
       }
     }
     console.log("@@@ ELE : " + JSON.stringify(ele));
+    console.log("@@@ options : " + JSON.stringify(options));
     setSelectedElement(ele[0]);
     setIsToolSelectionMode(true);
     setSelectedEleUserDefaultValue(options.filter(option => option.id === ele[0].signatory_id));
@@ -437,7 +453,6 @@ export default function Home() {
 
     switch (toolType) {
       case "Signature": {
-        
           signElems.map((ele) => {
             console.log(ele.eleId);
             if (ele.eleId === id) {
@@ -499,7 +514,9 @@ export default function Home() {
     setIsLoading(true);
     setIsFetching(false);
     console.log("@@@ handleContinue.");
-    console.log("@@@ FINAL MAPPING OBJECT: " + JSON.stringify(signElems));
+    console.log("@@@ FINAL MAPPING OBJECT: signElems: " + JSON.stringify(signElems));
+    console.log("@@@ FINAL MAPPING OBJECT: textElems: " + JSON.stringify(textElems));
+    console.log("@@@ FINAL MAPPING OBJECT: dateElems: " + JSON.stringify(dateElems));
 
     const body = {
       uuid_template_instance: uuid_template_instance,
@@ -628,8 +645,8 @@ export default function Home() {
 
                 <button
                   type="button"
-                  className="tool-btn btn-margin working-btn"
-                  onClick={handleDateBoxToolClick}
+                  className="tool-btn btn-margin disabled-btn"
+                  //onClick={handleDateBoxToolClick}
                 >
                   <BsCalendar2Date className="tool-icon" />
                   <p style={{ marginLeft: "12px", color: "#ffffff" }}>
@@ -822,6 +839,7 @@ export default function Home() {
                 }}
               ></div>
               {img && <img src={img} style={{ width: "100%" }} />}
+              
             </div>
           </div>
           <div

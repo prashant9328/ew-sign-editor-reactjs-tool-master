@@ -67,17 +67,20 @@ const DragTool = ({
         handleDragStop({ x: d.x, y: d.y }, e);
       }}
       onResizeStop={(e, direction, ref, delta, position) => {
+        let width = parseInt(ref.style.width.substring(0, ref.style.width.length-2));
+        let height = parseInt(ref.style.height.substring(0, ref.style.height.length-2));
+
         setCurrentState({
           ...currentState,
-          width: ref.style.width,
-          height: ref.style.height,
+          width: width,
+          height: height,
           ...position,
         });
 
         handleResize(
           {
-            width: ref.style.width,
-            height: ref.style.height,
+            width: width,
+            height: height,
           },
           e
         );
