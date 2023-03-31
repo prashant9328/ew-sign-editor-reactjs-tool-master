@@ -14,18 +14,11 @@
   --theme-color-low-opacity: rgba(28, 95, 156, 0.1);
 }
 
-.right-sidebar-tool-header{
-background-color: rgba(28, 95, 156, 0.2);
-border: 1px solid var(--theme-color-medium-opacity);  
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 16px;
+*{
+  margin: 0px;
 }
 
-.right-sidebar-tool-icon {
-color: #555d65;
-}
+
 
 .progress-bar-section{
  margin-bottom: 2rem;
@@ -228,6 +221,26 @@ border-radius: 5px;
 overflow-x: hidden;
 }
 
+.right-sidebar-tool-header{
+  background-color: rgba(28, 95, 156, 0.2);
+  border: 1px solid var(--theme-color-medium-opacity);  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  }
+  
+  .right-sidebar-tool-icon {
+  color: #555d65;
+  }
+
+.right-sidebar-tool-detail {
+  position: fixed;
+  z-index: 99; 
+  background-color: white;
+  height: 100%;
+}
+
 .continue-btn {
 background-color: var(--theme-color);  
 border-radius: 3px;
@@ -243,6 +256,7 @@ margin: 16px 16px 0px 0px;
 display: flex;
 position: relative;
 cursor: pointer;
+z-index: 2;
 }
 
 .page-img {
@@ -320,12 +334,12 @@ margin-top: 6px;
 
 .signature-tool-icon-position {
 position: absolute;
-top: 10px;
+top: 5px;
 }
 
 .textbox-tool-icon-position, .datebox-tool-icon-position{
   position: absolute;
-top: 6px;
+top: 5.5px;
 }
 
 .resize-circle {

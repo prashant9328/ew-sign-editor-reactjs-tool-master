@@ -11,31 +11,27 @@ import { MdOutlineAlternateEmail, MdDelete } from "react-icons/md";
 import DragTool from "../components/drag-tool";
 import ProgressIndicator from "../components/progress-indicator";
 import CustomSelect from "../components/custom-select";
-import {page} from "../components/page";
 import { useSearchParams } from "react-router-dom";
-import { Container, Grid, Button, Segment } from "semantic-ui-react";
+import PdfViewer from '../components/PDFViewer';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
   // Temporary
   const colors = ["rgba(28, 95, 156, 0.5)", "rgba(255, 110, 49, 0.5)", "rgba(33, 255, 255, 0.5)", "rgba(64, 66, 88, 0.5)", "rgba(60, 207, 78, 0.5)"];
   const [options, setOptions] = React.useState([]);
-  //   { id: 12, bgColor: colors[0], value: "sudip", label: "Sudip"},
-  //   { id: 13, bgColor: colors[1], value: "krunal", label: "Krunal"},
-  //   { id: 14, bgColor: colors[2], value: "haresh", label: "Haresh" },
-  //   { id: 15, bgColor: colors[3], value: "jayant", label: "Jayant" }
-  // ]);
+  const [signatoryIdList, setSignatoryIdList] = React.useState([]);
+  
   const [selectedEleUserDefaultValue, setSelectedEleUserDefaultValue] = React.useState(options[0]);
   const [searchParams] = useSearchParams();
 
+  const [isPDFLoading, setIsPDFLoading] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFetching, setIsFetching] = React.useState(true);
   const [isFileShared, setIsFileShared] = React.useState(false);
   const [isToolSelectionMode, setIsToolSelectionMode] = React.useState(false);
   const [selectedElement, setSelectedElement] = React.useState({});
 
-  const [serverURL, setServerURL] = React.useState(
-    "http://winsrv.eruditeworks.com/EwSignApi"
-  );
   const uuid = searchParams.get("uuid");
   const uuid_template_instance = searchParams.get("uuid_template_instance");
   const userId = searchParams.get("userid");
@@ -45,25 +41,24 @@ export default function Home() {
     // 'https://cdn.glitch.global/5790e45e-8028-494f-9443-fac72a396419/Signature_Image.jpg?v=1676700133928',
   ]);
   const [img, setImg] = React.useState(null);
-
   //fields
-  const fields = [
-    { id: 1, name: "Signature" },
-    { id: 2, name: "Textbox" },
-    { id: 3, name: "Datebox" },
-  ];
+  const [fields, setFields] = React.useState([]);
 
   // SIGNATURE TOOL
+  const signEleDimension = {width: 130, height: 29, minWidth: 130, minHeight: 29, maxWidth: 300, maxHeight: 130};
   const [signEleCount, setSignEleCount] = React.useState(0);
   const [signElems, setSignElems] = React.useState([]);
 
-  // Textbox Tool
+  // Text Tool
+  const textEleDimension = {width: 130, height: 26, minWidth: 85, minHeight: 29, maxWidth: 500, maxHeight: 30};
   const [textEleCount, setTextEleCount] = React.useState(0);
   const [textElems, setTextElems] = React.useState([]);
 
-  // Datebox Tool
+  // Date Tool
+  const dateEleDimension = {width: 130, height: 26, minWidth: 120, minHeight: 29, maxWidth: 120, maxHeight: 30};
   const [dateEleCount, setDateEleCount] = React.useState(0);
   const [dateElems, setDateElems] = React.useState([]);
+  const [previousCoord, setPreviousCoord] = React.useState({x: 0, y:0});
 
   React.useEffect(() => {
     //const uuid = JSON.parse(localStorage.getItem('data'));
@@ -79,7 +74,7 @@ export default function Home() {
       uuid_template_instance: uuid_template_instance,
     };
     // setIsLoading(false);
-    fetch(`${serverURL}/api/fetchImagesData`, {
+    fetch(`${process.env.REACT_APP_API_URL}/api/fetchImagesData`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -93,36 +88,104 @@ export default function Home() {
 
         // TODO: Add all elements which were saved by user previously.
         let data = response.data;
-        if(data.signatoryList.length>0) {
+        // {"id":1,"name":"signatureBlock","type":"Signature","is_required":1,"default_height":100,"default_width":150}
+
+        // if(data.allFieldsData != null && data.allFieldsData.length>0) {
+        //   const tempFields = [];
+        //   data.allFieldsData.forEach(fieldData => {
+        //     tempFields.push({id: fieldData.id, name: fieldData.name, type: fieldData.type, width: signEleDimension.width, height: signEleDimension.height, minWidth: signEleDimension.minWidth, minHeight: signEleDimension.minHeight, maxWidth: signEleDimension.maxWidth, maxHeight: signEleDimension.maxHeight});
+        //   });
+        //   setFields(tempFields);
+        // }
+        setFields([
+          {id: 1, name: 'Signature', type: 'Signature', width: signEleDimension.width, height: signEleDimension.height, minWidth: signEleDimension.minWidth, minHeight: signEleDimension.minHeight, maxWidth: signEleDimension.maxWidth, maxHeight: signEleDimension.maxHeight},
+          {id: 2, name: 'Text', type: 'Text', width: textEleDimension.width, height: textEleDimension.height, minWidth: textEleDimension.minWidth, minHeight: textEleDimension.minHeight, maxWidth: textEleDimension.maxWidth, maxHeight: textEleDimension.maxHeight},
+          {id: 4, name: 'Date', type: 'Date', width: dateEleDimension.width, height: dateEleDimension.height, minWidth: dateEleDimension.minWidth, minHeight: dateEleDimension.minHeight, maxWidth: dateEleDimension.maxWidth, maxHeight: dateEleDimension.maxHeight}
+        ]);
+
+        if(data.signatoryList != null && data.signatoryList.length>0) {
           let signatoryList = [];
+          let signatoryIdList = [];
           data.signatoryList.forEach((signatory, index) => {
             signatory.bgColor = colors[index];
+            signatory.id = signatory.id;
             signatory.value = signatory.name;
             signatory.label = signatory.name;
             signatoryList.push(signatory);
+            signatoryIdList.push(signatory.id);
           })
           console.log('###'+JSON.stringify(signatoryList));
           setOptions(signatoryList);
+          setSignatoryIdList(signatoryIdList);
         }
-        if (data.cordinatesData.length > 0) {
+        if (data.cordinatesData != null && data.cordinatesData.length > 0) {
           let tempSignElems = [];
-          data.cordinatesData.forEach((coord, index) => {
-            if (coord.fieldType === "Signature") {
-              tempSignElems.push(
-                signElems.concat({
-                  field_id: 1,
-                  signatory_id: 12,
-                  eleId: `signEle${index}`,
-                  pageId: coord.pageId,
-                  x: coord.x,
-                  y: coord.y,
-                  width: coord.width,
-                  height: coord.height,
-                })
-              );
+          let tempTextElems = [];
+          let tempDateElems = [];
+          data.cordinatesData.forEach((coord) => {
+            const field = fields.find(field => field.id === coord.field_id);
+            console.log('@@@ OPTION: '+ JSON.stringify(options));
+            const option = options[coord.userIndex];
+            const bgColor = option.bgColor;
+            switch (field.name) {
+              case "Signature":
+                tempSignElems.push(
+                  signElems.concat({
+                    field_id: field.id,
+                    signatory_id: coord.signatory_id,
+                    bgColor: bgColor,
+                    name: `Signature${signEleCount + 1}`,
+                    eleId: `signEle${signEleCount}`,
+                    pageId: coord.pageId,
+                    x: coord.x,
+                    y: coord.y,
+                    width: coord.width,
+                    height: coord.height,
+                  })
+                );
+                setSignEleCount(signEleCount+1);
+                break;
+              case "Text":
+                tempTextElems.push(
+                  textElems.concat({
+                    field_id: field.id,
+                    signatory_id: coord.signatory_id,
+                    bgColor: bgColor,
+                    name: `Text${textEleCount + 1}`,
+                    eleId: `textEle${textEleCount}`,
+                    pageId: coord.pageId,
+                    x: coord.x,
+                    y: coord.y,
+                    width: coord.width,
+                    height: coord.height,
+                  })
+                );
+                setTextEleCount(textEleCount+1);
+                break;
+              case "Date":
+                tempDateElems.push(
+                  dateElems.concat({
+                    field_id: field.id,
+                    signatory_id: coord.signatory_id,
+                    bgColor: bgColor,
+                    name: `Date${dateEleCount + 1}`,
+                    eleId: `dateEle${dateEleCount}`,
+                    pageId: coord.pageId,
+                    x: coord.x,
+                    y: coord.y,
+                    width: coord.width,
+                    height: coord.height,
+                  })
+                );
+                setDateElems(dateEleCount+1);
+                break;
+              default:
+                break;
             }
           });
           setSignElems(tempSignElems);
+          setTextElems(tempTextElems);
+          setDateElems(tempDateElems);
         }
 
         data.images.forEach((file) => {
@@ -134,13 +197,42 @@ export default function Home() {
       .finally(() => {
         setTimeout(() => {
           setIsLoading(false);
-        }, 3000);
+        }, 2000);
       });
   }, []);
 
   React.useEffect(() => {
     getImage(activePage);
   }, [imgLst]); 
+
+  function showToast(type, message) {
+    switch (type) {
+      case 'info':
+        toast.info(message);
+        break;
+      case 'success':
+        toast.success(message);
+        break;
+      case 'warn':
+          toast.warn(message);
+          break;
+      case 'error':
+        toast.error(message);
+        break;
+      default:
+        toast(message);
+        break;
+    }
+  } 
+
+  function validateCoordinates(finalCoordData) {
+    for(let id=0; id<signatoryIdList.length; id++) {
+      if(finalCoordData.find(coord => coord.signatory_id === signatoryIdList[id])) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   function changeMode(selectedEle, isEditMode) {
     setSelectedElement(selectedEle);
@@ -166,7 +258,7 @@ export default function Home() {
         );
 
         break;
-      case "Textbox":
+      case "Text":
         setTextElems(
           textElems.map((ele) => {
             if(ele.eleId === selectedElement.eleId) {
@@ -177,7 +269,7 @@ export default function Home() {
           })
         )
         break;
-      case "Datebox":
+      case "Date":
         setDateElems(
           dateElems.map((ele) => {
             if(ele.eleId === selectedElement.eleId) {
@@ -204,33 +296,18 @@ export default function Home() {
 
     switch (foundField.name) {
       case "Signature": {
-        alert("Signature");
-        alert("@@@ signElems: " + JSON.stringify(signElems));
-        alert("@@@ selectedElement: "+ selectedElement.eleId);
-
-        alert(JSON.stringify(signElems.filter((ele) => ele.eleId !== selectedElement.eleId)));
-
         setSignElems(
-          signElems.filter((ele) => {
-            alert('@@@ ele: '+ JSON.stringify(ele));
-            if(ele.eleId !== selectedElement.eleId) return ele;
-          })
+          signElems.filter((ele) => ele.eleId !== selectedElement.eleId)
         );
         break;
       }
-      case "Textbox": {
-        console.log("Textbox");
-        console.log("@@@ textElems: " + JSON.stringify(textElems));
-
+      case "Text": {
         setTextElems(
           textElems.filter((ele) => ele.eleId !== selectedElement.eleId)
         );
         break;
       }
-      case "Datebox": {
-        console.log("Datebox");
-        console.log("@@@ dateElems: " + JSON.stringify(dateElems));
-
+      case "Date": {
         setDateElems(
           dateElems.filter((ele) => ele.eleId !== selectedElement.eleId)
         );
@@ -245,22 +322,17 @@ export default function Home() {
   }
 
   function handleSelectedEleNameChange(event) {
-    console.log("@@@ VALUE: " + event.target.value);
-    console.log("@@@ selectedElement.type: " + JSON.stringify(selectedElement));
     // selected element
     switch (selectedElement.type) {
       case "Signature": {
-        console.log("Signature");
         setSignElems(signElems.map((ele) => (ele.name = event.target.value)));
         break;
       }
-      case "Textbox": {
-        console.log("Textbox");
+      case "Text": {
         setTextElems(textElems.map((ele) => (ele.name = event.target.value)));
         break;
       }
-      case "Datebox": {
-        console.log("Datebox");
+      case "Date": {
         setDateElems(dateElems.map((ele) => (ele.name = event.target.value)));
         break;
       }
@@ -272,15 +344,16 @@ export default function Home() {
 
   function addNewElement(fieldId, name, eleId, width, height) {
     setSelectedEleUserDefaultValue(options[0]);
+    setPreviousCoord({x: previousCoord.x + 30, y: previousCoord.y + 30});
     return {
-      bgColor: colors[0],
       field_id: fieldId,
       signatory_id: options[0].id,
+      bgColor: colors[0],
       name: name,
       eleId: eleId,
       pageId: activePage,
-      x: 0,
-      y: 0,
+      x: previousCoord.x,
+      y: previousCoord.y,
       width: width,
       height: height,
     };
@@ -295,8 +368,8 @@ export default function Home() {
           1,
           `Signature${signEleCount + 1}`,
           `signEle${signEleCount}`,
-          160,
-          40
+          signEleDimension.width,
+          signEleDimension.height
         );
         setSignElems(signElems.concat(newSignEle));
         setSignEleCount(signEleCount + 1);
@@ -322,8 +395,8 @@ export default function Home() {
           2,
           `Text${textEleCount + 1}`,
           `textEle${textEleCount}`,
-          138,
-          26
+          textEleDimension.width,
+          textEleDimension.height
         );
         setTextElems(textElems.concat(newTextEle));
         setTextEleCount(textEleCount + 1);
@@ -349,8 +422,8 @@ export default function Home() {
           3,
           `Date${dateEleCount + 1}`,
           `dateEle${dateEleCount}`,
-          138,
-          26
+          dateEleDimension.width,
+          dateEleDimension.height
         );
         setDateElems(dateElems.concat(newDateEle));
         setDateEleCount(dateEleCount + 1);
@@ -379,11 +452,11 @@ export default function Home() {
         ele = signElems.filter((ele) => ele.eleId === id);
         break;
       }
-      case "Textbox": {
+      case "Text": {
         ele = textElems.filter((ele) => ele.eleId === id);
         break;
       }
-      case "Datebox": {
+      case "Date": {
         ele = dateElems.filter((ele) => ele.eleId === id);
         break;
       }
@@ -403,20 +476,29 @@ export default function Home() {
     // console.log("@@@ Data : Parent : handleDragStop : " + JSON.stringify(data));
     // console.log("@@@ toolType : Parent : handleDragStop : " + toolType);
     // console.log("@@@ Id: " + id);
+    // PDF VIEWER - Width: 612px, height: 792px
+    const pdfWidth = document.getElementsByTagName('canvas')[0].width;
+    const pdfHeight = document.getElementsByTagName('canvas')[0].height;
 
+    setPreviousCoord({x: data.x+30, y: data.y+30});
     switch (toolType) {
       case "Signature": {
           signElems.map((ele) => {
             //console.log(ele.eleId);
             if (ele.eleId === id) {
+              const x = data.x + ele.width;
+              const y = data.y + ele.height;
+
               ele.x = data.x;
               ele.y = data.y;
+              ele.x = x < 0 ? 0 : (x > pdfWidth ? pdfWidth : data.x);
+              ele.y = y < 0 ? 0 : (y > pdfHeight ? pdfHeight : data.y);
               return ele;
             }
           })
         break;
       }
-      case "Textbox": {
+      case "Text": {
           textElems.map((ele) => {
             //console.log(ele.eleId);
             if (ele.eleId === id) {
@@ -427,7 +509,7 @@ export default function Home() {
           })
         break;
       }
-      case "Datebox": {
+      case "Date": {
           dateElems.map((ele) => {
             console.log(ele.eleId);
             if (ele.eleId === id) {
@@ -444,6 +526,7 @@ export default function Home() {
       }
     }
     //setIsToolSelectionMode(true);
+    console.log("@@@ signElems : Parent : handleDragStop : " + JSON.stringify(signElems));
     return;
   }
 
@@ -461,10 +544,9 @@ export default function Home() {
               return ele;
             }
           })
-       
         break;
       }
-      case "Textbox": {
+      case "Text": {
         
           textElems.map((ele) => {
             console.log(ele.eleId);
@@ -477,7 +559,7 @@ export default function Home() {
         
         break;
       }
-      case "Datebox": {
+      case "Date": {
        
           dateElems.map((ele) => {
             console.log(ele.eleId);
@@ -517,41 +599,67 @@ export default function Home() {
     console.log("@@@ FINAL MAPPING OBJECT: signElems: " + JSON.stringify(signElems));
     console.log("@@@ FINAL MAPPING OBJECT: textElems: " + JSON.stringify(textElems));
     console.log("@@@ FINAL MAPPING OBJECT: dateElems: " + JSON.stringify(dateElems));
+    const finalCoordData = [...signElems, ...textElems, ...dateElems];
+    console.log('@@@ finalCoordData: '+ JSON.stringify(finalCoordData));
+    console.log('@@@ validateCoordinates: ' + validateCoordinates(finalCoordData));
+    console.log('@@@ signatoryIdList: ' + JSON.stringify(signatoryIdList));
 
-    const body = {
-      uuid_template_instance: uuid_template_instance,
-      // TODO: Merge all types of element and send a object data.
-      data: [...signElems, ...textElems, ...dateElems],
-    };
+    const isValid = validateCoordinates(finalCoordData);
+    console.log('@@@ isValid: '+ isValid);
 
-    console.log('@@@ body: handleContinue: '+JSON.stringify(body));
-    // setIsLoading(false);
-    fetch(`${serverURL}/api/submitCordinatesData`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        console.log(JSON.stringify(response));
+    if(!isValid) {
+      setIsLoading(false);
+      showToast('error', 'Please add atleast one field for each user.');
+    }
+
+    if(isValid) {
+      const body = {
+        uuid_template_instance: uuid_template_instance,
+        // TODO: Merge all types of element and send a object data.
+        data: finalCoordData,
+      };
+  
+      console.log('@@@ body: handleContinue: '+JSON.stringify(body));
+      // setIsLoading(false);
+      fetch(`${process.env.REACT_APP_API_URL}/api/submitCordinatesData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
       })
-      .catch((error) => {
-        console.log("@@@ Saved coordinate: " + JSON.stringify(error));
-      })
-      .finally(() => {
-        setIsFileShared(true);
-        setIsLoading(false);
-      });
+        .then((res) => res.json())
+        .then((response) => {
+          console.log(JSON.stringify(response));
+        })
+        .catch((error) => {
+          console.log("@@@ Saved coordinate: " + JSON.stringify(error));
+        })
+        .finally(() => {
+          setIsFileShared(true);
+          setIsLoading(false);
+        });
+    }
   }
 
   return (
     <>
-      {isLoading ? (
+      <ToastContainer 
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      {isLoading || isPDFLoading ? (
         <div
           style={{
-            position: "absolute",
+            position: "fixed",
             zIndex: 5,
             top: 0,
             left: 0,
@@ -639,18 +747,18 @@ export default function Home() {
                 >
                   <BsTextareaT className="tool-icon" />{" "}
                   <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Textbox
+                    Text
                   </p>
                 </button>
 
                 <button
                   type="button"
-                  className="tool-btn btn-margin disabled-btn"
-                  //onClick={handleDateBoxToolClick}
+                  className="tool-btn btn-margin working-btn"
+                  onClick={handleDateBoxToolClick}
                 >
                   <BsCalendar2Date className="tool-icon" />
                   <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Datebox
+                    Date
                   </p>
                 </button>
                 <button
@@ -723,6 +831,7 @@ export default function Home() {
                 if (ele.pageId === activePage) {
                   let toolName = "Signature";
                   let bgColor = ele.bgColor;
+                  let field = fields.find(field => field.type === 'Signature');
                   return (
                     <DragTool
                       isEditMode={ele.eleId === selectedElement.eleId}
@@ -734,8 +843,10 @@ export default function Home() {
                       y={ele.y}
                       width={ele.width}
                       height={ele.height}
-                      minWidth={75}
-                      minHeight={38}
+                      minWidth={field.minWidth}
+                      minHeight={field.minHeight}
+                      maxWidth={field.maxWidth}
+                      maxHeight={field.maxHeight}
                       handleDragStart={(toolType, e) =>
                         handleDragStart(ele.eleId, toolType, e)
                       }
@@ -755,8 +866,9 @@ export default function Home() {
               {textElems.map((ele) => {
                 console.log(ele);
                 if (ele.pageId === activePage) {
-                  let toolName = "Textbox";
+                  let toolName = "Text";
                   let bgColor = ele.bgColor;
+                  let field = fields.find(field => field.type === 'Text');
                   return (
                     <DragTool
                       isEditMode={ele.eleId === selectedElement.eleId}
@@ -768,9 +880,10 @@ export default function Home() {
                       y={ele.y}
                       width={ele.width}
                       height={ele.height}
-                      minWidth={85}
-                      minHeight={30}
-                      maxHeight={30}
+                      minWidth={field.minWidth}
+                      minHeight={field.minHeight}
+                      maxHeight={field.maxHeight}
+                      maxWidth={field.maxWidth}
                       handleDragStart={(toolType, e) =>
                         handleDragStart(ele.eleId, toolType, e)
                       }
@@ -790,7 +903,7 @@ export default function Home() {
               {dateElems.map((ele) => {
                 console.log(ele);
                 if (ele.pageId === activePage) {
-                  let toolName = "Datebox";
+                  let toolName = "Date";
                   let bgColor = ele.bgColor;
                   return (
                     <DragTool
@@ -803,10 +916,10 @@ export default function Home() {
                       y={ele.y}
                       width={ele.width}
                       height={ele.height}
-                      minWidth={85}
-                      minHeight={30}
-                      maxHeight={30}
-                      maxWidth={120}
+                      minWidth={dateEleDimension.minWidth}
+                      minHeight={dateEleDimension.minHeight}
+                      maxHeight={dateEleDimension.maxHeight}
+                      maxWidth={dateEleDimension.maxWidth}
                       handleDragStart={(toolType, e) =>
                         handleDragStart(ele.eleId, toolType, e)
                       }
@@ -838,20 +951,26 @@ export default function Home() {
                   zIndex: 1,
                 }}
               ></div>
-              {img && <img src={img} style={{ width: "100%" }} />}
-              
+              {/* {img && <img src={img} style={{ width: "100%" }} />} */
+                // console.log(`URL : ${process.env.REACT_APP_API_URL}/fetchpdf/?uuid=${uuid}`)
+              }
+              <PdfViewer pdf={`${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
+                 activePage={activePage}
+                 setPDFLoading={setIsPDFLoading}
+              />
             </div>
           </div>
           <div
             className="right-sidebar"
             id="right-sidebar-div"
-            style={{ position: "relative" }}
+            style={{ position: "relative", paddingRight: "10px"}}
           >
             {isToolSelectionMode ? (
-              <>
+              <div className="right-sidebar-tool-detail">
                 {/* <div style={{position:"absolute", right: "10px"}} onClick={() => setIsToolSelectionMode(false)}>
               <AiFillCloseSquare/>
             </div> */}
+          
                 <div class="right-sidebar-tool-header">
                   <RiBallPenLine style={{ margin: "8px", color: "#555d65" }} />
                   <span style={{ fontSize: "20px", color: "#555d65" }}>
@@ -889,7 +1008,7 @@ export default function Home() {
                     options={options}
                     name="currentSignatory"
                     onChange={(effect, e) => {
-                      let fieldType = fields.find(field => field.id === selectedElement.field_id).name;
+                      let fieldType = fields.find(field => field.id === selectedElement.field_id).type;
                       handleSignatoryChange(fieldType, effect, e);
                     }}
                   ></CustomSelect>
@@ -918,11 +1037,12 @@ export default function Home() {
                     }}
                   />
                 </div>
-              </>
+              </div>
             ) : null}
 
-            {!isToolSelectionMode &&
-              imgLst &&
+            {/* {!isToolSelectionMode && */}
+            <div style={{position: "absolute"}}>
+            { imgLst &&
               imgLst.map((item, index) => {
                 return (
                   <div
@@ -943,12 +1063,20 @@ export default function Home() {
                   </div>
                 );
               })}
+            </div>
           </div>
           <div className="navbar">
             <ProgressIndicator></ProgressIndicator>
+            {!isToolSelectionMode && 
             <button className="continue-btn" onClick={handleContinue}>
-              continue
+              Save
             </button>
+            }
+            {isToolSelectionMode && 
+              <button className="continue-btn" onClick={() => {setIsToolSelectionMode(false)}}>
+                Done
+              </button>
+            }
           </div>
         </div>
       )}

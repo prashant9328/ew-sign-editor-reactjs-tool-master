@@ -1,16 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 
-// const style = {
-//   position: "absolute",
-//   display: "flex",
-//   alignItems: "center",
-//   paddingLeft: "10px",
-//   border: "solid 1px #000000",
-//   background: "rgb(28,95,156, 0.5)",
-//   zIndex: 2,
-// };
-
 const DragTool = ({
   isEditMode = false,
   bgColor="rgb(28,95,156, 0.5)",
@@ -42,7 +32,7 @@ const DragTool = ({
 
   return (
     <Rnd
-      bounds=".document"
+      // bounds=".document"
       className=".drag-tool"
       style={{ 
         position: "absolute", 
