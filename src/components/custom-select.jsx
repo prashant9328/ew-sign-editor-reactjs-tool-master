@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Select from 'react-select';
 
-const CustomSelect = ({value, options, name, onChange}) => {
+const CustomSelect = ({value, defaultValue, options, name, type, onChange}) => {
   const [isClearable, setIsClearable] = useState(false);
   const [isSearchable, setIsSearchable] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -22,7 +22,7 @@ const CustomSelect = ({value, options, name, onChange}) => {
         name={name}
         options={options}
         onChange={(e) => {
-          onChange("current", e);
+          onChange(type, e);
         }}
         value={value}
       />

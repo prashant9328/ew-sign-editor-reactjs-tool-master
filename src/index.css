@@ -333,13 +333,24 @@ margin-top: 6px;
 }
 
 .signature-tool-icon-position {
-position: absolute;
-top: 5px;
+  position: absolute;
+  top: 5px;
 }
 
-.textbox-tool-icon-position, .datebox-tool-icon-position{
+.initials-tool-icon-position {
   position: absolute;
-top: 5.5px;
+  top: 3px;
+}
+
+.text-tool-icon-position, .date-tool-icon-position{
+  position: absolute;
+  top: 5.5px;
+}
+
+.checkbox-tool-icon-position {
+  position: absolute;
+  top: 3px;
+  right: 3px;
 }
 
 .resize-circle {

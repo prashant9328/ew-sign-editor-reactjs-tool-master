@@ -3,6 +3,7 @@ import { Rnd } from "react-rnd";
 
 const DragTool = ({
   isEditMode = false,
+  enableResizing = true,
   bgColor="rgb(28,95,156, 0.5)",
   toolType,
   toolIcon,
@@ -43,6 +44,7 @@ const DragTool = ({
         background: `${bgColor}`,
         zIndex: 2
       }}
+      enableResizing={enableResizing}
       size={{ width: currentState.width, height: currentState.height }}
       position={{ x: currentState.x, y: currentState.y }}
       minWidth={minWidth}
