@@ -19,13 +19,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   // Temporary
-  const tools = Object.freeze({
-    SIGNATURE: "Signature",
-    INITIALS: "Initials",
-    TEXT: "Text",
-    DATE: "Date",
-    CHECKBOX: "Checkbox"
-  });
+  // const tools = Object.freeze({
+  //   SIGNATURE: "Signature",
+  //   INITIALS: "Initials",
+  //   TEXT: "Text",
+  //   DATE: "Date",
+  //   CHECKBOX: "Checkbox"
+  // });
 
   const colorsWithHighOpacity = [
     "rgba(28, 95, 156, 0.8)",
@@ -57,8 +57,8 @@ export default function Home() {
   const [selectedElement, setSelectedElement] = React.useState({});
 
   const uuid = searchParams.get("uuid");
-  const uuid_template_instance = searchParams.get("uuid_template_instance");
-  const userId = searchParams.get("userid");
+  // const uuid_template_instance = searchParams.get("uuid_template_instance");
+  // const userId = searchParams.get("userid");
 
   const [activePage, setActivePage] = React.useState(0);
   const [imgLst, setImgLst] = React.useState([
@@ -100,11 +100,12 @@ export default function Home() {
 
     const data = {
       uuid: uuid,
-      salesforceUserId: userId,
-      uuid_template_instance: uuid_template_instance,
+      // salesforceUserId: userId,
+      // uuid_template_instance: uuid_template_instance,
     };
     // setIsLoading(false);
-    fetch(`${process.env.REACT_APP_API_URL}/api/fetchImagesData`, {
+    console.log(`@@@ ${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`);
+    fetch(`${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -157,132 +158,132 @@ export default function Home() {
           setOptions(signatoryList);
           setSignatoryIdList(signatoryIdList);
         }
-        if (data.cordinatesData != null && data.cordinatesData.length > 0) {
-          let tempSignElems = [];
-          let tempInitialsElems = [];
-          let tempTextElems = [];
-          let tempDateElems = [];
-          let tempCheckElems = [];
+        // if (data.cordinatesData != null && data.cordinatesData.length > 0) {
+        //   let tempSignElems = [];
+        //   let tempInitialsElems = [];
+        //   let tempTextElems = [];
+        //   let tempDateElems = [];
+        //   let tempCheckElems = [];
 
-          let tempSignEleCount = 0;
-          let tempInitialsEleCount = 0;
-          let tempTextEleCount = 0;
-          let tempDateEleCount = 0;
-          let tempCheckEleCount = 0;
+        //   let tempSignEleCount = 0;
+        //   let tempInitialsEleCount = 0;
+        //   let tempTextEleCount = 0;
+        //   let tempDateEleCount = 0;
+        //   let tempCheckEleCount = 0;
 
-          data.cordinatesData.forEach((coord) => {
-            // console.log("@@@ FIELDS: " + JSON.stringify(tempFields));
-            const field = tempFields.find(
-              (field) => field.id === coord.field_id
-            );
-            // console.log("@@@ OPTION: " + JSON.stringify(signatoryList));
-            const option = signatoryList[coord.userIndex];
-            const bgColor = option.bgColor;
+        //   data.cordinatesData.forEach((coord) => {
+        //     // console.log("@@@ FIELDS: " + JSON.stringify(tempFields));
+        //     const field = tempFields.find(
+        //       (field) => field.id === coord.field_id
+        //     );
+        //     // console.log("@@@ OPTION: " + JSON.stringify(signatoryList));
+        //     const option = signatoryList[coord.userIndex];
+        //     const bgColor = option.bgColor;
 
-            switch (field.name) {
-              case "Signature":
-                tempSignElems.push({
-                  field_id: field.id,
-                  signatory_id: option.id,
-                  bgColor: bgColor,
-                  name: `Signature${tempSignEleCount + 1}`,
-                  eleId: `signEle${tempSignEleCount}`,
-                  pageId: coord.pageId,
-                  x: coord.x,
-                  y: coord.y,
-                  width: coord.width,
-                  height: coord.height,
-                });
-                tempSignEleCount++;
-                break;
-              case "Initials":
-                tempInitialsElems.push({
-                  field_id: field.id,
-                  signatory_id: option.id,
-                  bgColor: bgColor,
-                  name: `Initials${tempInitialsEleCount + 1}`,
-                  eleId: `initialsEle${tempInitialsEleCount}`,
-                  pageId: coord.pageId,
-                  x: coord.x,
-                  y: coord.y,
-                  width: coord.width,
-                  height: coord.height,
-                });
-                tempInitialsEleCount++;
-                break;
-              case "Text":
-                tempTextElems.push(
-                  {
-                    field_id: field.id,
-                    signatory_id: option.id,
-                    bgColor: bgColor,
-                    name: `Text${tempTextEleCount + 1}`,
-                    eleId: `textEle${tempTextEleCount}`,
-                    pageId: coord.pageId,
-                    x: coord.x,
-                    y: coord.y,
-                    width: coord.width,
-                    height: coord.height,
-                  })
-                  tempTextEleCount++;
-                break;
-              case "Date":
-                tempDateElems.push(
-                  {
-                    field_id: field.id,
-                    signatory_id: option.id,
-                    bgColor: bgColor,
-                    name: `Date${tempDateEleCount + 1}`,
-                    eleId: `dateEle${tempDateEleCount}`,
-                    pageId: coord.pageId,
-                    x: coord.x,
-                    y: coord.y,
-                    width: coord.width,
-                    height: coord.height,
-                  })
-                  tempDateEleCount++;
-                break;
-              case "Checkbox":
-                tempCheckElems.push(
-                    {
-                      field_id: field.id,
-                      signatory_id: option.id,
-                      bgColor: bgColor,
-                      name: `Checkbox${tempCheckEleCount + 1}`,
-                      eleId: `checkBoxEle${tempCheckEleCount}`,
-                      pageId: coord.pageId,
-                      x: coord.x,
-                      y: coord.y,
-                      width: coord.width,
-                      height: coord.height,
-                    })
-                    tempCheckEleCount++;
-                  break;
-              default:
-                break;
-            }
-          });
-          // console.log(
-          //   "@@@ PREVIOUS: SIGNELE: " + JSON.stringify(tempSignElems)
-          // );
-          // console.log(
-          //   "@@@ PREVIOUS: TEXTELE: " + JSON.stringify(tempTextElems)
-          // );
-          // console.log(
-          //   "@@@ PREVIOUS: DATEELE: " + JSON.stringify(tempDateElems)
-          // );
-          setSignElems(tempSignElems);
-          setInitialsElems(tempInitialsElems);
-          setTextElems(tempTextElems);
-          setDateElems(tempDateElems);
-          setCheckBoxElems(tempCheckElems);
+        //     switch (field.name) {
+        //       case "Signature":
+        //         tempSignElems.push({
+        //           field_id: field.id,
+        //           signatory_id: option.id,
+        //           bgColor: bgColor,
+        //           name: `Signature${tempSignEleCount + 1}`,
+        //           eleId: `signEle${tempSignEleCount}`,
+        //           pageId: coord.pageId,
+        //           x: coord.x,
+        //           y: coord.y,
+        //           width: coord.width,
+        //           height: coord.height,
+        //         });
+        //         tempSignEleCount++;
+        //         break;
+        //       case "Initials":
+        //         tempInitialsElems.push({
+        //           field_id: field.id,
+        //           signatory_id: option.id,
+        //           bgColor: bgColor,
+        //           name: `Initials${tempInitialsEleCount + 1}`,
+        //           eleId: `initialsEle${tempInitialsEleCount}`,
+        //           pageId: coord.pageId,
+        //           x: coord.x,
+        //           y: coord.y,
+        //           width: coord.width,
+        //           height: coord.height,
+        //         });
+        //         tempInitialsEleCount++;
+        //         break;
+        //       case "Text":
+        //         tempTextElems.push(
+        //           {
+        //             field_id: field.id,
+        //             signatory_id: option.id,
+        //             bgColor: bgColor,
+        //             name: `Text${tempTextEleCount + 1}`,
+        //             eleId: `textEle${tempTextEleCount}`,
+        //             pageId: coord.pageId,
+        //             x: coord.x,
+        //             y: coord.y,
+        //             width: coord.width,
+        //             height: coord.height,
+        //           })
+        //           tempTextEleCount++;
+        //         break;
+        //       case "Date":
+        //         tempDateElems.push(
+        //           {
+        //             field_id: field.id,
+        //             signatory_id: option.id,
+        //             bgColor: bgColor,
+        //             name: `Date${tempDateEleCount + 1}`,
+        //             eleId: `dateEle${tempDateEleCount}`,
+        //             pageId: coord.pageId,
+        //             x: coord.x,
+        //             y: coord.y,
+        //             width: coord.width,
+        //             height: coord.height,
+        //           })
+        //           tempDateEleCount++;
+        //         break;
+        //       case "Checkbox":
+        //         tempCheckElems.push(
+        //             {
+        //               field_id: field.id,
+        //               signatory_id: option.id,
+        //               bgColor: bgColor,
+        //               name: `Checkbox${tempCheckEleCount + 1}`,
+        //               eleId: `checkBoxEle${tempCheckEleCount}`,
+        //               pageId: coord.pageId,
+        //               x: coord.x,
+        //               y: coord.y,
+        //               width: coord.width,
+        //               height: coord.height,
+        //             })
+        //             tempCheckEleCount++;
+        //           break;
+        //       default:
+        //         break;
+        //     }
+        //   });
+        //   // console.log(
+        //   //   "@@@ PREVIOUS: SIGNELE: " + JSON.stringify(tempSignElems)
+        //   // );
+        //   // console.log(
+        //   //   "@@@ PREVIOUS: TEXTELE: " + JSON.stringify(tempTextElems)
+        //   // );
+        //   // console.log(
+        //   //   "@@@ PREVIOUS: DATEELE: " + JSON.stringify(tempDateElems)
+        //   // );
+        //   setSignElems(tempSignElems);
+        //   setInitialsElems(tempInitialsElems);
+        //   setTextElems(tempTextElems);
+        //   setDateElems(tempDateElems);
+        //   setCheckBoxElems(tempCheckElems);
 
-          setSignEleCount(tempSignEleCount);
-          setInitialsEleCount(tempInitialsEleCount);
-          setTextEleCount(tempTextEleCount);
-          setDateEleCount(tempDateEleCount);
-          setCheckBoxEleCount(tempCheckEleCount);
-        }
+        //   setSignEleCount(tempSignEleCount);
+        //   setInitialsEleCount(tempInitialsEleCount);
+        //   setTextEleCount(tempTextEleCount);
+        //   setDateEleCount(tempDateEleCount);
+        //   setCheckBoxEleCount(tempCheckEleCount);
+        // }
 
         data.images.forEach((file) => {
           // console.log("@@@ PATH: " + file.path);
@@ -322,16 +323,15 @@ export default function Home() {
   }
 
   function validateCoordinates(finalCoordData) {
-    for (let id = 0; id < signatoryIdList.length; id++) {
-      if (
-        finalCoordData.find(
-          (coord) => coord.signatory_id === signatoryIdList[id]
-        )
-      ) {
-        return true;
-      }
+    if(finalCoordData.length===0) return false;
+
+    const finalCoordSignatoryIdList = [];
+    for (let i = 0; i < finalCoordData.length; i++) {
+      finalCoordSignatoryIdList.push(finalCoordData[i].signatory_id);
     }
-    return false;
+
+    let checker = (arr, target) => target.every(v => arr.includes(v));
+    return checker(finalCoordSignatoryIdList, signatoryIdList);
   }
 
   function changeMode(selectedEle, isEditMode, selectedOption=options[0]) {
@@ -414,9 +414,7 @@ export default function Home() {
 
   function handleEleDelete() {
 
-    console.log(
-      "@@@ signElems: DELETE: BEFORE: " + JSON.stringify(signElems)
-    );
+    
 
     console.log(
       "@@@ selectedElement: DELETE: BEFORE: " + JSON.stringify(selectedElement)
@@ -426,44 +424,53 @@ export default function Home() {
       (field) => field.id === selectedElement.field_id
     );
     
-    let tempSignElems = [];
+    console.log('@@@ foundField: '+ JSON.stringify(foundField));
     switch (foundField.name) {
       case "Signature": {
-          tempSignElems = signElems.filter((ele) => {
-            if(ele.eleId !== selectedElement.eleId) {
-              console.log('@@@ ELE: '+ JSON.stringify(ele));
-              return ele;
-            }
-          });
+        console.log(
+          "@@@ signElems: DELETE: BEFORE: " + JSON.stringify(signElems)
+        );
+        let tempSignElems = signElems.filter((ele) => ele.eleId !== selectedElement.eleId);
+        console.log('@@@ tempSignElems: '+ JSON.stringify(tempSignElems));
+        setSignElems(tempSignElems);
         // );
         break;
       }
       case "Text": {
-        setTextElems(
-          textElems.filter((ele) => ele.eleId !== selectedElement.eleId)
+        console.log(
+          "@@@ textElems: DELETE: BEFORE: " + JSON.stringify(textElems)
         );
+        let tempTextElems = textElems.filter((ele) => ele.eleId !== selectedElement.eleId);
+        console.log('@@@ tempSignElems: '+ JSON.stringify(tempTextElems));
+        setTextElems(tempTextElems);
         break;
       }
       case "Date": {
-        setDateElems(
-          dateElems.filter((ele) => ele.eleId !== selectedElement.eleId)
+        console.log(
+          "@@@ dateElems: DELETE: BEFORE: " + JSON.stringify(dateElems)
         );
+       
+        let tempDateElems = dateElems.filter((ele) => ele.eleId !== selectedElement.eleId);
+        console.log('@@@ tempSignElems: '+ JSON.stringify(tempDateElems));
+        setDateElems(tempDateElems);
         break;
       }
       case "Checkbox": {
-        setCheckBoxElems(
-          checkBoxElems.filter((ele) => ele.eleId !== selectedElement.eleId)
+        console.log(
+          "@@@ checkBoxElems: DELETE: BEFORE: " + JSON.stringify(checkBoxElems)
         );
+        let tempCheckBoxElems = checkBoxElems.filter((ele) => ele.eleId !== selectedElement.eleId)
+        console.log('@@@ tempSignElems: '+ JSON.stringify(tempCheckBoxElems));
+        setCheckBoxElems(tempCheckBoxElems);
+
         break;
       }
       default: {
         break;
       }
     }
-    console.log('@@@ tempSignElems: '+ JSON.stringify(tempSignElems));
-    setSignElems(tempSignElems);
+    
     changeMode({}, false);
-    console.log("@@@ signElems: AFTER DELETE " + JSON.stringify(signElems));
   }
 
   function handleSelectedEleNameChange(event) {
@@ -513,6 +520,7 @@ export default function Home() {
       y: previousCoord.y,
       width: width,
       height: height,
+
     };
   }
 
@@ -887,14 +895,17 @@ export default function Home() {
 
     if (isValid) {
       const body = {
-        uuid_template_instance: uuid_template_instance,
+        // uuid_template_instance: uuid_template_instance,
         // TODO: Merge all types of element and send a object data.
         data: finalCoordData,
+        uuid: uuid
       };
 
       console.log("@@@ body: handleContinue: " + JSON.stringify(body));
       // setIsLoading(false);
-      fetch(`${process.env.REACT_APP_API_URL}/api/submitCordinatesData`, {
+      
+
+      fetch(`${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1013,8 +1024,8 @@ export default function Home() {
 
                 <button
                   type="button"
-                  className="tool-btn btn-margin"
-                  style={{ backgroundColor: selectedSigner ? selectedSigner.toolColor : '', boxShadow: `1px 0 5px ${selectedSigner ? selectedSigner.toolColor : ''}`, borderRadius: "3px"}}
+                  className="tool-btn btn-margin disabled-btn"
+                  // style={{ backgroundColor: selectedSigner ? selectedSigner.toolColor : '', boxShadow: `1px 0 5px ${selectedSigner ? selectedSigner.toolColor : ''}`, borderRadius: "3px"}}
                   onClick={handleInitialToolClick}
                 >
                   <RiFontSize className="tool-icon" />{" "}
