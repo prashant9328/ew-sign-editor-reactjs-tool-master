@@ -41,6 +41,7 @@ export default function Home() {
     "rgba(64, 66, 88, 0.5)",
     "rgba(60, 207, 78, 0.5)",
   ];
+
   const [options, setOptions] = React.useState([]);
   const [signatoryIdList, setSignatoryIdList] = React.useState([]);
 
@@ -57,7 +58,7 @@ export default function Home() {
   const [selectedElement, setSelectedElement] = React.useState({});
 
   const uuid = searchParams.get("uuid");
-  // const uuid_template_instance = searchParams.get("uuid_template_instance");
+  const template_instance_uuid = searchParams.get("template_instance_uuid")?? null;
   // const userId = searchParams.get("userid");
 
   const [activePage, setActivePage] = React.useState(0);
@@ -100,8 +101,8 @@ export default function Home() {
 
     const data = {
       uuid: uuid,
+      templateInstanceUUID: template_instance_uuid
       // salesforceUserId: userId,
-      // uuid_template_instance: uuid_template_instance,
     };
     // setIsLoading(false);
     console.log(`@@@ ${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`);
@@ -120,6 +121,8 @@ export default function Home() {
         // TODO: Add all elements which were saved by user previously.
         let data = response.data;
         // {"id":1,"name":"signatureBlock","type":"Signature","is_required":1,"default_height":100,"default_width":150}
+
+        
 
         const tempFields = [];
         if (data.allFieldsData != null && data.allFieldsData.length > 0) {
@@ -140,24 +143,30 @@ export default function Home() {
         }
 
         const signatoryList = [];
-        if (data.signatoryList != null && data.signatoryList.length > 0) {
+        if(data.signatureFlow === "OR") {
+          const signatory = { id: 0, bgColor: colors[0], toolColor: colorsWithHighOpacity[0], value: 0, label: "User 1"};
+         
+          signatoryList.push(signatory);
+          signatoryIdList.push(signatory.id);
+        } else if (data.signatureFlow === "AND" && data.signatoryList != null && data.signatoryList.length > 0){
           let signatoryIdList = [];
           data.signatoryList.forEach((signatory, index) => {
             signatory.bgColor = colors[index];
             signatory.toolColor = colorsWithHighOpacity[index];
-            signatory.id = signatory.id;
+            // signatory.id = signatory.id;
             signatory.value = signatory.name;
             signatory.label = signatory.name;
             signatoryList.push(signatory);
             signatoryIdList.push(signatory.id);
           });
           // console.log("###" + JSON.stringify(signatoryList));
-          
           // const signatory = signatoryList[0];
-          setSelectedSigner(signatoryList[0]);
-          setOptions(signatoryList);
-          setSignatoryIdList(signatoryIdList);
         }
+
+        setSelectedSigner(signatoryList[0]);
+        setOptions(signatoryList);
+        setSignatoryIdList(signatoryIdList);
+
         // if (data.cordinatesData != null && data.cordinatesData.length > 0) {
         //   let tempSignElems = [];
         //   let tempInitialsElems = [];
@@ -898,7 +907,8 @@ export default function Home() {
         // uuid_template_instance: uuid_template_instance,
         // TODO: Merge all types of element and send a object data.
         data: finalCoordData,
-        uuid: uuid
+        uuid: uuid,
+        template_instance_uuid: template_instance_uuid
       };
 
       console.log("@@@ body: handleContinue: " + JSON.stringify(body));
