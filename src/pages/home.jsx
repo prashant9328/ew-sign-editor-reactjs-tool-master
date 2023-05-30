@@ -16,6 +16,7 @@ import { useSearchParams } from "react-router-dom";
 import PdfViewer from "../components/PDFViewer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from 'axios';
 
 export default function Home() {
   // Temporary
@@ -106,13 +107,15 @@ export default function Home() {
     };
     // setIsLoading(false);
     console.log(`@@@ ${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`);
-    fetch(`${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
+
+    axios.post(
+      `${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`, 
+      JSON.stringify(data), 
+      {
+        headers:{
+          "Content-Type": "application/json;"
+        }
+      })
       .then((res) => res.json())
       .then((response) => {
         const tempArr = [];
@@ -121,8 +124,6 @@ export default function Home() {
         // TODO: Add all elements which were saved by user previously.
         let data = response.data;
         // {"id":1,"name":"signatureBlock","type":"Signature","is_required":1,"default_height":100,"default_width":150}
-
-        
 
         const tempFields = [];
         if (data.allFieldsData != null && data.allFieldsData.length > 0) {
@@ -159,140 +160,11 @@ export default function Home() {
             signatoryList.push(signatory);
             signatoryIdList.push(signatory.id);
           });
-          // console.log("###" + JSON.stringify(signatoryList));
-          // const signatory = signatoryList[0];
         }
 
         setSelectedSigner(signatoryList[0]);
         setOptions(signatoryList);
         setSignatoryIdList(signatoryIdList);
-
-        // if (data.cordinatesData != null && data.cordinatesData.length > 0) {
-        //   let tempSignElems = [];
-        //   let tempInitialsElems = [];
-        //   let tempTextElems = [];
-        //   let tempDateElems = [];
-        //   let tempCheckElems = [];
-
-        //   let tempSignEleCount = 0;
-        //   let tempInitialsEleCount = 0;
-        //   let tempTextEleCount = 0;
-        //   let tempDateEleCount = 0;
-        //   let tempCheckEleCount = 0;
-
-        //   data.cordinatesData.forEach((coord) => {
-        //     // console.log("@@@ FIELDS: " + JSON.stringify(tempFields));
-        //     const field = tempFields.find(
-        //       (field) => field.id === coord.field_id
-        //     );
-        //     // console.log("@@@ OPTION: " + JSON.stringify(signatoryList));
-        //     const option = signatoryList[coord.userIndex];
-        //     const bgColor = option.bgColor;
-
-        //     switch (field.name) {
-        //       case "Signature":
-        //         tempSignElems.push({
-        //           field_id: field.id,
-        //           signatory_id: option.id,
-        //           bgColor: bgColor,
-        //           name: `Signature${tempSignEleCount + 1}`,
-        //           eleId: `signEle${tempSignEleCount}`,
-        //           pageId: coord.pageId,
-        //           x: coord.x,
-        //           y: coord.y,
-        //           width: coord.width,
-        //           height: coord.height,
-        //         });
-        //         tempSignEleCount++;
-        //         break;
-        //       case "Initials":
-        //         tempInitialsElems.push({
-        //           field_id: field.id,
-        //           signatory_id: option.id,
-        //           bgColor: bgColor,
-        //           name: `Initials${tempInitialsEleCount + 1}`,
-        //           eleId: `initialsEle${tempInitialsEleCount}`,
-        //           pageId: coord.pageId,
-        //           x: coord.x,
-        //           y: coord.y,
-        //           width: coord.width,
-        //           height: coord.height,
-        //         });
-        //         tempInitialsEleCount++;
-        //         break;
-        //       case "Text":
-        //         tempTextElems.push(
-        //           {
-        //             field_id: field.id,
-        //             signatory_id: option.id,
-        //             bgColor: bgColor,
-        //             name: `Text${tempTextEleCount + 1}`,
-        //             eleId: `textEle${tempTextEleCount}`,
-        //             pageId: coord.pageId,
-        //             x: coord.x,
-        //             y: coord.y,
-        //             width: coord.width,
-        //             height: coord.height,
-        //           })
-        //           tempTextEleCount++;
-        //         break;
-        //       case "Date":
-        //         tempDateElems.push(
-        //           {
-        //             field_id: field.id,
-        //             signatory_id: option.id,
-        //             bgColor: bgColor,
-        //             name: `Date${tempDateEleCount + 1}`,
-        //             eleId: `dateEle${tempDateEleCount}`,
-        //             pageId: coord.pageId,
-        //             x: coord.x,
-        //             y: coord.y,
-        //             width: coord.width,
-        //             height: coord.height,
-        //           })
-        //           tempDateEleCount++;
-        //         break;
-        //       case "Checkbox":
-        //         tempCheckElems.push(
-        //             {
-        //               field_id: field.id,
-        //               signatory_id: option.id,
-        //               bgColor: bgColor,
-        //               name: `Checkbox${tempCheckEleCount + 1}`,
-        //               eleId: `checkBoxEle${tempCheckEleCount}`,
-        //               pageId: coord.pageId,
-        //               x: coord.x,
-        //               y: coord.y,
-        //               width: coord.width,
-        //               height: coord.height,
-        //             })
-        //             tempCheckEleCount++;
-        //           break;
-        //       default:
-        //         break;
-        //     }
-        //   });
-        //   // console.log(
-        //   //   "@@@ PREVIOUS: SIGNELE: " + JSON.stringify(tempSignElems)
-        //   // );
-        //   // console.log(
-        //   //   "@@@ PREVIOUS: TEXTELE: " + JSON.stringify(tempTextElems)
-        //   // );
-        //   // console.log(
-        //   //   "@@@ PREVIOUS: DATEELE: " + JSON.stringify(tempDateElems)
-        //   // );
-        //   setSignElems(tempSignElems);
-        //   setInitialsElems(tempInitialsElems);
-        //   setTextElems(tempTextElems);
-        //   setDateElems(tempDateElems);
-        //   setCheckBoxElems(tempCheckElems);
-
-        //   setSignEleCount(tempSignEleCount);
-        //   setInitialsEleCount(tempInitialsEleCount);
-        //   setTextEleCount(tempTextEleCount);
-        //   setDateEleCount(tempDateEleCount);
-        //   setCheckBoxEleCount(tempCheckEleCount);
-        // }
 
         data.images.forEach((file) => {
           // console.log("@@@ PATH: " + file.path);
@@ -305,6 +177,15 @@ export default function Home() {
           setIsLoading(false);
         }, 2000);
       });
+
+
+    // fetch(`${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(data),
+    // })
   }, []);
 
   React.useEffect(() => {
@@ -908,31 +789,40 @@ export default function Home() {
         // TODO: Merge all types of element and send a object data.
         data: finalCoordData,
         uuid: uuid,
-        template_instance_uuid: template_instance_uuid
+        templateInstanceUUID: template_instance_uuid
       };
 
       console.log("@@@ body: handleContinue: " + JSON.stringify(body));
       // setIsLoading(false);
-      
 
-      fetch(`${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
+    axios.post(
+      `${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, 
+      JSON.stringify(body), 
+      {
+        headers:{
+          "Content-Type": "application/json;"
+        }
       })
-        .then((res) => res.json())
-        .then((response) => {
-          console.log(JSON.stringify(response));
-        })
-        .catch((error) => {
-          console.log("@@@ Saved coordinate: " + JSON.stringify(error));
-        })
-        .finally(() => {
-          setIsFileShared(true);
-          setIsLoading(false);
-        });
+    .then((res) => res.json())
+    .then((response) => {
+      console.log(JSON.stringify(response));
+      setIsFileShared(true);
+    })
+    .catch((error) => {
+      console.log("@@@ Saved coordinate: " + JSON.stringify(error));
+      toast.error(JSON.stringify(error));
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+
+      // fetch(`${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(body),
+      // })
     }
   }
 
