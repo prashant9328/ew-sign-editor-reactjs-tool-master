@@ -4,9 +4,9 @@ const ProgressIndicator = () => {
         
       <section className="progress-bar-section">
           <ol className="progress-bar">
-              <li className="is-complete"><span>Upload/Select template</span></li>
-              <li className="is-complete"><span>Add email detail</span></li>
-              <li className="is-active"><span>Edit template</span></li>  
+              <li className="is-complete" style={{textAlign: 'left'}}><span style={{color: "#33b536"}}>Upload/Select template</span></li>
+              <li className="is-complete" style={{textAlign: 'center'}}><span style={{color: "#33b536"}}>Add email detail</span></li>
+              <li className="is-active"   style={{textAlign: 'right'}}><span style={{color: "#33b536"}}>Edit template</span></li>  
           </ol>
       </section>
       </div>
