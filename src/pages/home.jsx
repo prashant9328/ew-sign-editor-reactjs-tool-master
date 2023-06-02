@@ -128,7 +128,6 @@ export default function Home() {
           data.signatoryList.forEach((signatory, index) => {
             signatory.bgColor = colors[index];
             signatory.toolColor = colorsWithHighOpacity[index];
-            // signatory.id = signatory.id;
             signatory.value = signatory.name;
             signatory.label = signatory.name;
             signatoryList.push(signatory);
@@ -1165,7 +1164,7 @@ export default function Home() {
                         <img
                           className="page-img"
                           style={{
-                            border: index === activePage ? "2px solid" : "0px",
+                            border: index === activePage ? "2px solid" : "1px solid #b3b3b34d",
                           }}
                           src={imgLst[index]}
                         />
