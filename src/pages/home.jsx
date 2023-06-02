@@ -19,18 +19,18 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function Home() {
   const colorsWithHighOpacity = [
-    "rgba(28, 95, 156, 0.8)",
-    "rgba(255, 110, 49, 0.8)",
-    "rgba(33, 255, 255, 0.8)",
-    "rgba(64, 66, 88, 0.8)",
-    "rgba(60, 207, 78, 0.8)",
+    "rgba(11, 30, 79, 0.8)",
+    "rgba(112, 105, 147, 0.8)",
+    "rgba(216, 0, 54, 0.8)",
+    "rgba(255, 76, 40, 0.8)",
+    "rgba(137, 153, 68, 0.8)",
   ];
   const colors = [
-    "rgba(28, 95, 156, 0.5)",
-    "rgba(255, 110, 49, 0.5)",
-    "rgba(33, 255, 255, 0.5)",
-    "rgba(64, 66, 88, 0.5)",
-    "rgba(60, 207, 78, 0.5)",
+    "rgba(11, 30, 79, 0.5)",
+    "rgba(112, 105, 147, 0.5)",
+    "rgba(216, 0, 54, 0.5)",
+    "rgba(255, 76, 40, 0.5)",
+    "rgba(137, 153, 68, 0.5)",
   ];
 
   const [options, setOptions] = React.useState([]);
@@ -264,6 +264,7 @@ export default function Home() {
     );
   }
 
+
   function handleEleDelete() {
 
     let foundField = fields.find(
@@ -273,52 +274,74 @@ export default function Home() {
     console.log('@@@ foundField: '+ JSON.stringify(foundField));
     switch (foundField.name) {
       case "Signature": {
+        let currentSignElems = signElems;
+        let emptyArr = [];
+        setSignElems(emptyArr);
         console.log(
           "@@@ signElems: DELETE: BEFORE: " + JSON.stringify(signElems)
         );
-        let tempSignElems = signElems.filter((ele) => ele.eleId !== selectedElement.eleId);
+        let tempSignElems = currentSignElems.filter((ele) => ele.eleId !== selectedElement.eleId);
         console.log('@@@ tempSignElems: '+ JSON.stringify(tempSignElems));
-        setSignElems(tempSignElems);
+        setTimeout(() =>
+        {
+          setSignElems(tempSignElems);
+        }, 0);
         // );
         break;
       }
       case "Text": {
+        let currentTextElems = textElems;
+        let emptyArr = [];
+        setTextElems(emptyArr);
         console.log(
           "@@@ textElems: DELETE: BEFORE: " + JSON.stringify(textElems)
         );
-        let tempTextElems = textElems.filter((ele) => ele.eleId !== selectedElement.eleId);
+        let tempTextElems = currentTextElems.filter((ele) => ele.eleId !== selectedElement.eleId);
         console.log('@@@ tempSignElems: '+ JSON.stringify(tempTextElems));
-        setTextElems(tempTextElems);
+        setTimeout(() =>
+        {
+          setTextElems(tempTextElems);
+        }, 0);
+        
         break;
       }
       case "Date": {
+        let currrentDateElems = dateElems;
+        let emptyArr = []
+        setDateElems(emptyArr);
         console.log(
           "@@@ dateElems: DELETE: BEFORE: " + JSON.stringify(dateElems)
         );
        
-        let tempDateElems = dateElems.filter((ele) => ele.eleId !== selectedElement.eleId);
+        let tempDateElems = currrentDateElems.filter((ele) => ele.eleId !== selectedElement.eleId);
         console.log('@@@ tempSignElems: '+ JSON.stringify(tempDateElems));
-        setDateElems(tempDateElems);
+        setTimeout(() =>
+        {
+          setDateElems(tempDateElems);
+        }, 0);  
         break;
       }
       case "Checkbox": {
+        let currenctCheckboxElems = checkBoxElems;
+        let emptyArr = [];
+        setCheckBoxElems(emptyArr);
         console.log(
           "@@@ checkBoxElems: DELETE: BEFORE: " + JSON.stringify(checkBoxElems)
         );
-        let tempCheckBoxElems = checkBoxElems.filter((ele) => ele.eleId !== selectedElement.eleId)
+        let tempCheckBoxElems = currenctCheckboxElems.filter((ele) => ele.eleId !== selectedElement.eleId)
         console.log('@@@ tempSignElems: '+ JSON.stringify(tempCheckBoxElems));
-        setCheckBoxElems(tempCheckBoxElems);
-
+        setTimeout(() =>
+        {
+          setCheckBoxElems(tempCheckBoxElems);
+        }, 0);        
         break;
       }
       default: {
         break;
       }
     }
-    
-    changeMode({}, false);
+    changeMode({}, false ,selectedSigner );
   }
-
   function handleSelectedEleNameChange(event) {
     console.log("@@@ handleSelectedEleNameChange: CLICKED..... ");
 
@@ -485,6 +508,8 @@ export default function Home() {
   } 
 
   function handleDragStart(id, toolType, e) {
+    let emptyArr = [];
+    setSelectedEleUserDefaultValue(emptyArr);
     console.log('@@@ handleDragStart: CALLED.....');
     // console.log("@@@ handleDragStart");
     // console.log("@@@ Id: handleDragStart: " + id);
@@ -516,20 +541,19 @@ export default function Home() {
     console.log("@@@ ELE : " + JSON.stringify(ele));
     setSelectedElement(ele[0]);
     setIsToolSelectionMode(true);
-    setSelectedEleUserDefaultValue(
-      options.filter((option) => option.id === ele[0].signatory_id)
-    );
   }
 
   function handleDragStop(id, toolType, data, e) {
     console.log('@@@ handleDragStop: CALLED.....');
     setPreviousCoord({ x: data.x + 30, y: data.y + 30 });
+    let eleValue = [];
     switch (toolType) {
       case "Signature": {
         signElems.map((ele) => {
           if (ele.eleId === id) {
             ele.x = data.x;
             ele.y = data.y;
+            eleValue.push(ele);
             return ele;
           }
         });
@@ -541,6 +565,7 @@ export default function Home() {
           if (ele.eleId === id) {
             ele.x = data.x;
             ele.y = data.y;
+            eleValue.push(ele);
             return ele;
           }
         });
@@ -552,6 +577,7 @@ export default function Home() {
           if (ele.eleId === id) {
             ele.x = data.x;
             ele.y = data.y;
+            eleValue.push(ele);
             return ele;
           }
         });
@@ -563,6 +589,7 @@ export default function Home() {
           if (ele.eleId === id) {
             ele.x = data.x;
             ele.y = data.y;
+            eleValue.push(ele);
             return ele;
           }
         });
@@ -572,6 +599,9 @@ export default function Home() {
         break;
       }
     }
+    setSelectedEleUserDefaultValue(
+      options.filter((option) => option.id === eleValue[0].signatory_id)
+    );
     return;
   }
 
@@ -752,8 +782,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="container">
-          <div className="left-sidebar">
-            <div>
+            <div className="left-sidebar">
               <div className="tools-title">Signer</div>
               <CustomSelect 
                 value={selectedSigner}
@@ -765,32 +794,20 @@ export default function Home() {
                   handleSignatoryChange('', effect, e);
                 }}>            
               </CustomSelect>
-              <div className="tools-title">Signature fields</div>
-              <div className="signature-tool">
-                <button
-                  type="button"
-                  className="tool-btn signature-btn"
-                  style={{ backgroundColor: selectedSigner ? selectedSigner.toolColor : '', boxShadow: `1px 0 5px ${selectedSigner ? selectedSigner.toolColor : ''}`, borderRadius: "3px"}}
-                  onClick={handleSignToolClick}
-                >
-                  <RiBallPenLine className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Signature
-                  </p>
-                </button>
+              <div className="tools-title">Fields</div>
+              <div className="flex-container">
+                    <button
+                      type="button"
+                      className="flex-item tool-btn signature-btn"
+                      style={{ marginLeft : '0px' , backgroundColor: selectedSigner ? selectedSigner.toolColor : '', boxShadow: `1px 0 5px ${selectedSigner ? selectedSigner.toolColor : ''}`, borderRadius: "3px"}}
+                      onClick={handleSignToolClick}
+                    >
+                      <RiBallPenLine className="tool-icon" />{" "}
+                      <p style={{ marginLeft: '-7px',color: "#ffffff" }}>
+                        Signature
+                      </p>
+                    </button>
 
-                <button
-                  type="button"
-                  className="tool-btn btn-margin disabled-btn"
-                >
-                  <RiFontSize className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Initials
-                  </p>
-                </button>
-              </div>
-              <div className="tools-title">Standard fields</div>
-              <div className="standard-tool">
                 <button
                   type="button"
                   className="tool-btn btn-margin"
@@ -798,81 +815,80 @@ export default function Home() {
                   onClick={handleTextBoxToolClick}
                 >
                   <BsTextareaT className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>Text</p>
+                  <p style={{color: "#ffffff" }}>Text</p>
                 </button>
 
-                <button
-                  type="button"
-                  className="tool-btn btn-margin"
-                  style={{ backgroundColor: selectedSigner ? selectedSigner.toolColor : '', boxShadow: `1px 0 5px ${selectedSigner ? selectedSigner.toolColor : ''}`, borderRadius: "3px"}}
-                  onClick={handleDateBoxToolClick}
-                >
-                  <BsCalendar2Date className="tool-icon" />
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>Date</p>
-                </button>
-                <button
-                  type="button"
-                  className="tool-btn btn-margin"
-                  style={{ backgroundColor: selectedSigner ? selectedSigner.toolColor : '', boxShadow: `1px 0 5px ${selectedSigner ? selectedSigner.toolColor : ''}`, borderRadius: "3px"}}
-                  onClick={handleCheckBoxToolClick}
-                >
-                  <BsCheck2Square className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Checkbox
-                  </p>
-                </button>
+                    <button
+                      type="button"
+                      className="tool-btn btn-margin flex-item "
+                      style={{ backgroundColor: selectedSigner ? selectedSigner.toolColor : '', boxShadow: `1px 0 5px ${selectedSigner ? selectedSigner.toolColor : ''}`, borderRadius: "3px"}}
+                      onClick={handleDateBoxToolClick}
+                    >
+                      <BsCalendar2Date className="tool-icon" />
+                      <p style={{ color: "#ffffff" }}>Date</p>
+                    </button>
+                    <button
+                      type="button"
+                      className="tool-btn btn-margin flex-item "
+                      style={{borderRadius: '3px',
+                      backgroundColor: selectedSigner ? selectedSigner.toolColor : '',
+                      boxShadow: 'rgba(11, 30, 79, 0.8) 1px 0px 5px'}}
+                      onClick={handleCheckBoxToolClick}
+                    >
+                      <BsCheck2Square className="tool-icon" />{" "}
+                      <p style={{  marginLeft: '-11px', color: "#ffffff" }}>
+                        Checkbox
+                      </p>
+                    </button>
+                  <button
+                    type="button"
+                    className="tool-btn btn-margin disabled-btn flex-item "
+                  >
+                    <BsCalendar2Date className="tool-icon" />{" "}
+                    <p style={{  color: "#ffffff" }}>
+                      Date Signed
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="tool-btn btn-margin disabled-btn flex-item "
+                  >
+                    <BiUser className="tool-icon" />{" "}
+                    <p style={{  color: "#ffffff" }}>
+                      Full Name
+                    </p>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="tool-btn btn-margin disabled-btn flex-item "
+                  >
+                    <MdOutlineAlternateEmail className="tool-icon" />{" "}
+                    <p style={{  color: "#ffffff" }}>Email</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="tool-btn btn-margin disabled-btn flex-item "
+                  >
+                    <BsBuildings className="tool-icon" />{" "}
+                    <p style={{ marginLeft: '-7px',  color: "#ffffff" }}>
+                      Company
+                    </p>
+                  </button>
+
+                  <button 
+                    type="button"
+                    className="tool-btn btn-margin disabled-btn flex-item "
+                  >
+                    <RiSuitcaseLine className="tool-icon" />{" "}
+                    <p style={{color: "#ffffff" }}>
+                      Job Title
+                    </p>
+                  </button>
+                  <div className="flex-item" style={{marginLeft: '67px'}}></div>
               </div>
-              <div className="tools-title">Auto-fill fields</div>
-              <div className="standard-tool">
-                <button
-                  type="button"
-                  className="tool-btn btn-margin disabled-btn"
-                >
-                  <BsCalendar2Date className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Date Signed
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  className="tool-btn btn-margin disabled-btn"
-                >
-                  <BiUser className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Full Name
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  className="tool-btn btn-margin disabled-btn"
-                >
-                  <MdOutlineAlternateEmail className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>Email</p>
-                </button>
-
-                <button
-                  type="button"
-                  className="tool-btn btn-margin disabled-btn"
-                >
-                  <BsBuildings className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Company
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  className="tool-btn btn-margin disabled-btn"
-                >
-                  <RiSuitcaseLine className="tool-icon" />{" "}
-                  <p style={{ marginLeft: "12px", color: "#ffffff" }}>
-                    Job Title
-                  </p>
-                </button>
-              </div>
-            </div>
           </div>
           <div>
             <div className="document" id="center-img-div">
