@@ -16,18 +16,8 @@ import { useSearchParams } from "react-router-dom";
 import PdfViewer from "../components/PDFViewer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from 'axios';
 
 export default function Home() {
-  // Temporary
-  // const tools = Object.freeze({
-  //   SIGNATURE: "Signature",
-  //   INITIALS: "Initials",
-  //   TEXT: "Text",
-  //   DATE: "Date",
-  //   CHECKBOX: "Checkbox"
-  // });
-
   const colorsWithHighOpacity = [
     "rgba(28, 95, 156, 0.8)",
     "rgba(255, 110, 49, 0.8)",
@@ -63,9 +53,7 @@ export default function Home() {
   // const userId = searchParams.get("userid");
 
   const [activePage, setActivePage] = React.useState(0);
-  const [imgLst, setImgLst] = React.useState([
-    // 'https://cdn.glitch.global/5790e45e-8028-494f-9443-fac72a396419/Signature_Image.jpg?v=1676700133928',
-  ]);
+  const [imgLst, setImgLst] = React.useState([]);
   const [img, setImg] = React.useState(null);
   //fields
   const [fields, setFields] = React.useState([]);
@@ -73,10 +61,6 @@ export default function Home() {
   // SIGNATURE TOOL
   const [signEleCount, setSignEleCount] = React.useState(0);
   const [signElems, setSignElems] = React.useState([]);
-
-  // Initials Tool
-  const [initialsEleCount, setInitialsEleCount] = React.useState(0);
-  const [initialsElems, setInitialsElems] = React.useState([]);
 
   // Text Tool
   const [textEleCount, setTextEleCount] = React.useState(0);
@@ -93,29 +77,18 @@ export default function Home() {
   const [previousCoord, setPreviousCoord] = React.useState({ x: 0, y: 0 });
 
   React.useEffect(() => {
-    //const uuid = JSON.parse(localStorage.getItem('data'));
-    // console.log(window.location.href);
-
-    // console.log("@@@ UUID: " + uuid);
-    // console.log("@@@ uuid_template_instance: " + uuid_template_instance);
-    // console.log("@@@ userId: " + userId);
-
     const data = {
       uuid: uuid,
       templateInstanceUUID: template_instance_uuid
-      // salesforceUserId: userId,
     };
-    // setIsLoading(false);
     console.log(`@@@ ${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`);
-
-    axios.post(
-      `${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`, 
-      JSON.stringify(data), 
-      {
-        headers:{
-          "Content-Type": "application/json;"
-        }
-      })
+      fetch(`${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
       .then((res) => res.json())
       .then((response) => {
         const tempArr = [];
@@ -144,12 +117,13 @@ export default function Home() {
         }
 
         const signatoryList = [];
-        if(data.signatureFlow === "OR") {
+        const signatureFlow = data.signatureFlow;
+        if(signatureFlow === "OR") {
           const signatory = { id: 0, bgColor: colors[0], toolColor: colorsWithHighOpacity[0], value: 0, label: "User 1"};
          
           signatoryList.push(signatory);
           signatoryIdList.push(signatory.id);
-        } else if (data.signatureFlow === "AND" && data.signatoryList != null && data.signatoryList.length > 0){
+        } else if (signatureFlow === "AND" && data.signatoryList != null && data.signatoryList.length > 0){
           let signatoryIdList = [];
           data.signatoryList.forEach((signatory, index) => {
             signatory.bgColor = colors[index];
@@ -179,13 +153,7 @@ export default function Home() {
       });
 
 
-    // fetch(`${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(data),
-    // })
+    //
   }, []);
 
   React.useEffect(() => {
@@ -234,13 +202,7 @@ export default function Home() {
 
   function handleSignatoryChange(fieldType, effect, e) {
     console.log("@@@ handleSignatoryChange: CALLED....");
-    
-    // console.log("@@@ handleSignatoryChange: fieldType: " + fieldType);
-    // console.log("@@@ handleSignatoryChange: effect: " + effect);
-    // console.log("@@@ handleSignatoryChange: value: " + JSON.stringify(e));
-
     if(effect === 'all_tool') {
-      // console.log('all_tool: '+ JSON.stringify(e));
       setSelectedSigner(e);
       setSelectedElement({});
       setIsToolSelectionMode(false);
@@ -304,12 +266,6 @@ export default function Home() {
 
   function handleEleDelete() {
 
-    
-
-    console.log(
-      "@@@ selectedElement: DELETE: BEFORE: " + JSON.stringify(selectedElement)
-    );
-
     let foundField = fields.find(
       (field) => field.id === selectedElement.field_id
     );
@@ -372,10 +328,6 @@ export default function Home() {
         setSignElems(signElems.map((ele) => (ele.name = event.target.value)));
         break;
       }
-      case "Initials": {
-        setInitialsElems(initialsElems.map((ele) => (ele.name = event.target.value)));
-        break;
-      }
       case "Text": {
         setTextElems(textElems.map((ele) => (ele.name = event.target.value)));
         break;
@@ -430,34 +382,6 @@ export default function Home() {
         setSignElems(signElems.concat(newSignEle));
         setSignEleCount(signEleCount + 1);
         changeMode(newSignEle, true, selectedSigner);
-        break;
-      }
-      case 2: {
-        // console.log("Double click");
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  function handleInitialToolClick(event) {
-    console.log("@@@ handleInitialToolClick: CLICKED..... ");
-    const field = fields.find(field => field.type === 'Initials');
-    switch (event.detail) {
-      case 1: {
-        // console.log("Single click");
-        let newInitialsEle = addNewElement(
-          field.id,
-          `Initials${initialsEleCount + 1}`,
-          `initialsEle${initialsEleCount}`,
-          field.width,
-          field.height
-        );
-        setInitialsElems(initialsElems.concat(newInitialsEle));
-        setInitialsEleCount(initialsEleCount + 1);
-        changeMode(newInitialsEle, true, selectedSigner);
         break;
       }
       case 2: {
@@ -573,10 +497,6 @@ export default function Home() {
         ele = signElems.filter((ele) => ele.eleId === id);
         break;
       }
-      case "Initials": {
-        ele = initialsElems.filter((ele) => ele.eleId === id);
-        break;
-      }
       case "Text": {
         ele = textElems.filter((ele) => ele.eleId === id);
         break;
@@ -594,13 +514,11 @@ export default function Home() {
       }
     }
     console.log("@@@ ELE : " + JSON.stringify(ele));
-    // console.log("@@@ options : " + JSON.stringify(options));
     setSelectedElement(ele[0]);
     setIsToolSelectionMode(true);
     setSelectedEleUserDefaultValue(
       options.filter((option) => option.id === ele[0].signatory_id)
     );
-    // changeMode(ele[0], true);
   }
 
   function handleDragStop(id, toolType, data, e) {
@@ -609,17 +527,6 @@ export default function Home() {
     switch (toolType) {
       case "Signature": {
         signElems.map((ele) => {
-          if (ele.eleId === id) {
-            ele.x = data.x;
-            ele.y = data.y;
-            return ele;
-          }
-        });
-
-        break;
-      }
-      case "Initials": {
-        initialsElems.map((ele) => {
           if (ele.eleId === id) {
             ele.x = data.x;
             ele.y = data.y;
@@ -665,31 +572,13 @@ export default function Home() {
         break;
       }
     }
-    //setIsToolSelectionMode(true);
-    // console.log(
-    //   "@@@ signElems : Parent : handleDragStop : " + JSON.stringify(signElems)
-    // );
     return;
   }
 
   function handleResize(id, toolType, data, e) {
-    // console.log("@@@ Data : Parent : handleResize : " + JSON.stringify(data));
-    // console.log("@@@ toolType : Parent : handleDragStop : " + toolType);
-
     switch (toolType) {
       case "Signature": {
         signElems.map((ele) => {
-          // console.log(ele.eleId);
-          if (ele.eleId === id) {
-            ele.width = data.width;
-            ele.height = data.height;
-            return ele;
-          }
-        });
-        break;
-      }
-      case "Initials": {
-        initialsElems.map((ele) => {
           // console.log(ele.eleId);
           if (ele.eleId === id) {
             ele.width = data.width;
@@ -742,10 +631,6 @@ export default function Home() {
   }
 
   function handlePaggination(index) {
-    // console.log("@@@ handlePaggination: " + index);
-    // console.log("@@@ activePage: " + activePage);
-    // console.log("@@@ Data: " + JSON.stringify(signElems));
-    // console.log("@@@ Selected Ele: " + JSON.stringify(selectedElement));
     if (index === activePage) return;
     setActivePage(index);
     getImage(index);
@@ -758,25 +643,8 @@ export default function Home() {
   function handleContinue() {
     setIsLoading(true);
     setIsFetching(false);
-    console.log("@@@ handleContinue.");
-    console.log(
-      "@@@ FINAL MAPPING OBJECT: signElems: " + JSON.stringify(signElems)
-    );
-    console.log(
-      "@@@ FINAL MAPPING OBJECT: textElems: " + JSON.stringify(textElems)
-    );
-    console.log(
-      "@@@ FINAL MAPPING OBJECT: dateElems: " + JSON.stringify(dateElems)
-    );
-    const finalCoordData = [...signElems, ...initialsElems, ...textElems, ...dateElems, ...checkBoxElems];
-    console.log("@@@ finalCoordData: " + JSON.stringify(finalCoordData));
-    console.log(
-      "@@@ validateCoordinates: " + validateCoordinates(finalCoordData)
-    );
-    console.log("@@@ signatoryIdList: " + JSON.stringify(signatoryIdList));
-
+    const finalCoordData = [...signElems, ...textElems, ...dateElems, ...checkBoxElems];
     const isValid = validateCoordinates(finalCoordData);
-    console.log("@@@ isValid: " + isValid);
 
     if (!isValid) {
       setIsLoading(false);
@@ -785,23 +653,18 @@ export default function Home() {
 
     if (isValid) {
       const body = {
-        // uuid_template_instance: uuid_template_instance,
         // TODO: Merge all types of element and send a object data.
         data: finalCoordData,
         uuid: uuid,
         templateInstanceUUID: template_instance_uuid
       };
 
-      console.log("@@@ body: handleContinue: " + JSON.stringify(body));
-      // setIsLoading(false);
-
-    axios.post(
-      `${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, 
-      JSON.stringify(body), 
-      {
-        headers:{
-          "Content-Type": "application/json;"
-        }
+    fetch(`${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
       })
     .then((res) => res.json())
     .then((response) => {
@@ -816,13 +679,7 @@ export default function Home() {
       setIsLoading(false);
     });
 
-      // fetch(`${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(body),
-      // })
+      
     }
   }
 
@@ -925,8 +782,6 @@ export default function Home() {
                 <button
                   type="button"
                   className="tool-btn btn-margin disabled-btn"
-                  // style={{ backgroundColor: selectedSigner ? selectedSigner.toolColor : '', boxShadow: `1px 0 5px ${selectedSigner ? selectedSigner.toolColor : ''}`, borderRadius: "3px"}}
-                  onClick={handleInitialToolClick}
                 >
                   <RiFontSize className="tool-icon" />{" "}
                   <p style={{ marginLeft: "12px", color: "#ffffff" }}>
@@ -1021,48 +876,7 @@ export default function Home() {
           </div>
           <div>
             <div className="document" id="center-img-div">
-            {initialsElems.map((ele) => {
-                if (ele.pageId === activePage) {
-                  console.log('@@@ RENDERING SIGNATURE: INSIDE: '+ JSON.stringify(ele));
-                  const toolName = "Initials";
-                  const bgColor = ele.bgColor;
-                  const field = fields.find(
-                    (field) => field.type === toolName
-                  );
-                  return (
-                    <DragTool
-                      isEditMode={
-                        selectedElement && ele.eleId === selectedElement.eleId
-                      }
-                      enableResizing={false}
-                      bgColor={bgColor}
-                      toolType={toolName}
-                      id={ele.eleId}
-                      pageId={ele.pageId}
-                      x={ele.x}
-                      y={ele.y}
-                      width={ele.width}
-                      height={ele.height}
-                      minWidth={field.minWidth}
-                      minHeight={field.minHeight}
-                      maxWidth={field.maxWidth}
-                      maxHeight={field.maxHeight}
-                      handleDragStart={(toolType, e) =>
-                        handleDragStart(ele.eleId, toolType, e)
-                      }
-                      handleDragStop={(data, e) =>
-                        handleDragStop(ele.eleId, toolName, data, e)
-                      }
-                      handleResize={(data, e) =>
-                        handleResize(ele.eleId, toolName, data, e)
-                      }
-                      toolIcon={
-                        <RiFontSize className={`${toolName.toLowerCase()}-tool-icon-position`} />
-                      }
-                    />
-                  );
-                }
-              })}
+            
               {signElems.map((ele) => {
                 if (ele.pageId === activePage) {
                   console.log('@@@ RENDERING SIGNATURE: INSIDE: '+ JSON.stringify(ele));
@@ -1252,10 +1066,6 @@ export default function Home() {
                   zIndex: 1,
                 }}
               ></div>
-              {
-                /* {img && <img src={img} style={{ width: "100%" }} />} */
-                // console.log(`URL : ${process.env.REACT_APP_API_URL}/fetchpdf/?uuid=${uuid}`)
-              }
               <PdfViewer
                 pdf={`${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
                 activePage={activePage}
@@ -1270,10 +1080,6 @@ export default function Home() {
           >
             {isToolSelectionMode ? (
               <div className="right-sidebar-tool-detail">
-                {/* <div style={{position:"absolute", right: "10px"}} onClick={() => setIsToolSelectionMode(false)}>
-              <AiFillCloseSquare/>
-            </div> */}
-
                 <div class="right-sidebar-tool-header">
                   <RiBallPenLine style={{ margin: "8px", color: "#555d65" }} />
                   <span style={{ fontSize: "20px", color: "#555d65" }}>
@@ -1331,7 +1137,6 @@ export default function Home() {
                   <label style={{ fontSize: "13px", color: "#555d65" }}>
                     Field name<span style={{ color: "red" }}>*</span>
                   </label>
-                  {/* <CustomSelect options={options} name="currentSignatory"></CustomSelect> */}
                   <input
                     defaultValue={selectedElement.name}
                     onChange={(event) => handleSelectedEleNameChange(event)}
@@ -1346,7 +1151,6 @@ export default function Home() {
               </div>
             ) : null}
 
-            {/* {!isToolSelectionMode && */}
             <div style={{ position: "absolute" }}>
               {imgLst &&
                 imgLst.map((item, index) => {
