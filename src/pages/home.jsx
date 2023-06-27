@@ -1200,7 +1200,7 @@ return (
             
             {!isToolSelectionMode && (
                 <button className="continue-btn" onClick={handleContinue}>
-                  {template_instance_uuid == null ? "Save" : "Send"}
+                  {template_instance_uuid == null ? "SAVE TEMPLATE" : "SEND TO SIGN"}
                 </button>
             )}
             {isToolSelectionMode && (
