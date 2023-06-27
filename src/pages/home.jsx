@@ -55,6 +55,7 @@ const template_instance_uuid = searchParams.get("template_instance_uuid")?? null
 const [activePage, setActivePage] = React.useState(0);
 const [imgLst, setImgLst] = React.useState([]);
 const [img, setImg] = React.useState(null);
+ const [unfocusDivStyle,setUnfocusDivStyle] = React.useState({ height:0,width:0});
 //fields
 const [fields, setFields] = React.useState([]);
 
@@ -77,6 +78,7 @@ const [checkBoxElems, setCheckBoxElems] = React.useState([]);
 const [previousCoord, setPreviousCoord] = React.useState({ x: 0, y: 0 });
 
 React.useEffect(() => {
+
   const data = {
     uuid: uuid,
     templateInstanceUUID: template_instance_uuid
@@ -118,26 +120,32 @@ React.useEffect(() => {
 
       const signatoryList = [];
       const signatureFlow = data.signatureFlow;
+
+      let tempSignatoryIdList = [];
+
       if(signatureFlow === "OR") {
-        const signatory = { id: 0, bgColor: colors[0], toolColor: colorsWithHighOpacity[0], value: 0, label: "User 1"};
+        const signatory = { id: 0, index: 0, bgColor: colors[0], toolColor: colorsWithHighOpacity[0], value: 0, label: "User 1"};
         
         signatoryList.push(signatory);
-        signatoryIdList.push(signatory.id);
+        tempSignatoryIdList.push(signatory.id);
       } else if (signatureFlow === "AND" && data.signatoryList != null && data.signatoryList.length > 0){
-        let signatoryIdList = [];
+        
         data.signatoryList.forEach((signatory, index) => {
+          signatory.index = index;
           signatory.bgColor = colors[index];
           signatory.toolColor = colorsWithHighOpacity[index];
           signatory.value = signatory.name;
           signatory.label = signatory.name;
           signatoryList.push(signatory);
-          signatoryIdList.push(signatory.id);
+          tempSignatoryIdList.push(signatory.id);
         });
       }
 
+      console.log('@@@ signatoryIdList: FINAL : '+ tempSignatoryIdList);
+
       setSelectedSigner(signatoryList[0]);
       setOptions(signatoryList);
-      setSignatoryIdList(signatoryIdList);
+      setSignatoryIdList(tempSignatoryIdList);
 
       data.images.forEach((file) => {
         // console.log("@@@ PATH: " + file.path);
@@ -156,6 +164,32 @@ React.useEffect(() => {
 React.useEffect(() => {
   getImage(activePage);
 }, [imgLst]);
+
+  React.useEffect(() => {
+    
+  
+   const intervalStamp = setInterval(() => {
+
+      if(document.getElementsByTagName('canvas')[0].style.height){
+        
+        const element = document.getElementsByTagName('canvas')[0];
+        const style = {
+          height:element.style.height,
+          width:element.style.width
+        }
+
+       setUnfocusDivStyle(style)
+
+        clearInterval(intervalStamp)
+      }
+
+    }, 2000);
+
+    return () => {
+      
+    }
+  }, []);
+  
 
 function showToast(type, message) {
   switch (type) {
@@ -178,6 +212,7 @@ function showToast(type, message) {
 }
 
 function validateCoordinates(finalCoordData) {
+  // check if minimum one field is set for all the users
   if(finalCoordData.length===0) return false;
 
   const finalCoordSignatoryIdList = [];
@@ -185,6 +220,7 @@ function validateCoordinates(finalCoordData) {
     finalCoordSignatoryIdList.push(finalCoordData[i].signatory_id);
   }
 
+  console.log('@signatoryIdList: '+signatoryIdList);
   let checker = (arr, target) => target.every(v => arr.includes(v));
   return checker(finalCoordSignatoryIdList, signatoryIdList);
 }
@@ -373,6 +409,7 @@ function addNewElement(fieldId, name, eleId, width, height) {
   return {
     field_id: fieldId,
     signatory_id: selectedSigner.id,
+    user_index_id: selectedSigner.index,
     bgColor: selectedSigner.bgColor,
     name: name,
     eleId: eleId,
@@ -666,25 +703,38 @@ const getImage = async (index) => {
   setImg(imgLst[index]);
 };
 
+function changeSignatoryIdToNull(finalDataList) {
+  finalDataList.forEach(data => {
+    data.signatory_id = null;
+  });
+}
+
 function handleContinue() {
   setIsLoading(true);
   setIsFetching(false);
-  const finalCoordData = [...signElems, ...textElems, ...dateElems, ...checkBoxElems];
-  const isValid = validateCoordinates(finalCoordData);
 
+  const finalCoordData = [...signElems, ...textElems, ...dateElems, ...checkBoxElems];
+  console.log('HANDLE CONTINUE: '+JSON.stringify(finalCoordData));
+  const isValid = validateCoordinates(finalCoordData);
+  
   if (!isValid) {
     setIsLoading(false);
     showToast("error", "Please add atleast one field for each user.");
+    return;
   }
 
-  if (isValid) {
-    const body = {
-      // TODO: Merge all types of element and send a object data.
-      data: finalCoordData,
-      uuid: uuid,
-      templateInstanceUUID: template_instance_uuid
-    };
+  if(template_instance_uuid == null) {
+    // 
+    changeSignatoryIdToNull(finalCoordData);
+  }
 
+  const body = {
+    // TODO: Merge all types of element and send a object data.
+    data: finalCoordData,
+    uuid: uuid,
+    templateInstanceUUID: template_instance_uuid
+  };
+  console.log('@@@ BODY: '+ JSON.stringify(body));
   fetch(`${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, {
       method: "POST",
       headers: {
@@ -694,19 +744,18 @@ function handleContinue() {
     })
   .then((res) => res.json())
   .then((response) => {
+    window.parent.postMessage({"messageFrom": "EW Sign Editor", "status": true, "action": template_instance_uuid == null ? "Create Template" : "Create TI" }, "*");
     console.log(JSON.stringify(response));
     setIsFileShared(true);
   })
   .catch((error) => {
+    window.parent.postMessage({"messageFrom": "EW Sign Editor", "status": false, "action": template_instance_uuid == null ? "Create Template" : "Create TI", "errorMessage": JSON.stringify(error)}, "*");
     console.log("@@@ Saved coordinate: " + JSON.stringify(error));
     toast.error(JSON.stringify(error));
   })
   .finally(() => {
     setIsLoading(false);
-  });
-
-    
-  }
+  }); 
 }
 
 return (
@@ -827,6 +876,7 @@ return (
 
                   <button
                       type="button"
+                      disabled
                       className="tool-btn btn-margin disabled-btn flex-item">
                       <BsCalendar2Date className="tool-icon" />{" "}
                       <p>Date Signed</p>
@@ -834,6 +884,7 @@ return (
 
                   <button
                       type="button"
+                      disabled
                       className="tool-btn btn-margin disabled-btn flex-item">
                       <BiUser className="tool-icon" />{" "}
                       <p>Full Name</p>
@@ -841,6 +892,7 @@ return (
 
                   <button
                       type="button"
+                      disabled
                       className="tool-btn btn-margin disabled-btn flex-item" >
                       <MdOutlineAlternateEmail className="tool-icon" />{" "}
                       <p>Email</p>
@@ -848,6 +900,7 @@ return (
 
                   <button
                       type="button"
+                      disabled
                       className="tool-btn btn-margin disabled-btn flex-item">
                       <BsBuildings className="tool-icon" />{" "}
                       <p>Company</p>
@@ -855,6 +908,7 @@ return (
 
                   <button 
                       type="button"
+                      disabled
                       className="tool-btn btn-margin disabled-btn flex-item">
                       <RiSuitcaseLine className="tool-icon" />{" "}
                       <p>Job Title</p>
@@ -1052,6 +1106,8 @@ return (
                 left: 0,
                 right: 0,
                 zIndex: 1,
+                  height:unfocusDivStyle.height,
+                  width:unfocusDivStyle.width
               }}
             ></div>
             <PdfViewer
@@ -1125,6 +1181,7 @@ return (
                     <div className="flexbox-item">
                       <div className="page-count">{index + 1}</div>
                       <img
+                        loading="lazy" 
                         className="page-img"
                         style={{
                           border: index === activePage ? "2px solid #6e859b" : "1px solid #b3b3b34d",
@@ -1143,7 +1200,7 @@ return (
             
             {!isToolSelectionMode && (
                 <button className="continue-btn" onClick={handleContinue}>
-                    Save
+                  {template_instance_uuid == null ? "Save" : "Send"}
                 </button>
             )}
             {isToolSelectionMode && (
