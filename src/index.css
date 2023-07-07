@@ -186,7 +186,7 @@
     display: grid;
     grid-template-areas:
     "toolbar toolbar toolbar"
-    /* "menubar menubar menubar" */
+    "menubar menubar menubar"
     "leftBar document rightBar";
     grid-template-rows: -webkit-min-content auto;
     grid-template-rows: min-content auto;
