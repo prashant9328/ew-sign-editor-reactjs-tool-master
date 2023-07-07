@@ -30,8 +30,28 @@ const colorsWithHighOpacity = [
   "rgba(14, 131, 136, 0.5)",  
   "rgba(109, 103, 228, 0.5)",
   "rgba(193, 71, 233, 0.5)"
+  "rgba(207, 233, 254, 1)",
+  "rgba(242, 222, 254, 1)",
+  "rgba(242, 76, 61, 0.5)",
+  "rgba(3, 201, 136, 0.5)",
+  "rgba(127, 140, 237, 1)",
+  "rgba(81, 107, 120, 0.85)",  
+  "rgba(50, 30, 30, 0.5)",
+  "rgba(14, 131, 136, 0.5)",  
+  "rgba(109, 103, 228, 0.5)",
+  "rgba(193, 71, 233, 0.5)"
 ];
 const colors = [
+  "rgba(207, 233, 254, 0.8)",
+  "rgba(242, 222, 254, 0.8)",
+  "rgba(242, 76, 61, 0.3)",
+  "rgba(3, 201, 136, 0.3)",
+  "rgba(127, 140, 237, 0.8)",
+  "rgba(81, 107, 120, 0.65)", 
+  "rgba(50, 30, 30, 0.3)",
+  "rgba(14, 131, 136, 0.3)",  
+  "rgba(109, 103, 228, 0.3)",
+  "rgba(193, 71, 233, 0.3)"  
   "rgba(207, 233, 254, 0.8)",
   "rgba(242, 222, 254, 0.8)",
   "rgba(242, 76, 61, 0.3)",
@@ -50,12 +70,17 @@ const [signatoryIdList, setSignatoryIdList] = React.useState([]);
 const [selectedEleUserDefaultValue, setSelectedEleUserDefaultValue] =
   React.useState(options[0]);
 
+
 const [selectedSigner, setSelectedSigner] = React.useState();
+const [selectedSignatoryColor, setSelectedSignatoryColor] = React.useState();
+const [selectedAssignerColor, setSelectedAssignerColor] = React.useState();
+
 const [selectedSignatoryColor, setSelectedSignatoryColor] = React.useState();
 const [selectedAssignerColor, setSelectedAssignerColor] = React.useState();
 
 const [searchParams] = useSearchParams();
 
+const [isPDFLoading, setIsPDFLoading] = React.useState(true);
 const [isPDFLoading, setIsPDFLoading] = React.useState(true);
 const [isLoading, setIsLoading] = React.useState(true);
 const [isFetching, setIsFetching] = React.useState(true);
@@ -70,6 +95,7 @@ const template_instance_uuid = searchParams.get("template_instance_uuid")?? null
 const [activePage, setActivePage] = React.useState(0);
 const [imgLst, setImgLst] = React.useState([]);
 const [totalPage, settotalPage] = React.useState([]);
+const [totalPage, settotalPage] = React.useState([]);
 const [img, setImg] = React.useState(null);
  const [unfocusDivStyle,setUnfocusDivStyle] = React.useState({ height:0,width:0});
 //fields
@@ -79,6 +105,19 @@ const [fields, setFields] = React.useState([]);
 const [signEleCount, setSignEleCount] = React.useState(0);
 const [signElems, setSignElems] = React.useState([]);
 
+
+  const handlePreviousPage = () => {
+    if (activePage > 0) {
+      setActivePage(activePage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    // Assuming you have the total number of pages available in the state as `totalPages`
+    if (activePage < totalPage - 1) {
+      setActivePage(activePage + 1);
+    }
+  };
 
   const handlePreviousPage = () => {
     if (activePage > 0) {
@@ -147,12 +186,14 @@ React.useEffect(() => {
         setFields(tempFields);
       }
       
+      
       const signatoryList = [];
       const signatureFlow = data.signatureFlow;
 
       let tempSignatoryIdList = [];
 
       if(signatureFlow === "OR") {
+        const signatory = { id: 0, index: 0, bgColor: colors[0], toolColor: colorsWithHighOpacity[0], value: 0, label: "Signer 1"};
         const signatory = { id: 0, index: 0, bgColor: colors[0], toolColor: colorsWithHighOpacity[0], value: 0, label: "Signer 1"};
         
         signatoryList.push(signatory);
@@ -174,6 +215,7 @@ React.useEffect(() => {
 
       setSelectedSigner(signatoryList[0]);
       setSelectedSignatoryColor(signatoryList[0].toolColor);      
+      setSelectedSignatoryColor(signatoryList[0].toolColor);      
       setOptions(signatoryList);
       setSignatoryIdList(tempSignatoryIdList);
 
@@ -181,8 +223,10 @@ React.useEffect(() => {
         // console.log("@@@ PATH: " + file.path);
         tempArr.push(file.path);
         console.log('tempArr'+tempArr);
+        console.log('tempArr'+tempArr);
       });
       setImgLst(tempArr);
+      settotalPage(tempArr.length);
       settotalPage(tempArr.length);
     })
     .finally(() => {
@@ -228,8 +272,14 @@ function showToast(type, message) {
       toast.info(message, {
         toastId: 'info'
     });
+      toast.info(message, {
+        toastId: 'info'
+    });
       break;
     case "success":
+      toast.success(message, {
+        toastId: 'success'
+    });
       toast.success(message, {
         toastId: 'success'
     });
@@ -238,8 +288,14 @@ function showToast(type, message) {
       toast.warn(message, {
         toastId: 'warn'
     });
+      toast.warn(message, {
+        toastId: 'warn'
+    });
       break;
     case "error":
+      toast.error(message, {
+        toastId: 'error'
+    });
       toast.error(message, {
         toastId: 'error'
     });
@@ -277,10 +333,14 @@ function handleSignatoryChange(fieldType, effect, e) {
     if(effect === 'all_tool') {
         setSelectedSigner(e);
         setSelectedSignatoryColor(e.toolColor);
+        setSelectedSignatoryColor(e.toolColor);
         setSelectedElement({});
         setIsToolSelectionMode(false);
         setSelectedEleUserDefaultValue(e);
         return;
+    }
+    else{
+      setSelectedAssignerColor(e.toolColor);
     }
     else{
       setSelectedAssignerColor(e.toolColor);
@@ -337,6 +397,7 @@ function handleSignatoryChange(fieldType, effect, e) {
     }
     setSelectedEleUserDefaultValue(
         options.filter((option) => option.id === selectedElement.signatory_id)
+    );   
     );   
 }
 
@@ -471,6 +532,7 @@ function handleSignToolClick(event) {
   switch (event.detail) {
     case 1: {
       setSelectedAssignerColor(selectedSignatoryColor);
+      setSelectedAssignerColor(selectedSignatoryColor);
       // console.log("Single click");
       let newSignEle = addNewElement(
         field.id,
@@ -479,6 +541,7 @@ function handleSignToolClick(event) {
         field.width,
         field.height
       );
+      
       
       setSignElems(signElems.concat(newSignEle));
       setSignEleCount(signEleCount + 1);
@@ -503,6 +566,7 @@ function handleTextBoxToolClick(event) {
   switch (event.detail) {
     case 1: {
       // console.log("Single click");
+      setSelectedAssignerColor(selectedSignatoryColor);
       setSelectedAssignerColor(selectedSignatoryColor);
       let newTextEle = addNewElement(
         field.id,
@@ -535,6 +599,7 @@ function handleDateBoxToolClick(event) {
   switch (event.detail) {
     case 1: {
       setSelectedAssignerColor(selectedSignatoryColor);
+      setSelectedAssignerColor(selectedSignatoryColor);
       // console.log("Single click");
       let newDateEle = addNewElement(
         field.id,
@@ -565,6 +630,7 @@ function handleCheckBoxToolClick(event) {
   switch (event.detail) {
     case 1: {
       setSelectedAssignerColor(selectedSignatoryColor);
+      setSelectedAssignerColor(selectedSignatoryColor);
       // console.log("Single click");
       let newCheckEle = addNewElement(
         field.id,
@@ -589,6 +655,8 @@ function handleCheckBoxToolClick(event) {
 } 
 
 function handleDragStart(id, toolType, e) {
+  // let emptyArr = [];
+  // setSelectedEleUserDefaultValue(emptyArr);
   // let emptyArr = [];
   // setSelectedEleUserDefaultValue(emptyArr);
   console.log('@@@ handleDragStart: CALLED.....');
@@ -620,8 +688,13 @@ function handleDragStart(id, toolType, e) {
     }
   }
   console.log("@@@ ELE :" + JSON.stringify(ele));
+  console.log("@@@ ELE :" + JSON.stringify(ele));
   setSelectedElement(ele[0]);
   setIsToolSelectionMode(true);
+  setSelectedEleUserDefaultValue(
+    options.filter((option) => option.id === ele[0].signatory_id)
+  );  
+  setSelectedAssignerColor(options.filter((option) => option.id === ele[0].signatory_id)[0].toolColor);
   setSelectedEleUserDefaultValue(
     options.filter((option) => option.id === ele[0].signatory_id)
   );  
@@ -683,6 +756,7 @@ function handleDragStop(id, toolType, data, e) {
     default: {
       break;
     }
+  }  
   }  
   return;
 }
@@ -883,6 +957,8 @@ return (
               <div className="tools-title">Signer</div>
               <CustomSelect                   
                   color={selectedSignatoryColor}
+              <CustomSelect                   
+                  color={selectedSignatoryColor}
                   value={selectedSigner}
                   options={options} 
                   name="signer"
@@ -968,6 +1044,23 @@ return (
                 <div className="flex-item" style={{marginLeft: '67px'}}></div>
             </div>
         </div>
+        <div>       
+        {/* <div style={{backgroundColor: "#f9f9f9",  margin: "auto",width: "100%",padding: "10px"}}>
+            {activePage === 0 ? (<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
+            &#8678;
+            </button>): (<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handlePreviousPage} >
+            &#8678;
+            </button>)}            
+            <span>{`Page ${activePage + 1} of ${totalPage}`}</span>
+            {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
+            &#8680;
+            </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
+            &#8680;
+            </button> )}
+                 
+        </div>  */}
+             
+          <div className="document" id="center-img-div">                    
         <div>       
         {/* <div style={{backgroundColor: "#f9f9f9",  margin: "auto",width: "100%",padding: "10px"}}>
             {activePage === 0 ? (<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
@@ -1184,7 +1277,9 @@ return (
               setPDFLoading={setIsPDFLoading}
             />
           
+          
           </div>
+          
           
         </div>
         <div
@@ -1217,6 +1312,8 @@ return (
                 <div style={{padding: "10px",}}>
                     <label htmlFor="currentSignatory" class="field-lbl">Assigned to</label>
                     <div class="remove-margin">
+                        <CustomSelect                     
+                            color={selectedAssignerColor}
                         <CustomSelect                     
                             color={selectedAssignerColor}
                             value={selectedEleUserDefaultValue}
@@ -1267,9 +1364,11 @@ return (
         </div>
 
         <div className="navbar">
+        <div className="navbar">
             <img src="https://eruditeworksprivatelimited4--partial.sandbox.file.force.com/servlet/servlet.ImageServer?id=0159D0000001Rlv&oid=00D9D0000008fSF&lastMod=1686396736000" class="logo"/>
             
             {!isToolSelectionMode && (
+                <button className="continue-btn" onClick={handleContinue} >
                 <button className="continue-btn" onClick={handleContinue} >
                   {template_instance_uuid == null ? "SAVE TEMPLATE" : "SEND TO SIGN"}
                 </button>
@@ -1282,10 +1381,11 @@ return (
         </div>                 
       </div>
       {!isLoading ?( <footer className="footer">
-        <div>
-          {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "77px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
+        <div class="pagination-container">
+        <div class="pagination-inner-container">    
+          {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
                 &#8678;
-                </button>): (<button style={{height: "30px", width: "30px", marginLeft: "77px"}}className="tool-btn" onClick={handlePreviousPage} >
+                </button>): (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn" onClick={handlePreviousPage} >
                 &#8678;
                 </button>)}            
                 <span>&nbsp;{`Page ${activePage + 1} of ${totalPage}`}&nbsp;</span>
@@ -1294,6 +1394,7 @@ return (
                 </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
                 &#8680;
                 </button> )}
+        </div>
         </div>
       </footer>)   : null}
       </>

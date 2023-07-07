@@ -198,7 +198,7 @@
     --toolbarHeight: 50px;
     display: grid;
     grid-template-areas:
-    "toolbar toolbar toolbar"    
+    "toolbar toolbar toolbar"
     "leftBar document rightBar";
     grid-template-rows: -webkit-min-content auto;
     grid-template-rows: min-content auto;
@@ -208,6 +208,7 @@
     justify-content: space-between;
     /*background-color: var(--theme-color-low-opacity);*/
 }
+
 .navbar {
     grid-area: toolbar;
     position: relative;
@@ -371,6 +372,10 @@
 
 .tool-icon {
     color: #ffffff;
+}
+
+.select__control{
+    font-size: 21px;
 }
 
 .working-btn {
