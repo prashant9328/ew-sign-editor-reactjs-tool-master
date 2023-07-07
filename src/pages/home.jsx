@@ -1296,6 +1296,23 @@ return (
         </div>                    */}
       </div>
     )}
+    {!isLoading ?( <footer className="footer">
+        <div class="pagination-container">
+        <div class="pagination-inner-container">    
+          {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
+                &#8678;
+                </button>): (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn" onClick={handlePreviousPage} >
+                &#8678;
+                </button>)}            
+                <span>&nbsp;{`Page ${activePage + 1} of ${totalPage}`}&nbsp;</span>
+                {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
+                &#8680;
+                </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
+                &#8680;
+                </button> )}
+        </div>
+        </div>
+      </footer>)   : null}
   </>
 );
 }
