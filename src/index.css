@@ -180,12 +180,25 @@
     width: 900px !important;
     height: 660px !important;
 }
-
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    z-index: 9999;    
+  }
+.pagination{
+    padding: 10px;
+    display: flex;
+    width: 100%;
+    background-color: red;
+}
 .container {
     --toolbarHeight: 50px;
     display: grid;
     grid-template-areas:
-    "toolbar toolbar toolbar"
+    "toolbar toolbar toolbar"    
     "leftBar document rightBar";
     grid-template-rows: -webkit-min-content auto;
     grid-template-rows: min-content auto;
@@ -195,7 +208,6 @@
     justify-content: space-between;
     /*background-color: var(--theme-color-low-opacity);*/
 }
-
 .navbar {
     grid-area: toolbar;
     position: relative;
@@ -359,10 +371,6 @@
 
 .tool-icon {
     color: #ffffff;
-}
-
-.select__control{
-    font-size: 21px;
 }
 
 .working-btn {
