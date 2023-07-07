@@ -186,6 +186,7 @@
     display: grid;
     grid-template-areas:
     "toolbar toolbar toolbar"
+    /* "menubar menubar menubar" */
     "leftBar document rightBar";
     grid-template-rows: -webkit-min-content auto;
     grid-template-rows: min-content auto;
@@ -195,7 +196,16 @@
     justify-content: space-between;
     /*background-color: var(--theme-color-low-opacity);*/
 }
-
+.menubar{
+    grid-area: menubar;
+    position: relative;
+    background-color: #fff;
+    height: 40px;
+    align-items: center;
+    justify-content: flex-end;
+    border-bottom: 1px solid #ddd;
+    padding: 0 100px;
+}
 .navbar {
     grid-area: toolbar;
     position: relative;
@@ -360,10 +370,9 @@
 .tool-icon {
     color: #ffffff;
 }
-
-.select__control{
+.basic-single .select__control {    
     font-size: 21px;
-}
+  }
 
 .working-btn {
     background-color: var(--theme-color-high-opacity);

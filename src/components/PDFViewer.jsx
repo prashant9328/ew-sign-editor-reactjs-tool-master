@@ -3,7 +3,7 @@ import '../App.css';
 import PDF, {usePdf} from "react-pdf-js";
 const PdfViewer = ({pdf,activePage, setPDFLoading})=> {  
     const onDocumentComplete = (numPages) =>{
-        if(numPages!=null){
+        if(numPages){
             setPDFLoading(false);    
         }
     }
@@ -19,7 +19,9 @@ const PdfViewer = ({pdf,activePage, setPDFLoading})=> {
       console.error('pdf viewer error:', err);
     }
 
-
+    const onPageComplete = () =>{
+      console.log('pageCOMPLETE');
+    }
     return (
     <div className="pdfWrapper">
         <PDF
@@ -28,9 +30,12 @@ const PdfViewer = ({pdf,activePage, setPDFLoading})=> {
             onDocumentComplete={onDocumentComplete}
             onDocumentError={onDocumentError}
             page={activePage+1}
+            onPageComplete={onPageComplete}
             
         />
+         
     </div>
+    
     )
   
 };
