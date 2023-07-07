@@ -181,19 +181,14 @@
     height: 660px !important;
 }
 .footer {
-    position: fixed;
+    /* position: fixed;
     bottom: 0;
     width: 100%;
-    padding: 20px;
+    padding: 20px; */
     text-align: center;
-    z-index: 9999;    
+    /* z-index: 9999;     */
   }
-.pagination{
-    padding: 10px;
-    display: flex;
-    width: 100%;
-    background-color: red;
-}
+
 .container {
     --toolbarHeight: 50px;
     display: grid;
@@ -513,3 +508,61 @@ top: 5.5px;
     font-size: 16px;
     font-family: sans-serif;
 }
+
+
+/* pagination css starts*/
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    margin-left: 95px
+  }
+
+
+.pagination-inner-container {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 15%;
+    border-radius: 10px;
+    background-color: #f9f9f9
+    ;
+  }
+  
+  @media screen and (max-width: 1200px) {
+    .pagination-inner-container {
+      width: 20% !important;
+      max-width: 220px;
+    }
+  }
+  
+  @media screen and (max-width: 992px) {
+    .pagination-inner-container {
+      width: 25% !important;
+      max-width: 220px;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    .pagination-inner-container {
+      width: 30% !important;
+      min-width: 180px;
+    }
+  }
+  @media screen and (max-width: 480px) {
+    .pagination-inner-container {
+      width: 50% !important;
+      min-width: 200px;
+    }
+  }
+  
+  .pagination-inner-container > span {
+    font-weight: bold;
+  }
+/* pagination css ends */
