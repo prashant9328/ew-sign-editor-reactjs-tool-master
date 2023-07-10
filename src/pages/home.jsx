@@ -640,7 +640,28 @@ function handleDragStart(id, toolType, e) {
 }
 
 function handleDragStop(id, toolType, data, e) {
-  let tempEle  = signElems.filter((ele) => ele.eleId === id);
+  let tempEle;
+  switch (toolType) {
+    case "Signature": {
+       tempEle  = signElems.filter((ele) => ele.eleId === id);
+      break;
+    }
+    case "Text": {
+       tempEle  = textElems.filter((ele) => ele.eleId === id);
+      break;
+    }
+    case "Date": {
+       tempEle  = dateElems.filter((ele) => ele.eleId === id);
+      break;
+    }
+    case "Checkbox": {
+       tempEle  = checkBoxElems.filter((ele) => ele.eleId === id);
+      break;
+    }
+    default: {
+      break;
+    }
+  }    
   let toolWidth = tempEle[0].width;
   let toolHeight = tempEle[0].height;    
   if(data.x < 0){
