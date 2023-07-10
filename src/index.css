@@ -521,7 +521,7 @@ top: 5.5px;
     left: 0;
     right: 0;
     z-index: 1;
-    margin-left: 95px
+    margin-left: 137px
   }
 
 
@@ -530,7 +530,7 @@ top: 5.5px;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    width: 15%;
+    width: 19%;
     border-radius: 10px;
     background-color: #f9f9f9
     ;
@@ -538,7 +538,7 @@ top: 5.5px;
   
   @media screen and (max-width: 1200px) {
     .pagination-inner-container {
-      width: 20% !important;
+      width: 23% !important;
       max-width: 220px;
     }
   }
@@ -564,5 +564,10 @@ top: 5.5px;
   
   .pagination-inner-container > span {
     font-weight: bold;
+  }
+  .zoom-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
   }
 /* pagination css ends */

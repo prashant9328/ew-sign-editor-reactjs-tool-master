@@ -30,7 +30,7 @@ const DragTool = ({
     width: width,
     height: height,
   });
-
+  
   return (
     <Rnd
       // bounds=".document"
@@ -46,15 +46,15 @@ const DragTool = ({
       }}
       enableResizing={enableResizing}
       size={{ width: currentState.width, height: currentState.height }}
-      position={{ x: currentState.x, y: currentState.y }}
+      position={{ x: currentState.x<0 ? '0':currentState.x > 595-currentState.width? 595-currentState.width: currentState.x, y: currentState.y<0? '0':currentState.y> 840 - currentState.height ? 840 - currentState.height : currentState.y }}
       minWidth={minWidth}
       minHeight={minHeight}
       maxHeight={maxHeight}
       maxWidth={maxWidth}
-      onDragStart={(e, d) => {
+      onDragStart={(e, d) => {                
         handleDragStart(toolType, e);
       }}
-      onDragStop={(e, d) => {
+      onDragStop={(e, d) => {        
         setCurrentState({ ...currentState, x: d.x, y: d.y });
         handleDragStop({ x: d.x, y: d.y }, e);
       }}

@@ -1,13 +1,14 @@
 import React, {useState, useRef} from "react";
 import '../App.css';
 import PDF, {usePdf} from "react-pdf-js";
-const PdfViewer = ({pdf,activePage, setPDFLoading})=> {  
+
+const PdfViewer = ({pdf,activePage, setPDFLoading, scale})=> {      
+
     const onDocumentComplete = (numPages) =>{
         if(numPages){
             setPDFLoading(false);    
         }
-    }
-
+    };
     // const canvasEl = useRef(null)
     
     // const [loading, numPages] = usePdf({ref});
@@ -22,8 +23,9 @@ const PdfViewer = ({pdf,activePage, setPDFLoading})=> {
     const onPageComplete = () =>{
       console.log('pageCOMPLETE');
     }
-    return (
-    <div className="pdfWrapper">
+    
+    return (            
+    <div className="pdfWrapper">        
         <PDF
             rotate={0}
             file={pdf}
@@ -31,11 +33,11 @@ const PdfViewer = ({pdf,activePage, setPDFLoading})=> {
             onDocumentError={onDocumentError}
             page={activePage+1}
             onPageComplete={onPageComplete}
+            scale={scale}
             
         />
          
     </div>
-    
     )
   
 };

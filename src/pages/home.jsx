@@ -17,7 +17,8 @@ import PdfViewer from "../components/PDFViewer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loadingGif from '../images/loading-cropped.gif';
-
+import zoomInImage from '../images/zoomIn.png';
+import zoomOutImage from '../images/zoomOut.png';
 export default function Home() {
 const colorsWithHighOpacity = [
   "rgba(207, 233, 254, 1)",
@@ -25,7 +26,7 @@ const colorsWithHighOpacity = [
   "rgba(242, 76, 61, 0.5)",
   "rgba(3, 201, 136, 0.5)",
   "rgba(127, 140, 237, 1)",
-  "rgba(224, 229, 248, 1)",  
+  "rgba(81, 107, 120, 0.85)",   
   "rgba(50, 30, 30, 0.5)",
   "rgba(14, 131, 136, 0.5)",  
   "rgba(109, 103, 228, 0.5)",
@@ -37,7 +38,7 @@ const colors = [
   "rgba(242, 76, 61, 0.3)",
   "rgba(3, 201, 136, 0.3)",
   "rgba(127, 140, 237, 0.8)",
-  "rgba(224, 229, 248, 0.8)",  
+  "rgba(81, 107, 120, 0.65)",  
   "rgba(50, 30, 30, 0.3)",
   "rgba(14, 131, 136, 0.3)",  
   "rgba(109, 103, 228, 0.3)",
@@ -49,6 +50,9 @@ const [signatoryIdList, setSignatoryIdList] = React.useState([]);
 
 const [selectedEleUserDefaultValue, setSelectedEleUserDefaultValue] =
   React.useState(options[0]);
+
+
+  const [scale, setScale] = React.useState(1.0);
 
 const [selectedSigner, setSelectedSigner] = React.useState();
 const [selectedSignatoryColor, setSelectedSignatoryColor] = React.useState();
@@ -91,7 +95,14 @@ const [signElems, setSignElems] = React.useState([]);
     if (activePage < totalPage - 1) {
       setActivePage(activePage + 1);
     }
-  };
+  };  
+    const handleZoomIn = () => {
+        setScale((prevScale) => prevScale + 0.1);
+      };
+    
+      const handleZoomOut = () => {
+        setScale((prevScale) => (prevScale > 0.2 ? prevScale - 0.1 : prevScale));
+      };
 // Text Tool
 const [textEleCount, setTextEleCount] = React.useState(0);
 const [textElems, setTextElems] = React.useState([]);
@@ -629,62 +640,83 @@ function handleDragStart(id, toolType, e) {
 }
 
 function handleDragStop(id, toolType, data, e) {
-  console.log('@@@ handleDragStop: CALLED.....');
-  setPreviousCoord({ x: data.x + 30, y: data.y + 30 });
-  let eleValue = [];
-  switch (toolType) {
-    case "Signature": {
-      signElems.map((ele) => {
-        if (ele.eleId === id) {
-          ele.x = data.x;
-          ele.y = data.y;
-          eleValue.push(ele);
-          return ele;
-        }
-      });
-
-      break;
-    }
-    case "Text": {
-      textElems.map((ele) => {
-        if (ele.eleId === id) {
-          ele.x = data.x;
-          ele.y = data.y;
-          eleValue.push(ele);
-          return ele;
-        }
-      });
-      break;
-    }
-    case "Date": {
-      dateElems.map((ele) => {
-        // console.log(ele.eleId);
-        if (ele.eleId === id) {
-          ele.x = data.x;
-          ele.y = data.y;
-          eleValue.push(ele);
-          return ele;
-        }
-      });
-      break;
-    }
-    case "Checkbox": {
-      checkBoxElems.map((ele) => {
-        // console.log(ele.eleId);
-        if (ele.eleId === id) {
-          ele.x = data.x;
-          ele.y = data.y;
-          eleValue.push(ele);
-          return ele;
-        }
-      });
-      break;
-    }
-    default: {
-      break;
-    }
-  }  
-  return;
+  let tempEle  = signElems.filter((ele) => ele.eleId === id);
+  let toolWidth = tempEle[0].width;
+  let toolHeight = tempEle[0].height;    
+  if(data.x < 0){
+    data.x=0;
+  }
+  else if(data.x > 595 - toolWidth){
+    data.x = 595 - toolWidth;
+  }
+  else{
+    data.x = data.x;
+  }
+  if(data.y < 0){
+    data.y=0;
+  }
+  else if(data.y > 840 - toolHeight){
+    data.y = 840 - toolHeight;
+  }
+  else{
+    data.y = data.y;
+  }
+  console.log('@@@ handleDragStop: CALLED.....'+JSON.stringify(data));
+    setPreviousCoord({ x: data.x + 30, y: data.y + 30 });
+    let eleValue = [];
+    switch (toolType) {
+      case "Signature": {
+        signElems.map((ele) => {
+          if (ele.eleId === id) {
+            ele.x = data.x;
+            ele.y = data.y;
+            eleValue.push(ele);
+            return ele;
+          }
+        });
+  
+        break;
+      }
+      case "Text": {
+        textElems.map((ele) => {
+          if (ele.eleId === id) {
+            ele.x = data.x;
+            ele.y = data.y;
+            eleValue.push(ele);
+            return ele;
+          }
+        });
+        break;
+      }
+      case "Date": {
+        dateElems.map((ele) => {
+          // console.log(ele.eleId);
+          if (ele.eleId === id) {
+            ele.x = data.x;
+            ele.y = data.y;
+            eleValue.push(ele);
+            return ele;
+          }
+        });
+        break;
+      }
+      case "Checkbox": {
+        checkBoxElems.map((ele) => {
+          // console.log(ele.eleId);
+          if (ele.eleId === id) {
+            ele.x = data.x;
+            ele.y = data.y;
+            eleValue.push(ele);
+            return ele;
+          }
+        });
+        break;
+      }
+      default: {
+        break;
+      }
+    }  
+    return; 
 }
 
 function handleResize(id, toolType, data, e) {
@@ -1009,8 +1041,8 @@ return (
                     minHeight={field.minHeight}
                     maxWidth={field.maxWidth}
                     maxHeight={field.maxHeight}
-                    handleDragStart={(toolType, e) =>
-                      handleDragStart(ele.eleId, toolType, e)
+                    handleDragStart={(toolType, e) =>                      
+                      handleDragStart(ele.eleId, toolType, e)                    
                     }
                     handleDragStop={(data, e) =>
                       handleDragStop(ele.eleId, toolName, data, e)
@@ -1180,6 +1212,7 @@ return (
               pdf={`${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
               activePage={activePage}
               setPDFLoading={setIsPDFLoading}
+              scale={scale}
             />
           
           </div>
@@ -1308,8 +1341,12 @@ return (
                 {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
                 &#8680;
                 </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
-                &#8680;
+                &#8680;              
                 </button> )}
+                {/* &nbsp; */}
+        {/* <button className="tool-btn" style={{height: "30px", width: "30px"}}  onClick={handleZoomOut}><img class="zoom-icon" src={zoomOutImage} alt="Zoom Out" /></button>
+        &nbsp;        
+        <button  className="tool-btn" style={{height: "30px", width: "30px"}} onClick={handleZoomIn}> <img class="zoom-icon" src={zoomInImage} alt="Zoom In" /></button> */}
         </div>
         </div>
       </footer>)   : null}
