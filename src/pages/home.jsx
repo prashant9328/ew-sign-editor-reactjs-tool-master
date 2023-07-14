@@ -53,7 +53,8 @@ const [selectedEleUserDefaultValue, setSelectedEleUserDefaultValue] =
   React.useState(options[0]);
 
 
-  const [scale, setScale] = React.useState(1.0);
+const [scale, setScale] = React.useState(1.0);
+const [panningState, setPanningState] = React.useState({disabled: false});
 
 const [selectedSigner, setSelectedSigner] = React.useState();
 const [selectedSignatoryColor, setSelectedSignatoryColor] = React.useState();
@@ -89,6 +90,7 @@ const [signElems, setSignElems] = React.useState([]);
 
 
    const handlePreviousPage = () => {
+    changeMode({}, false);
     if (activePage > 0) {
       setActivePage(activePage - 1);
       scrollContainer.current.scrollTop = 0; 
@@ -99,6 +101,7 @@ const [signElems, setSignElems] = React.useState([]);
 
   const handleNextPage = () => {    
     if (activePage < totalPage - 1) {
+      changeMode({}, false);
       setActivePage(activePage + 1);      
       scrollContainer.current.scrollTop = 0;  
       const element = scrollImage.current.children[activePage+1];
@@ -291,8 +294,7 @@ function validateCoordinates(finalCoordData) {
 }
 
 function changeMode(selectedEle, isEditMode, selectedOption=options[0]) {
-  console.log("@@@ changeMode: CALLED....");
-
+  console.log("@@@ changeMode: CALLED....");  
   setSelectedElement(selectedEle);
   setIsToolSelectionMode(isEditMode);
   setSelectedEleUserDefaultValue(selectedOption);
@@ -618,6 +620,7 @@ function handleDragStart(id, toolType, e) {
   // let emptyArr = [];
   // setSelectedEleUserDefaultValue(emptyArr);
   console.log('@@@ handleDragStart: CALLED.....');
+  setPanningState({disabled: true});
   // console.log("@@@ handleDragStart");
   // console.log("@@@ Id: handleDragStart: " + id);
   // console.log("@@@ toolType: handleDragStart: " + toolType);
@@ -654,7 +657,7 @@ function handleDragStart(id, toolType, e) {
   setSelectedAssignerColor(options.filter((option) => option.id === ele[0].signatory_id)[0].toolColor);
 }
 
-function handleDragStop(id, toolType, data, e) {
+function handleDragStop(id, toolType, data, e) {  
   let tempEle;
   switch (toolType) {
     case "Signature": {
@@ -697,6 +700,7 @@ function handleDragStop(id, toolType, data, e) {
   else{
     data.y = data.y;
   }
+  setPanningState({disabled: false});
   console.log('@@@ handleDragStop: CALLED.....'+JSON.stringify(data));
     setPreviousCoord({ x: data.x + 30, y: data.y + 30 });
     let eleValue = [];
@@ -813,6 +817,7 @@ function handleResize(id, toolType, data, e) {
 function handlePaggination(index) {
   if (index === activePage) return;
   setActivePage(index);
+  changeMode({}, false);
   getImage(index);
   scrollContainer.current.scrollTop = 0;  
   const element = scrollImage.current.children[index];
@@ -1056,10 +1061,11 @@ return (
              
           <div className="document" id="center-img-div"  ref={scrollContainer}>                       
           <TransformWrapper defaultScale={1} maxScale={2.5}       
-            // disabled={deviceWidth <= 600}
+            disablePan={true}
             centerZoomedOut
             disablePadding
-            wheel={{ disabled: true }}
+            wheel={{ disabled: true }}            
+            panning={panningState}
             doubleClick={{ disabled: true }}
             scale={scale}>
             {({ zoomIn, zoomOut }) => (
