@@ -1066,6 +1066,7 @@ return (
             disablePadding
             wheel={{ disabled: true }}            
             panning={panningState}
+            onPanning={() => changeMode({}, false)}
             doubleClick={{ disabled: true }}
             scale={scale}>
             {({ zoomIn, zoomOut }) => (
