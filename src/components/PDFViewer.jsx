@@ -2,7 +2,7 @@ import React, {useState, useRef} from "react";
 import '../App.css';
 import PDF, {usePdf} from "react-pdf-js";
 
-const PdfViewer = ({pdf,activePage, setPDFLoading, scale})=> {      
+const PdfViewer = ({pdf,activePage, setPDFLoading})=> {      
 
     const onDocumentComplete = (numPages) =>{
         if(numPages){
@@ -25,16 +25,14 @@ const PdfViewer = ({pdf,activePage, setPDFLoading, scale})=> {
     }
     
     return (            
-    <div className="pdfWrapper">        
+    <div>        
         <PDF
             rotate={0}
             file={pdf}
             onDocumentComplete={onDocumentComplete}
             onDocumentError={onDocumentError}
             page={activePage+1}
-            onPageComplete={onPageComplete}
-            scale={scale}
-            
+            onPageComplete={onPageComplete}            
         />
          
     </div>

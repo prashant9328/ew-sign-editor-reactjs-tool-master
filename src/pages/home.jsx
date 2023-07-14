@@ -19,6 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import loadingGif from '../images/loading-cropped.gif';
 import zoomInImage from '../images/zoomIn.png';
 import zoomOutImage from '../images/zoomOut.png';
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 export default function Home() {
 const colorsWithHighOpacity = [
   "rgba(207, 233, 254, 1)",
@@ -58,6 +59,9 @@ const [selectedSigner, setSelectedSigner] = React.useState();
 const [selectedSignatoryColor, setSelectedSignatoryColor] = React.useState();
 const [selectedAssignerColor, setSelectedAssignerColor] = React.useState();
 
+const scrollContainer = React.useRef(null);
+const scrollImage = React.useRef(null);
+
 const [searchParams] = useSearchParams();
 
 const [isPDFLoading, setIsPDFLoading] = React.useState(true);
@@ -84,25 +88,37 @@ const [signEleCount, setSignEleCount] = React.useState(0);
 const [signElems, setSignElems] = React.useState([]);
 
 
-  const handlePreviousPage = () => {
+   const handlePreviousPage = () => {
     if (activePage > 0) {
       setActivePage(activePage - 1);
+      scrollContainer.current.scrollTop = 0; 
+      const element = scrollImage.current.children[activePage-1];
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
-  const handleNextPage = () => {
-    // Assuming you have the total number of pages available in the state as `totalPages`
+  const handleNextPage = () => {    
     if (activePage < totalPage - 1) {
-      setActivePage(activePage + 1);
+      setActivePage(activePage + 1);      
+      scrollContainer.current.scrollTop = 0;  
+      const element = scrollImage.current.children[activePage+1];
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  };  
-    const handleZoomIn = () => {
-        setScale((prevScale) => prevScale + 0.1);
-      };
+  };
+  const handleZoomIn = (zoomIn) => {
+    zoomIn();
+  };
+
+  const handleZoomOut = (zoomOut) => {
+    zoomOut();
+  };   
+    // const handleZoomIn = () => {
+    //   setScale(scale + 0.1);
+    //   };
     
-      const handleZoomOut = () => {
-        setScale((prevScale) => (prevScale > 0.2 ? prevScale - 0.1 : prevScale));
-      };
+    //   const handleZoomOut = () => {
+    //     setScale( scale - 0.1);
+    //   };
 // Text Tool
 const [textEleCount, setTextEleCount] = React.useState(0);
 const [textElems, setTextElems] = React.useState([]);
@@ -211,8 +227,7 @@ React.useEffect(() => {
   React.useEffect(() => {
     
   
-   const intervalStamp = setInterval(() => {
-
+   const intervalStamp = setInterval(() => {        
       if(document.getElementsByTagName('canvas')[0].style.height){
         
         const element = document.getElementsByTagName('canvas')[0];
@@ -799,6 +814,9 @@ function handlePaggination(index) {
   if (index === activePage) return;
   setActivePage(index);
   getImage(index);
+  scrollContainer.current.scrollTop = 0;  
+  const element = scrollImage.current.children[index];
+  element.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 const getImage = async (index) => {
@@ -1036,206 +1054,241 @@ return (
                  
         </div>  */}
              
-          <div className="document" id="center-img-div">                    
-            {signElems.map((ele) => {
-              if (ele.pageId === activePage) {
-                console.log('@@@ RENDERING SIGNATURE: INSIDE: '+ JSON.stringify(ele));
-                const toolName = "Signature";
-                const bgColor = ele.bgColor;
-                const field = fields.find(
-                  (field) => field.type === toolName
-                );
-                return (
-                  <DragTool
-                    isEditMode={
-                      selectedElement && ele.eleId === selectedElement.eleId
+          <div className="document" id="center-img-div"  ref={scrollContainer}>                       
+          <TransformWrapper defaultScale={1} maxScale={2.5}       
+            // disabled={deviceWidth <= 600}
+            centerZoomedOut
+            disablePadding
+            wheel={{ disabled: true }}
+            doubleClick={{ disabled: true }}
+            scale={scale}>
+            {({ zoomIn, zoomOut }) => (
+              <React.Fragment>
+                {/* <button onClick={() => handleZoomIn(zoomIn)}>Zoom In</button>
+                <button onClick={() => handleZoomOut(zoomOut)}>Zoom Out</button> */}
+                <footer className="footer">
+              <div class="pagination-container">
+              <div class="pagination-inner-container">    
+                {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage}>
+                      &#8678;
+                      </button>): (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn" onClick={handlePreviousPage} >
+                      &#8678;
+                      </button>)}            
+                      <span style={{color: "white"}}>&nbsp;{`Page ${activePage + 1} of ${totalPage}`}&nbsp;</span>
+                      {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
+                      &#8680;
+                      </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
+                      &#8680;              
+                      </button> )}
+                      &nbsp;
+              <button className="tool-btn" style={{height: "30px", width: "30px"}}  onClick={() => handleZoomOut(zoomOut)}><img class="zoom-icon" src={zoomOutImage} alt="Zoom Out" /></button>
+              &nbsp;        
+              <button  className="tool-btn" style={{height: "30px", width: "30px"}} onClick={() => handleZoomIn(zoomIn)}> <img class="zoom-icon" src={zoomInImage} alt="Zoom In" /></button>
+              </div>
+              </div>
+                </footer>
+                <TransformComponent>
+                  {signElems.map((ele) => {
+                    if (ele.pageId === activePage) {
+                      console.log('@@@ RENDERING SIGNATURE: INSIDE: '+ JSON.stringify(ele));
+                      const toolName = "Signature";
+                      const bgColor = ele.bgColor;
+                      const field = fields.find(
+                        (field) => field.type === toolName
+                      );
+                      return (
+                        <DragTool
+                          isEditMode={
+                            selectedElement && ele.eleId === selectedElement.eleId
+                          }
+                          bgColor={bgColor}
+                          toolType={toolName}
+                          id={ele.eleId}
+                          pageId={ele.pageId}
+                          x={ele.x}
+                          y={ele.y}
+                          width={ele.width}
+                          height={ele.height}
+                          minWidth={field.minWidth}
+                          minHeight={field.minHeight}
+                          maxWidth={field.maxWidth}
+                          maxHeight={field.maxHeight}
+                          handleDragStart={(toolType, e) =>                      
+                            handleDragStart(ele.eleId, toolType, e)                    
+                          }
+                          handleDragStop={(data, e) =>
+                            handleDragStop(ele.eleId, toolName, data, e)
+                          }
+                          handleResize={(data, e) =>
+                            handleResize(ele.eleId, toolName, data, e)
+                          }
+                          toolIcon={
+                            <RiBallPenLine
+                              className={`${toolName.toLowerCase()}-tool-icon-position`}
+                            />
+                          }
+                        />
+                      );
                     }
-                    bgColor={bgColor}
-                    toolType={toolName}
-                    id={ele.eleId}
-                    pageId={ele.pageId}
-                    x={ele.x}
-                    y={ele.y}
-                    width={ele.width}
-                    height={ele.height}
-                    minWidth={field.minWidth}
-                    minHeight={field.minHeight}
-                    maxWidth={field.maxWidth}
-                    maxHeight={field.maxHeight}
-                    handleDragStart={(toolType, e) =>                      
-                      handleDragStart(ele.eleId, toolType, e)                    
+                  })}
+                  {textElems.map((ele) => {
+                    // console.log(ele);
+                    if (ele && ele.pageId === activePage) {
+                      console.log('@@@ RENDERING TEXT: INSIDE: '+ JSON.stringify(ele));
+                      const toolName = "Text";
+                      const bgColor = ele.bgColor;
+                      const field = fields.find((field) => field.type === toolName);
+                      return (
+                        <DragTool
+                          isEditMode={
+                            selectedElement && ele.eleId === selectedElement.eleId
+                          }
+                          enableResizing={
+                            {left: true, right: true}
+                          }
+                          bgColor={bgColor}
+                          toolType={toolName}
+                          id={ele.eleId}
+                          pageId={ele.pageId}
+                          x={ele.x}
+                          y={ele.y}
+                          width={ele.width}
+                          height={ele.height}
+                          minWidth={field.minWidth}
+                          minHeight={field.minHeight}
+                          maxHeight={field.maxHeight}
+                          maxWidth={field.maxWidth}
+                          handleDragStart={(toolType, e) =>
+                            handleDragStart(ele.eleId, toolType, e)
+                          }
+                          handleDragStop={(data, e) =>
+                            handleDragStop(ele.eleId, toolName, data, e)
+                          }
+                          handleResize={(data, e) =>
+                            handleResize(ele.eleId, toolName, data, e)
+                          }
+                          toolIcon={
+                            <BsTextareaT
+                              className={`${toolName.toLowerCase()}-tool-icon-position`}
+                            />
+                          }
+                        />
+                      );
                     }
-                    handleDragStop={(data, e) =>
-                      handleDragStop(ele.eleId, toolName, data, e)
-                    }
-                    handleResize={(data, e) =>
-                      handleResize(ele.eleId, toolName, data, e)
-                    }
-                    toolIcon={
-                      <RiBallPenLine
-                        className={`${toolName.toLowerCase()}-tool-icon-position`}
-                      />
-                    }
-                  />
-                );
-              }
-            })}
-            {textElems.map((ele) => {
-              // console.log(ele);
-              if (ele && ele.pageId === activePage) {
-                console.log('@@@ RENDERING TEXT: INSIDE: '+ JSON.stringify(ele));
-                const toolName = "Text";
-                const bgColor = ele.bgColor;
-                const field = fields.find((field) => field.type === toolName);
-                return (
-                  <DragTool
-                    isEditMode={
-                      selectedElement && ele.eleId === selectedElement.eleId
-                    }
-                    enableResizing={
-                      {left: true, right: true}
-                    }
-                    bgColor={bgColor}
-                    toolType={toolName}
-                    id={ele.eleId}
-                    pageId={ele.pageId}
-                    x={ele.x}
-                    y={ele.y}
-                    width={ele.width}
-                    height={ele.height}
-                    minWidth={field.minWidth}
-                    minHeight={field.minHeight}
-                    maxHeight={field.maxHeight}
-                    maxWidth={field.maxWidth}
-                    handleDragStart={(toolType, e) =>
-                      handleDragStart(ele.eleId, toolType, e)
-                    }
-                    handleDragStop={(data, e) =>
-                      handleDragStop(ele.eleId, toolName, data, e)
-                    }
-                    handleResize={(data, e) =>
-                      handleResize(ele.eleId, toolName, data, e)
-                    }
-                    toolIcon={
-                      <BsTextareaT
-                        className={`${toolName.toLowerCase()}-tool-icon-position`}
-                      />
-                    }
-                  />
-                );
-              }
-            })}
+                  })}
 
-            {dateElems.map((ele) => {
-              // console.log(ele);
-              if (ele && ele.pageId === activePage) {
-                console.log('@@@ RENDERING DATE: INSIDE: '+ JSON.stringify(ele));
-                const toolName = "Date";
-                const bgColor = ele.bgColor;
-                const field = fields.find(field => field.type === toolName);
-                return (
-                  <DragTool
-                    isEditMode={
-                      selectedElement && ele.eleId === selectedElement.eleId
+                  {dateElems.map((ele) => {
+                    // console.log(ele);
+                    if (ele && ele.pageId === activePage) {
+                      console.log('@@@ RENDERING DATE: INSIDE: '+ JSON.stringify(ele));
+                      const toolName = "Date";
+                      const bgColor = ele.bgColor;
+                      const field = fields.find(field => field.type === toolName);
+                      return (
+                        <DragTool
+                          isEditMode={
+                            selectedElement && ele.eleId === selectedElement.eleId
+                          }
+                          enableResizing={
+                            {top: true, bottom: true}
+                          }
+                          bgColor={bgColor}
+                          toolType={toolName}
+                          id={ele.eleId}
+                          pageId={ele.pageId}
+                          x={ele.x}
+                          y={ele.y}
+                          width={ele.width}
+                          height={ele.height}
+                          minWidth={field.minWidth}
+                          minHeight={field.minHeight}
+                          maxHeight={field.maxHeight}
+                          maxWidth={field.maxWidth}
+                          handleDragStart={(toolType, e) =>
+                            handleDragStart(ele.eleId, toolType, e)
+                          }
+                          handleDragStop={(data, e) =>
+                            handleDragStop(ele.eleId, toolName, data, e)
+                          }
+                          handleResize={(data, e) =>
+                            handleResize(ele.eleId, toolName, data, e)
+                          }
+                          toolIcon={
+                            <BsCalendar2Date
+                              className={`${toolName.toLowerCase()}-tool-icon-position`}
+                            />
+                          }
+                        />
+                      );
                     }
-                    enableResizing={
-                      {top: true, bottom: true}
-                    }
-                    bgColor={bgColor}
-                    toolType={toolName}
-                    id={ele.eleId}
-                    pageId={ele.pageId}
-                    x={ele.x}
-                    y={ele.y}
-                    width={ele.width}
-                    height={ele.height}
-                    minWidth={field.minWidth}
-                    minHeight={field.minHeight}
-                    maxHeight={field.maxHeight}
-                    maxWidth={field.maxWidth}
-                    handleDragStart={(toolType, e) =>
-                      handleDragStart(ele.eleId, toolType, e)
-                    }
-                    handleDragStop={(data, e) =>
-                      handleDragStop(ele.eleId, toolName, data, e)
-                    }
-                    handleResize={(data, e) =>
-                      handleResize(ele.eleId, toolName, data, e)
-                    }
-                    toolIcon={
-                      <BsCalendar2Date
-                        className={`${toolName.toLowerCase()}-tool-icon-position`}
-                      />
-                    }
-                  />
-                );
-              }
-            })}
+                  })}
 
-            {checkBoxElems.map((ele) => {
-              // console.log(ele);
-              if (ele && ele.pageId === activePage) {
-                console.log('@@@ RENDERING DATE: INSIDE: '+ JSON.stringify(ele));
-                const toolName = "Checkbox";
-                const bgColor = ele.bgColor;
-                const field = fields.find(field => field.type === toolName);
-                return (
-                  <DragTool
-                    isEditMode={false}
-                    enableResizing={false}
-                    bgColor={bgColor}
-                    toolType={toolName}
-                    id={ele.eleId}
-                    pageId={ele.pageId}
-                    x={ele.x}
-                    y={ele.y}
-                    width={ele.width}
-                    height={ele.height}
-                    minWidth={field.minWidth}
-                    minHeight={field.minHeight}
-                    maxHeight={field.maxHeight}
-                    maxWidth={field.maxWidth}
-                    handleDragStart={(toolType, e) =>
-                      handleDragStart(ele.eleId, toolType, e)
+                  {checkBoxElems.map((ele) => {
+                    // console.log(ele);
+                    if (ele && ele.pageId === activePage) {
+                      console.log('@@@ RENDERING DATE: INSIDE: '+ JSON.stringify(ele));
+                      const toolName = "Checkbox";
+                      const bgColor = ele.bgColor;
+                      const field = fields.find(field => field.type === toolName);
+                      return (
+                        <DragTool
+                          isEditMode={false}
+                          enableResizing={false}
+                          bgColor={bgColor}
+                          toolType={toolName}
+                          id={ele.eleId}
+                          pageId={ele.pageId}
+                          x={ele.x}
+                          y={ele.y}
+                          width={ele.width}
+                          height={ele.height}
+                          minWidth={field.minWidth}
+                          minHeight={field.minHeight}
+                          maxHeight={field.maxHeight}
+                          maxWidth={field.maxWidth}
+                          handleDragStart={(toolType, e) =>
+                            handleDragStart(ele.eleId, toolType, e)
+                          }
+                          handleDragStop={(data, e) =>
+                            handleDragStop(ele.eleId, toolName, data, e)
+                          }
+                          handleResize={(data, e) =>
+                            handleResize(ele.eleId, toolName, data, e)
+                          }
+                          toolIcon={
+                            <BsApp
+                              className={`${toolName.toLowerCase()}-tool-icon-position`}
+                            />
+                          }
+                        />
+                      );
                     }
-                    handleDragStop={(data, e) =>
-                      handleDragStop(ele.eleId, toolName, data, e)
-                    }
-                    handleResize={(data, e) =>
-                      handleResize(ele.eleId, toolName, data, e)
-                    }
-                    toolIcon={
-                      <BsApp
-                        className={`${toolName.toLowerCase()}-tool-icon-position`}
-                      />
-                    }
-                  />
-                );
-              }
-            })}
+                  })}
 
-            {/* {console.log(img)} */}
-            <div
-              onClick={() => changeMode({}, false)}
-              style={{
-                position: "absolute",
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1,
-                  height:unfocusDivStyle.height,
-                  width:unfocusDivStyle.width
-              }}
-            ></div>
-                      
-            <PdfViewer
-              pdf={`${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
-              activePage={activePage}
-              setPDFLoading={setIsPDFLoading}
-              scale={scale}
-            />
-          
+                  {/* {console.log(img)} */}
+                  <div
+                    onClick={() => changeMode({}, false)}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      zIndex: 1,
+                        height:unfocusDivStyle.height,
+                        width:unfocusDivStyle.width
+                    }}
+                  ></div>
+                            
+                  <PdfViewer
+                    pdf={`${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
+                    activePage={activePage}
+                    setPDFLoading={setIsPDFLoading}
+                  />
+                </TransformComponent>
+              </React.Fragment>
+            )}
+          </TransformWrapper>                    
           </div>
           
         </div>
@@ -1292,7 +1345,7 @@ return (
             </div>
           ) : null}
 
-          <div style={{ position: "absolute" }}>
+          <div ref={scrollImage} style={{ position: "absolute" }}>
             {imgLst &&
               imgLst.map((item, index) => {
                 return (
@@ -1350,10 +1403,10 @@ return (
         </div>                    */}
       </div>
     )}
-    {!isLoading ?( <footer className="footer">
+    {/* {!isLoading ?( <footer className="footer">
         <div class="pagination-container">
         <div class="pagination-inner-container">    
-          {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
+          {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage}>
                 &#8678;
                 </button>): (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn" onClick={handlePreviousPage} >
                 &#8678;
@@ -1364,13 +1417,14 @@ return (
                 </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
                 &#8680;              
                 </button> )}
-                {/* &nbsp; */}
-        {/* <button className="tool-btn" style={{height: "30px", width: "30px"}}  onClick={handleZoomOut}><img class="zoom-icon" src={zoomOutImage} alt="Zoom Out" /></button>
+                &nbsp;
+        <button className="tool-btn" style={{height: "30px", width: "30px"}}  onClick={() => handleZoomOut(zoomIn)}><img class="zoom-icon" src={zoomOutImage} alt="Zoom Out" /></button>
         &nbsp;        
-        <button  className="tool-btn" style={{height: "30px", width: "30px"}} onClick={handleZoomIn}> <img class="zoom-icon" src={zoomInImage} alt="Zoom In" /></button> */}
+        <button  className="tool-btn" style={{height: "30px", width: "30px"}} onClick={() => handleZoomIn(zoomIn)}> <img class="zoom-icon" src={zoomInImage} alt="Zoom In" /></button>
         </div>
         </div>
-      </footer>)   : null}
+      </footer>)   : null} */}
+
   </>
 );
 }
