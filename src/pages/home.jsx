@@ -74,6 +74,8 @@ const [selectedElement, setSelectedElement] = React.useState({});
 
 const uuid = searchParams.get("uuid");
 const template_instance_uuid = searchParams.get("template_instance_uuid")?? null;
+console.log('tiUUID'+template_instance_uuid);
+console.log('uuid'+uuid);
 // const userId = searchParams.get("userid");
 
 const [activePage, setActivePage] = React.useState(0);
@@ -1288,7 +1290,7 @@ return (
                   ></div>
                             
                   <PdfViewer
-                    pdf={`${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
+                    pdf={template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
                     activePage={activePage}
                     setPDFLoading={setIsPDFLoading}
                   />
