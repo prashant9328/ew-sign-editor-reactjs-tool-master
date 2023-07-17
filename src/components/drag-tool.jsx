@@ -42,7 +42,7 @@ const DragTool = ({
         paddingLeft: "10px",
         border: "solid 1px #000000",
         background: `${bgColor}`,
-        zIndex: 2
+        zIndex: 9999
       }}
       enableResizing={enableResizing}
       size={{ width: currentState.width, height: currentState.height }}
