@@ -7,20 +7,21 @@ const CustomSelect = ({value, defaultValue, options, name, type, onChange, color
   const [isDisabled, setIsDisabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRtl, setIsRtl] = useState(false);
+  const [valueColor, setValueColor] = useState('black');
 
   return (
     <>
       <Select
         styles={{          
           singleValue: (provided, state) => ({
-            ...provided,
-            color: 'black',           
-          }),      
+            ...provided,    
+            color: `${valueColor}`,      
+          }),          
           control: (provided) => ({
-            ...provided,
+            ...provided,            
             backgroundColor: `${color}`,
             fontSize: '19px', 
-            cursor: 'pointer'                     
+            cursor: 'pointer'            
           }),          
           option: (provided, state) => ({
             ...provided,             
@@ -30,19 +31,15 @@ const CustomSelect = ({value, defaultValue, options, name, type, onChange, color
             border: state.isSelected ? '2.5px groove  #2684ff':'0.1px solid black',
             borderRadius: '3px',
             padding: '8px',     
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',    
+            boxShadow: state.isSelected ? '0 2px 4px #2684ff' :'0 2px 4px rgba(0, 0, 0, 0.1)',    
             color: "black",
-            cursor: 'pointer'                                
+            cursor: 'pointer',                                       
           }),
           dropdownIndicator: (provided) => ({
             ...provided,            
-            color: 'black',
+            color: `${valueColor}`,
             cursor: 'pointer'                     
-          }),
-          SelectContainer: (provided, state) => ({
-            ...provided,
-            color : 'red'
-          })          
+          })                
         }}
         defaultValue={options[0]}
         isDisabled={isDisabled}
@@ -55,6 +52,8 @@ const CustomSelect = ({value, defaultValue, options, name, type, onChange, color
         onChange={(e) => {
           onChange(type, e);
         }}
+        onFocus={()=> {setValueColor('#919191');}}
+        onBlur={() => {setValueColor('black');}}
         value={value}
       />
     </>

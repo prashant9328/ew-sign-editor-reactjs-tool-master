@@ -1075,7 +1075,7 @@ return (
               <React.Fragment>
                 {/* <button onClick={() => handleZoomIn(zoomIn)}>Zoom In</button>
                 <button onClick={() => handleZoomOut(zoomOut)}>Zoom Out</button> */}
-                <footer className="footer">
+                {isToolSelectionMode? null : (<footer className="footer">
               <div class="pagination-container">
               <div class="pagination-inner-container">    
                 {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage}>
@@ -1095,7 +1095,7 @@ return (
               <button  className="tool-btn" style={{height: "30px", width: "30px"}} onClick={() => handleZoomIn(zoomIn)}> <img class="zoom-icon" src={zoomInImage} alt="Zoom In" /></button>
               </div>
               </div>
-                </footer>
+                </footer>)}
                 <TransformComponent>
                   {signElems.map((ele) => {
                     if (ele.pageId === activePage) {
