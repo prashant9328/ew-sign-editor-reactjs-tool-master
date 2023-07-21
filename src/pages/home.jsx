@@ -21,6 +21,9 @@ import zoomInImage from '../images/zoomIn.png';
 import zoomOutImage from '../images/zoomOut.png';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 export default function Home() {
+  const defaultCanvasScale = "1";
+  const scaleForImages = "0.3";
+
 const colorsWithHighOpacity = [
   "rgba(207, 233, 254, 1)",
   "rgba(242, 222, 254, 1)",
@@ -65,6 +68,7 @@ const scrollImage = React.useRef(null);
 
 const [searchParams] = useSearchParams();
 
+// const [pageCount, setPageCount] = React.useState(0);
 const [isPDFLoading, setIsPDFLoading] = React.useState(true);
 const [isLoading, setIsLoading] = React.useState(true);
 const [isFetching, setIsFetching] = React.useState(true);
@@ -79,9 +83,9 @@ console.log('uuid'+uuid);
 // const userId = searchParams.get("userid");
 
 const [activePage, setActivePage] = React.useState(0);
-const [imgLst, setImgLst] = React.useState([]);
+// const [imgLst, setImgLst] = React.useState([]);
 const [totalPage, settotalPage] = React.useState([]);
-const [img, setImg] = React.useState(null);
+// const [img, setImg] = React.useState(null);
  const [unfocusDivStyle,setUnfocusDivStyle] = React.useState({ height:0,width:0});
 //fields
 const [fields, setFields] = React.useState([]);
@@ -117,13 +121,7 @@ const [signElems, setSignElems] = React.useState([]);
   const handleZoomOut = (zoomOut) => {
     zoomOut();
   };   
-    // const handleZoomIn = () => {
-    //   setScale(scale + 0.1);
-    //   };
-    
-    //   const handleZoomOut = () => {
-    //     setScale( scale - 0.1);
-    //   };
+   
 // Text Tool
 const [textEleCount, setTextEleCount] = React.useState(0);
 const [textElems, setTextElems] = React.useState([]);
@@ -154,12 +152,10 @@ React.useEffect(() => {
       })
     .then((res) => res.json())
     .then((response) => {
-      const tempArr = [];
       console.log("@@@ DATA FROM SERVER: " + JSON.stringify(response));
 
       // TODO: Add all elements which were saved by user previously.
       let data = response.data;
-      // {"id":1,"name":"signatureBlock","type":"Signature","is_required":1,"default_height":100,"default_width":150}
 
       const tempFields = [];
       if (data.allFieldsData != null && data.allFieldsData.length > 0) {
@@ -189,8 +185,7 @@ React.useEffect(() => {
         
         signatoryList.push(signatory);
         tempSignatoryIdList.push(signatory.id);
-      } else if (signatureFlow === "AND" && data.signatoryList != null && data.signatoryList.length > 0){
-        
+      } else if ((signatureFlow === "AND" || signatureFlow === "SEQUENCE")&& data.signatoryList != null && data.signatoryList.length > 0){
         data.signatoryList.forEach((signatory, index) => {
           signatory.index = index;
           signatory.bgColor = colors[index];
@@ -208,14 +203,6 @@ React.useEffect(() => {
       setSelectedSignatoryColor(signatoryList[0].toolColor);      
       setOptions(signatoryList);
       setSignatoryIdList(tempSignatoryIdList);
-
-      data.images.forEach((file) => {
-        // console.log("@@@ PATH: " + file.path);
-        tempArr.push(file.path);
-        console.log('tempArr'+tempArr);
-      });
-      setImgLst(tempArr);
-      settotalPage(tempArr.length);
     })
     .finally(() => {
       setTimeout(() => {
@@ -225,13 +212,7 @@ React.useEffect(() => {
   //
 }, []);
 
-React.useEffect(() => {
-  getImage(activePage);
-}, [imgLst]);
-
   React.useEffect(() => {
-    
-  
    const intervalStamp = setInterval(() => {        
       if(document.getElementsByTagName('canvas')[0].style.height){
         
@@ -247,9 +228,7 @@ React.useEffect(() => {
       }
 
     }, 2000);
-
     return () => {
-      
     }
   }, []);
   
@@ -619,14 +598,8 @@ function handleCheckBoxToolClick(event) {
 } 
 
 function handleDragStart(id, toolType, e) {
-  // let emptyArr = [];
-  // setSelectedEleUserDefaultValue(emptyArr);
   console.log('@@@ handleDragStart: CALLED.....');
   setPanningState({disabled: true});
-  // console.log("@@@ handleDragStart");
-  // console.log("@@@ Id: handleDragStart: " + id);
-  // console.log("@@@ toolType: handleDragStart: " + toolType);
-  // console.log("@@@ SELECTED ELE: " + JSON.stringify(selectedElement));
   let ele;
 
   switch (toolType) {
@@ -820,15 +793,11 @@ function handlePaggination(index) {
   if (index === activePage) return;
   setActivePage(index);
   changeMode({}, false);
-  getImage(index);
+  // getImage(index);
   scrollContainer.current.scrollTop = 0;  
   const element = scrollImage.current.children[index];
   element.scrollIntoView({ behavior: "smooth", block: "start" });
 }
-
-const getImage = async (index) => {
-  setImg(imgLst[index]);
-};
 
 function changeSignatoryIdToNull(finalDataList) {
   finalDataList.forEach(data => {
@@ -921,7 +890,6 @@ return (
                 fontFamily: "sans-serif",
               }}
             >
-              {/* <img src="https://www.eruditeworks.com/wp-content/uploads/2021/07/imgpsh_fullsize_anim.png" /> */}
               <img src={loadingGif} style={{minWidth:"150px", maxWidth:"250px"}} width="40%" />
               <br/>
               {isFetching ? <h4>Fetching...</h4> : <h4>Saving...</h4>}
@@ -1045,21 +1013,7 @@ return (
                 <div className="flex-item" style={{marginLeft: '67px'}}></div>
             </div>
         </div>
-        <div>       
-        {/* <div style={{backgroundColor: "#f9f9f9",  margin: "auto",width: "100%",padding: "10px"}}>
-            {activePage === 0 ? (<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
-            &#8678;
-            </button>): (<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handlePreviousPage} >
-            &#8678;
-            </button>)}            
-            <span>{`Page ${activePage + 1} of ${totalPage}`}</span>
-            {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
-            &#8680;
-            </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
-            &#8680;
-            </button> )}
-                 
-        </div>  */}
+        <div> 
              
           <div className="document" id="center-img-div"  ref={scrollContainer}>                       
           <TransformWrapper defaultScale={1} maxScale={2.5}       
@@ -1073,8 +1027,6 @@ return (
             scale={scale}>
             {({ zoomIn, zoomOut }) => (
               <React.Fragment>
-                {/* <button onClick={() => handleZoomIn(zoomIn)}>Zoom In</button>
-                <button onClick={() => handleZoomOut(zoomOut)}>Zoom Out</button> */}
                 <footer className="footer">
               <div class="pagination-container">
               <div class="pagination-inner-container">    
@@ -1288,11 +1240,13 @@ return (
                         width:unfocusDivStyle.width
                     }}
                   ></div>
-                            
+                  {console.log(template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`)}   
                   <PdfViewer
                     pdf={template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
                     activePage={activePage}
                     setPDFLoading={setIsPDFLoading}
+                    setPageCount={settotalPage}
+                    scale={defaultCanvasScale}
                   />
                 </TransformComponent>
               </React.Fragment>
@@ -1355,28 +1309,28 @@ return (
           ) : null}
 
           <div ref={scrollImage} style={{ position: "absolute" }}>
-            {imgLst &&
-              imgLst.map((item, index) => {
-                return (
-                  <div
-                    className="flexbox-container paggination"
-                    onClick={() => handlePaggination(index)}
-                    key={index}
-                  >
-                    <div className="flexbox-item">
-                      <div className="page-count">{index + 1}</div>
-                      <img
-                        loading="lazy" 
-                        className="page-img"
-                        style={{
-                          border: index === activePage ? "2px solid #6e859b" : "1px solid #b3b3b34d",
-                        }}
-                        src={imgLst[index]}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+            {console.log('@@@ pageCount: '+totalPage)}
+            {totalPage!=0 && Array.from(Array(totalPage), (e, i) => {
+              console.log("IN LOOP....");
+              return <div
+              className="flexbox-container paggination"
+              onClick={() => handlePaggination(i)}
+              key={i}
+            >
+              <div className="flexbox-item">
+                <div className="page-count">{i + 1}</div>
+                <div className="page-img" style={{border: i === activePage ? "2px solid #6e859b" : "1px solid #b3b3b34d",}}>
+                  <PdfViewer 
+                    pdf={template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
+                    activePage={i}
+                    setPDFLoading={setIsPDFLoading}
+                    setPageCount={settotalPage}
+                    scale={scaleForImages}
+                  />
+                </div>
+              </div>
+            </div>
+            })}
           </div>
         </div>
 
@@ -1394,46 +1348,9 @@ return (
               </button>
            )}
         </div> 
-        {/* <div className="menubar">
-          <div style={{textAlign: 'center', marginLeft: "77px",paddingTop: '5px'}}>
-              {activePage === 0 ? (<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
-              &#8678;
-              </button>): (<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handlePreviousPage} >
-              &#8678;
-              </button>)}            
-              <span>&nbsp;{`Page ${activePage + 1} of ${totalPage}`}&nbsp;</span>
-              {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
-              &#8680;
-              </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
-              &#8680;
-              </button> )}
-                  
-          </div> 
-        </div>                    */}
+        
       </div>
     )}
-    {/* {!isLoading ?( <footer className="footer">
-        <div class="pagination-container">
-        <div class="pagination-inner-container">    
-          {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage}>
-                &#8678;
-                </button>): (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn" onClick={handlePreviousPage} >
-                &#8678;
-                </button>)}            
-                <span>&nbsp;{`Page ${activePage + 1} of ${totalPage}`}&nbsp;</span>
-                {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
-                &#8680;
-                </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
-                &#8680;              
-                </button> )}
-                &nbsp;
-        <button className="tool-btn" style={{height: "30px", width: "30px"}}  onClick={() => handleZoomOut(zoomIn)}><img class="zoom-icon" src={zoomOutImage} alt="Zoom Out" /></button>
-        &nbsp;        
-        <button  className="tool-btn" style={{height: "30px", width: "30px"}} onClick={() => handleZoomIn(zoomIn)}> <img class="zoom-icon" src={zoomInImage} alt="Zoom In" /></button>
-        </div>
-        </div>
-      </footer>)   : null} */}
-
   </>
 );
 }
