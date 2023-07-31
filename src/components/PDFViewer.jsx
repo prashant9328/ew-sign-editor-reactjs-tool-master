@@ -7,7 +7,7 @@ import PDF, {usePdf} from "react-pdf-js";
 const PdfViewer = ({pdf,activePage, setPDFLoading, setPageCount, scale})=> {      
 
     const onDocumentComplete = (numPages) =>{
-        console.log('@@@ PDF: PAGES: '+ numPages);
+        // console.log('@@@ PDF: PAGES: '+ numPages);
         if(numPages){
             setPageCount(numPages);
             setPDFLoading(false);    
