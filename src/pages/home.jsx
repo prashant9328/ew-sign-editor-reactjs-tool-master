@@ -941,18 +941,33 @@ function handleResize(id, toolType, data, e) {
   }
 }
 
+// function handlePaggination(index) {
+//   // console.log('INDEX: '+ index);
+//   if (index === activePage) return;
+//   setActivePage(index);
+//   changeMode({}, false);
+//   // getImage(index);
+//   // if(scrollContainer) {
+//   //   scrollContainer.current.scrollTop = 0;  
+//   //   const element = scrollImage.current.children[index];
+
+//   //   element?.scrollIntoView({ behavior: "smooth", block: "start" });
+//   // }
+// }
+
 function handlePaggination(index) {
-  // console.log('INDEX: '+ index);
   if (index === activePage) return;
   setActivePage(index);
   changeMode({}, false);
   // getImage(index);
-  // if(scrollContainer) {
-  //   scrollContainer.current.scrollTop = 0;  
-  //   const element = scrollImage.current.children[index];
-
-  //   element?.scrollIntoView({ behavior: "smooth", block: "start" });
-  // }
+  scrollContainer.current.scrollTop = 0;
+  const element = scrollImage.current.children[index];
+  if (element) {
+    const containerRect = scrollImage.current.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const offsetTop = elementRect.top - containerRect.top;
+    scrollImage.current.scrollTop += offsetTop;
+  }
 }
 
 function changeSignatoryIdToNull(finalDataList) {
