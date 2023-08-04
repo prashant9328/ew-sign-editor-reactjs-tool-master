@@ -1483,7 +1483,8 @@ return (
             </div>
           ) : null}
 
-          <div ref={scrollImage} style={{ position: "absolute" }}>
+          {/* <div ref={scrollImage} style={{ overflow: "scroll"}}> */}
+          <div ref={scrollImage} style={{ position: "relative", overflowY: "scroll", height: "100vh" }}>
             {/* {console.log('@@@ pageCount: '+totalPage)} */}
             {totalPage!==0 && Array.from(Array(totalPage), (e, i) => {
               
