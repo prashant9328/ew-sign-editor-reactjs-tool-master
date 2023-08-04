@@ -17,81 +17,103 @@ import PdfViewer from "../components/PDFViewer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import loadingGif from '../images/loading-cropped.gif';
-import zoomInImage from '../images/zoomIn.png';
-import zoomOutImage from '../images/zoomOut.png';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import {Paggination} from "../components/paggination";
+
+
 export default function Home() {
-const colorsWithHighOpacity = [
-  "rgba(207, 233, 254, 1)",
-  "rgba(242, 222, 254, 1)",
-  "rgba(242, 76, 61, 0.5)",
-  "rgba(3, 201, 136, 0.5)",
-  "rgba(127, 140, 237, 1)",
-  "rgba(81, 107, 120, 0.85)",   
-  "rgba(50, 30, 30, 0.5)",
-  "rgba(14, 131, 136, 0.5)",  
-  "rgba(109, 103, 228, 0.5)",
-  "rgba(193, 71, 233, 0.5)"
-];
-const colors = [
-  "rgba(207, 233, 254, 0.8)",
-  "rgba(242, 222, 254, 0.8)",
-  "rgba(242, 76, 61, 0.3)",
-  "rgba(3, 201, 136, 0.3)",
-  "rgba(127, 140, 237, 0.8)",
-  "rgba(81, 107, 120, 0.65)",  
-  "rgba(50, 30, 30, 0.3)",
-  "rgba(14, 131, 136, 0.3)",  
-  "rgba(109, 103, 228, 0.3)",
-  "rgba(193, 71, 233, 0.3)"  
-];
+  const defaultCanvasScale = "1";
+  const scaleForImages = "0.3";
+  // const documentXDistanceFromLeftSideBar = 595;
+  const documentXDistanceFromLeftSideBar = 517;
+  const documentYDistanceFromTopSideBar = 821;
+  
+  const randomWidth = 20; 
+  const randomHeight = 100; 
 
-const [options, setOptions] = React.useState([]);
-const [signatoryIdList, setSignatoryIdList] = React.useState([]);
+  const colorsWithHighOpacity = [
+    "rgba(207, 233, 254, 1)",
+    "rgba(242, 222, 254, 1)",
+    "rgba(242, 76, 61, 0.5)",
+    "rgba(3, 201, 136, 0.5)",
+    "rgba(127, 140, 237, 1)",
+    "rgba(81, 107, 120, 0.85)",   
+    "rgba(50, 30, 30, 0.5)",
+    "rgba(14, 131, 136, 0.5)",  
+    "rgba(109, 103, 228, 0.5)",
+    "rgba(193, 71, 233, 0.5)"
+  ];
 
-const [selectedEleUserDefaultValue, setSelectedEleUserDefaultValue] =
-  React.useState(options[0]);
+  const colors = [
+    "rgba(207, 233, 254, 0.8)",
+    "rgba(242, 222, 254, 0.8)",
+    "rgba(242, 76, 61, 0.3)",
+    "rgba(3, 201, 136, 0.3)",
+    "rgba(127, 140, 237, 0.8)",
+    "rgba(81, 107, 120, 0.65)",  
+    "rgba(50, 30, 30, 0.3)",
+    "rgba(14, 131, 136, 0.3)",  
+    "rgba(109, 103, 228, 0.3)",
+    "rgba(193, 71, 233, 0.3)"  
+  ];
 
+  const [orgId, setOrgId] = React.useState("");
 
-const [scale, setScale] = React.useState(1.0);
-const [panningState, setPanningState] = React.useState({disabled: false});
+  const [options, setOptions] = React.useState([]);
+  const [signatoryIdList, setSignatoryIdList] = React.useState([]);
 
-const [selectedSigner, setSelectedSigner] = React.useState();
-const [selectedSignatoryColor, setSelectedSignatoryColor] = React.useState();
-const [selectedAssignerColor, setSelectedAssignerColor] = React.useState();
+  const [selectedEleUserDefaultValue, setSelectedEleUserDefaultValue] =
+    React.useState(options[0]);
 
-const scrollContainer = React.useRef(null);
-const scrollImage = React.useRef(null);
+  const [scale, setScale] = React.useState(1.0);
+  const [panningState, setPanningState] = React.useState({disabled: false});
 
-const [searchParams] = useSearchParams();
+  const [selectedSigner, setSelectedSigner] = React.useState();
+  const [selectedSignatoryColor, setSelectedSignatoryColor] = React.useState();
+  const [selectedAssignerColor, setSelectedAssignerColor] = React.useState();
 
-const [isPDFLoading, setIsPDFLoading] = React.useState(true);
-const [isLoading, setIsLoading] = React.useState(true);
-const [isFetching, setIsFetching] = React.useState(true);
-const [isFileShared, setIsFileShared] = React.useState(false);
-const [isToolSelectionMode, setIsToolSelectionMode] = React.useState(false);
-const [selectedElement, setSelectedElement] = React.useState({});
+  const draggableEle = React.useRef(null);
+  const scrollContainer = React.useRef(null);
+  const scrollImage = React.useRef(null);
+  const documentContainer = React.useRef(null);
+  // const documentContainer = React.useCallback(node => {
+  //   if (node !== null) {
+  //     var rect = node.getBoundingClientRect();
+  //     console.log(rect.top, rect.right, rect.bottom, rect.left);
+  //     setDocumentBounding({top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left});
+  //   }
+  // }, [])
 
-const uuid = searchParams.get("uuid");
-const template_instance_uuid = searchParams.get("template_instance_uuid")?? null;
-console.log('tiUUID'+template_instance_uuid);
-console.log('uuid'+uuid);
-// const userId = searchParams.get("userid");
+  const [searchParams] = useSearchParams();
 
-const [activePage, setActivePage] = React.useState(0);
-const [imgLst, setImgLst] = React.useState([]);
-const [totalPage, settotalPage] = React.useState([]);
-const [img, setImg] = React.useState(null);
- const [unfocusDivStyle,setUnfocusDivStyle] = React.useState({ height:0,width:0});
-//fields
-const [fields, setFields] = React.useState([]);
+  // const [pageCount, setPageCount] = React.useState(0);
+  const [isPDFLoading, setIsPDFLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isFetching, setIsFetching] = React.useState(true);
+  const [isFileShared, setIsFileShared] = React.useState(false);
+  const [isToolSelectionMode, setIsToolSelectionMode] = React.useState(false);
+  const [selectedElement, setSelectedElement] = React.useState({});
+  const [signatureFlow, setSignatureFlow] = React.useState(null);
+  const uuid = searchParams.get("uuid");
+  const template_instance_uuid = searchParams.get("template_instance_uuid")?? null;
+  // console.log('tiUUID'+template_instance_uuid);
+  // console.log('uuid'+uuid);
+  // const userId = searchParams.get("userid");
 
-// SIGNATURE TOOL
-const [signEleCount, setSignEleCount] = React.useState(0);
-const [signElems, setSignElems] = React.useState([]);
+  const [activePage, setActivePage] = React.useState(0);
+  // const [imgLst, setImgLst] = React.useState([]);handlePaggination
+  const [totalPage, settotalPage] = React.useState([]);
+  // const [img, setImg] = React.useState(null);
+  const [documentBounding, setDocumentBounding] = React.useState({top:0, right:0, bottom:0, left:0});
+  const [unfocusDivStyle,setUnfocusDivStyle] = React.useState({ height:0,width:0});
+  //fields
+  const [fields, setFields] = React.useState([]);
 
+  // SIGNATURE TOOL
+  const [signEleCount, setSignEleCount] = React.useState(0);
+  const [signElems, setSignElems] = React.useState([]);
 
-   const handlePreviousPage = () => {
+  const handlePreviousPage = () => {
     changeMode({}, false);
     if (activePage > 0) {
       setActivePage(activePage - 1);
@@ -117,13 +139,7 @@ const [signElems, setSignElems] = React.useState([]);
   const handleZoomOut = (zoomOut) => {
     zoomOut();
   };   
-    // const handleZoomIn = () => {
-    //   setScale(scale + 0.1);
-    //   };
-    
-    //   const handleZoomOut = () => {
-    //     setScale( scale - 0.1);
-    //   };
+   
 // Text Tool
 const [textEleCount, setTextEleCount] = React.useState(0);
 const [textElems, setTextElems] = React.useState([]);
@@ -144,7 +160,7 @@ React.useEffect(() => {
     uuid: uuid,
     templateInstanceUUID: template_instance_uuid
   };
-  console.log(`@@@ ${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`);
+  // console.log(`@@@ ${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`);
     fetch(`${process.env.REACT_APP_API_URL}/api/admin/fetchImagesData`, {
         method: "POST",
         headers: {
@@ -154,12 +170,12 @@ React.useEffect(() => {
       })
     .then((res) => res.json())
     .then((response) => {
-      const tempArr = [];
-      console.log("@@@ DATA FROM SERVER: " + JSON.stringify(response));
+      // console.log("@@@ DATA FROM SERVER: " + JSON.stringify(response));
 
       // TODO: Add all elements which were saved by user previously.
       let data = response.data;
-      // {"id":1,"name":"signatureBlock","type":"Signature","is_required":1,"default_height":100,"default_width":150}
+
+      setOrgId(data.orgId);
 
       const tempFields = [];
       if (data.allFieldsData != null && data.allFieldsData.length > 0) {
@@ -180,6 +196,7 @@ React.useEffect(() => {
       }
       
       const signatoryList = [];
+      setSignatureFlow(data.signatureFlow);
       const signatureFlow = data.signatureFlow;
 
       let tempSignatoryIdList = [];
@@ -189,8 +206,7 @@ React.useEffect(() => {
         
         signatoryList.push(signatory);
         tempSignatoryIdList.push(signatory.id);
-      } else if (signatureFlow === "AND" && data.signatoryList != null && data.signatoryList.length > 0){
-        
+      } else if ((signatureFlow === "AND" || signatureFlow === "SEQUENCE")&& data.signatoryList != null && data.signatoryList.length > 0){
         data.signatoryList.forEach((signatory, index) => {
           signatory.index = index;
           signatory.bgColor = colors[index];
@@ -202,20 +218,12 @@ React.useEffect(() => {
         });
       }
 
-      console.log('@@@ signatoryIdList: FINAL : '+ tempSignatoryIdList);
+      // console.log('@@@ signatoryIdList: FINAL : '+ tempSignatoryIdList);
 
       setSelectedSigner(signatoryList[0]);
       setSelectedSignatoryColor(signatoryList[0].toolColor);      
       setOptions(signatoryList);
       setSignatoryIdList(tempSignatoryIdList);
-
-      data.images.forEach((file) => {
-        // console.log("@@@ PATH: " + file.path);
-        tempArr.push(file.path);
-        console.log('tempArr'+tempArr);
-      });
-      setImgLst(tempArr);
-      settotalPage(tempArr.length);
     })
     .finally(() => {
       setTimeout(() => {
@@ -225,13 +233,7 @@ React.useEffect(() => {
   //
 }, []);
 
-React.useEffect(() => {
-  getImage(activePage);
-}, [imgLst]);
-
   React.useEffect(() => {
-    
-  
    const intervalStamp = setInterval(() => {        
       if(document.getElementsByTagName('canvas')[0].style.height){
         
@@ -241,18 +243,17 @@ React.useEffect(() => {
           width:element.style.width
         }
 
+        // console.log("style: "+ JSON.stringify(style));
        setUnfocusDivStyle(style)
 
         clearInterval(intervalStamp)
       }
 
     }, 2000);
-
     return () => {
-      
     }
   }, []);
-  
+
 function showToast(type, message) {
   switch (type) {
     case "info":
@@ -290,20 +291,20 @@ function validateCoordinates(finalCoordData) {
     finalCoordSignatoryIdList.push(finalCoordData[i].signatory_id);
   }
 
-  console.log('@signatoryIdList: '+signatoryIdList);
+  // console.log('@signatoryIdList: '+signatoryIdList);
   let checker = (arr, target) => target.every(v => arr.includes(v));
   return checker(finalCoordSignatoryIdList, signatoryIdList);
 }
 
 function changeMode(selectedEle, isEditMode, selectedOption=options[0]) {
-  console.log("@@@ changeMode: CALLED....");  
+  // console.log("@@@ changeMode: CALLED....");  
   setSelectedElement(selectedEle);
   setIsToolSelectionMode(isEditMode);
   setSelectedEleUserDefaultValue(selectedOption);
 }
 
 function handleSignatoryChange(fieldType, effect, e) {
-    console.log("@@@ handleSignatoryChange: CALLED....");
+    // console.log("@@@ handleSignatoryChange: CALLED....");
     if(effect === 'all_tool') {
         setSelectedSigner(e);
         setSelectedSignatoryColor(e.toolColor);
@@ -322,6 +323,7 @@ function handleSignatoryChange(fieldType, effect, e) {
           signElems.map((ele) => {
             if (ele.eleId === selectedElement.eleId) {
               ele.signatory_id = e.id;
+              ele.user_index_id = e.id;
               selectedElement.bgColor = ele.bgColor = e.bgColor;
             }
             return ele;
@@ -334,6 +336,7 @@ function handleSignatoryChange(fieldType, effect, e) {
           textElems.map((ele) => {
             if (ele.eleId === selectedElement.eleId) {
               ele.signatory_id = e.id;
+              ele.user_index_id = e.id;
               selectedElement.bgColor = ele.bgColor = e.bgColor;
             }
             return ele;
@@ -345,6 +348,7 @@ function handleSignatoryChange(fieldType, effect, e) {
           dateElems.map((ele) => {
             if (ele.eleId === selectedElement.eleId) {
               ele.signatory_id = e.id;
+              ele.user_index_id = e.id;
               selectedElement.bgColor = ele.bgColor = e.bgColor;
             }
             return ele;
@@ -356,6 +360,7 @@ function handleSignatoryChange(fieldType, effect, e) {
             checkBoxElems.map((ele) => {
               if (ele.eleId === selectedElement.eleId) {
                 ele.signatory_id = e.id;
+                ele.user_index_id = e.id;
                 selectedElement.bgColor = ele.bgColor = e.bgColor;
               }
               return ele;
@@ -376,17 +381,17 @@ function handleEleDelete() {
     (field) => field.id === selectedElement.field_id
   );
   
-  console.log('@@@ foundField: '+ JSON.stringify(foundField));
+  // console.log('@@@ foundField: '+ JSON.stringify(foundField));
   switch (foundField.name) {
     case "Signature": {
       let currentSignElems = signElems;
       let emptyArr = [];
       setSignElems(emptyArr);
-      console.log(
-        "@@@ signElems: DELETE: BEFORE: " + JSON.stringify(signElems)
-      );
+      // console.log(
+      //   "@@@ signElems: DELETE: BEFORE: " + JSON.stringify(signElems)
+      // );
       let tempSignElems = currentSignElems.filter((ele) => ele.eleId !== selectedElement.eleId);
-      console.log('@@@ tempSignElems: '+ JSON.stringify(tempSignElems));
+      // console.log('@@@ tempSignElems: '+ JSON.stringify(tempSignElems));
       setTimeout(() =>
       {
         setSignElems(tempSignElems);
@@ -398,11 +403,11 @@ function handleEleDelete() {
       let currentTextElems = textElems;
       let emptyArr = [];
       setTextElems(emptyArr);
-      console.log(
-        "@@@ textElems: DELETE: BEFORE: " + JSON.stringify(textElems)
-      );
+      // console.log(
+      //   "@@@ textElems: DELETE: BEFORE: " + JSON.stringify(textElems)
+      // );
       let tempTextElems = currentTextElems.filter((ele) => ele.eleId !== selectedElement.eleId);
-      console.log('@@@ tempSignElems: '+ JSON.stringify(tempTextElems));
+      // console.log('@@@ tempSignElems: '+ JSON.stringify(tempTextElems));
       setTimeout(() =>
       {
         setTextElems(tempTextElems);
@@ -414,12 +419,12 @@ function handleEleDelete() {
       let currrentDateElems = dateElems;
       let emptyArr = []
       setDateElems(emptyArr);
-      console.log(
-        "@@@ dateElems: DELETE: BEFORE: " + JSON.stringify(dateElems)
-      );
+      // console.log(
+      //   "@@@ dateElems: DELETE: BEFORE: " + JSON.stringify(dateElems)
+      // );
       
       let tempDateElems = currrentDateElems.filter((ele) => ele.eleId !== selectedElement.eleId);
-      console.log('@@@ tempSignElems: '+ JSON.stringify(tempDateElems));
+      // console.log('@@@ tempSignElems: '+ JSON.stringify(tempDateElems));
       setTimeout(() =>
       {
         setDateElems(tempDateElems);
@@ -430,11 +435,11 @@ function handleEleDelete() {
       let currenctCheckboxElems = checkBoxElems;
       let emptyArr = [];
       setCheckBoxElems(emptyArr);
-      console.log(
-        "@@@ checkBoxElems: DELETE: BEFORE: " + JSON.stringify(checkBoxElems)
-      );
+      // console.log(
+      //   "@@@ checkBoxElems: DELETE: BEFORE: " + JSON.stringify(checkBoxElems)
+      // );
       let tempCheckBoxElems = currenctCheckboxElems.filter((ele) => ele.eleId !== selectedElement.eleId)
-      console.log('@@@ tempSignElems: '+ JSON.stringify(tempCheckBoxElems));
+      // console.log('@@@ tempSignElems: '+ JSON.stringify(tempCheckBoxElems));
       setTimeout(() =>
       {
         setCheckBoxElems(tempCheckBoxElems);
@@ -448,7 +453,7 @@ function handleEleDelete() {
   changeMode({}, false ,selectedSigner );
 }
 function handleSelectedEleNameChange(event) {
-  console.log("@@@ handleSelectedEleNameChange: CLICKED..... ");
+  // console.log("@@@ handleSelectedEleNameChange: CLICKED..... ");
 
   // selected element
   switch (selectedElement.type) {
@@ -474,8 +479,8 @@ function handleSelectedEleNameChange(event) {
   }
 }
 
-function addNewElement(fieldId, name, eleId, width, height) {
-  console.log("@@@ addNewElement..... ");
+function addNewElement(fieldId, name, eleId, x=0, y=0, width, height) {
+  // console.log("@@@ addNewElement..... ");
 
   setSelectedEleUserDefaultValue(selectedSigner);
   setPreviousCoord({ x: previousCoord.x + 30, y: previousCoord.y + 30 });
@@ -487,25 +492,69 @@ function addNewElement(fieldId, name, eleId, width, height) {
     name: name,
     eleId: eleId,
     pageId: activePage,
-    x: previousCoord.x,
-    y: previousCoord.y,
+    // x: previousCoord.x,
+    // y: previousCoord.y,
+    x: x,
+    y: y,
     width: width,
     height: height,
 
   };
 }
 
-function handleSignToolClick(event) {
-  console.log("@@@ handleSignToolClick: CLICKED..... ");
+function handleDragLeave(event) {
+  // console.log('CURRENT: '+ documentContainer.current);
+  const element = documentContainer.current;
+  element.style.backgroundColor = "";
+  element.style.opacity = 1;
+}
+
+function handleDragEnter(event) {
+  // console.log("DRAG...enter: ");
+  // console.log("DRAG...enter: X: " + event.pageX);
+  // console.log("DRAG...enter: X: " + event.pageY);
+  var rect = documentContainer.current.getBoundingClientRect();
+  console.log(rect.top, rect.right, rect.bottom, rect.left);
+  setDocumentBounding({top: rect.top, right: rect.right, bottom: rect.bottom, left: rect.left});
+  
+  const element = documentContainer.current;
+  element.style.backgroundColor = "#000000";
+  element.style.opacity = 0.1;
+
+  // const dragElement = draggableEle.current;
+  // dragElement.dropEffect = "copy";
+}
+
+function handleDrag(event) {
+  // console.log("DRAG...: ");
+  // console.log("DRAG...: X: " + event.pageX);
+  // console.log("DRAG...: X: " + event.pageY);
+}
+
+function handleSignToolDragStart(event) {
+
+}
+
+function handleSignToolDragEnd(event) {
+  // var rect = documentContainer.current.getBoundingClientRect();
+  // console.log(rect.top, rect.right, rect.bottom, rect.left);
+
+
+  console.log("@@@ handleSignToolDragEnd: DRAG..... ");
+  console.log("@@@ handleSignToolDragEnd: X..... "+ event.pageX);
+  console.log("@@@ handleSignToolDragEnd: Y..... "+ event.pageY);
   const field = fields.find(field => field.type === 'Signature');
-  switch (event.detail) {
-    case 1: {
-      setSelectedAssignerColor(selectedSignatoryColor);
+  const pagex = event.pageX - documentBounding.left;
+  const pagey = event.pageY - documentBounding.top;
+
+  setSelectedAssignerColor(selectedSignatoryColor);
       // console.log("Single click");
       let newSignEle = addNewElement(
         field.id,
         `Signature${signEleCount + 1}`,
         `signEle${signEleCount}`,
+        pagex,
+        pagey,
         field.width,
         field.height
       );
@@ -513,120 +562,196 @@ function handleSignToolClick(event) {
       setSignElems(signElems.concat(newSignEle));
       setSignEleCount(signEleCount + 1);
       changeMode(newSignEle, true, selectedSigner);
-      break;
-    }
-    case 2: {
-      // console.log("Double click");
-      break;
-    }
-    default: {
-      break;
-    }
-  }
 }
 
-function handleTextBoxToolClick(event) {
-  console.log("@@@ handleTextBoxToolClick: CALLED..... ");
+// function handleSignToolClick(event) {
+//   console.log("@@@ handleSignToolClick: CLICKED..... ");
+//   const field = fields.find(field => field.type === 'Signature');
+//   switch (event.detail) {
+//     case 1: {
+//       setSelectedAssignerColor(selectedSignatoryColor);
+//       // console.log("Single click");
+//       let newSignEle = addNewElement(
+//         field.id,
+//         `Signature${signEleCount + 1}`,
+//         `signEle${signEleCount}`,
+//         field.width,
+//         field.height
+//       );
+      
+//       setSignElems(signElems.concat(newSignEle));
+//       setSignEleCount(signEleCount + 1);
+//       changeMode(newSignEle, true, selectedSigner);
+//       break;
+//     }
+//     case 2: {
+//       // console.log("Double click");
+//       break;
+//     }
+//     default: {
+//       break;
+//     }
+//   }
+// }
 
-  // console.log("@@@ TEXT tool is selected!!! ");
+function handleTextBoxToolDragEnd(event) {
   const field = fields.find(field => field.type === 'Text');
-  switch (event.detail) {
-    case 1: {
-      // console.log("Single click");
-      setSelectedAssignerColor(selectedSignatoryColor);
-      let newTextEle = addNewElement(
-        field.id,
-        `Text${textEleCount + 1}`,
-        `textEle${textEleCount}`,
-        field.width,
-        field.height
-      );
-      setTextElems(textElems.concat(newTextEle));
-      setTextEleCount(textEleCount + 1);
-      changeMode(newTextEle, true, selectedSigner);
-      break;
-    }
-    case 2: {
-      // console.log("Double click");
-      break;
-    }
-    default: {
-      break;
-    }
-  }
+  const pagex = event.pageX - documentXDistanceFromLeftSideBar + randomWidth;
+  const pagey = event.pageY - randomHeight;
+
+  setSelectedAssignerColor(selectedSignatoryColor);
+  let newTextEle = addNewElement(
+    field.id,
+    `Text${textEleCount + 1}`,
+    `textEle${textEleCount}`,
+    pagex,
+    pagey,
+    field.width,
+    field.height
+  );
+  setTextElems(textElems.concat(newTextEle));
+  setTextEleCount(textEleCount + 1);
+  changeMode(newTextEle, true, selectedSigner);
 }
 
-function handleDateBoxToolClick(event) {
-  console.log("@@@ handleDateBoxToolClick: CALLED..... ");
+// function handleTextBoxToolClick(event) {
+//   console.log("@@@ handleTextBoxToolClick: CALLED..... ");
 
-  // console.log("@@@ DATE tool is selected!!! ");
+//   // console.log("@@@ TEXT tool is selected!!! ");
+//   const field = fields.find(field => field.type === 'Text');
+//   switch (event.detail) {
+//     case 1: {
+//       // console.log("Single click");
+//       setSelectedAssignerColor(selectedSignatoryColor);
+//       let newTextEle = addNewElement(
+//         field.id,
+//         `Text${textEleCount + 1}`,
+//         `textEle${textEleCount}`,
+//         field.width,
+//         field.height
+//       );
+//       setTextElems(textElems.concat(newTextEle));
+//       setTextEleCount(textEleCount + 1);
+//       changeMode(newTextEle, true, selectedSigner);
+//       break;
+//     }
+//     case 2: {
+//       // console.log("Double click");
+//       break;
+//     }
+//     default: {
+//       break;
+//     }
+//   }
+// }
+
+function handleDateBoxToolDragEnd(event) {
   const field = fields.find(field => field.type === 'Date');
+  const pagex = event.pageX - documentXDistanceFromLeftSideBar + randomWidth;
+  const pagey = event.pageY - randomHeight;
 
-  switch (event.detail) {
-    case 1: {
-      setSelectedAssignerColor(selectedSignatoryColor);
-      // console.log("Single click");
-      let newDateEle = addNewElement(
-        field.id,
-        `Date${dateEleCount + 1}`,
-        `dateEle${dateEleCount}`,
-        field.width,
-        field.height
-      );
-      setDateElems(dateElems.concat(newDateEle));
-      setDateEleCount(dateEleCount + 1);
-      changeMode(newDateEle, true, selectedSigner);
-      break;
-    }
-    case 2: {
-      // console.log("Double click");
-      break;
-    }
-    default: {
-      break;
-    }
-  }
+  setSelectedAssignerColor(selectedSignatoryColor);
+  // console.log("Single click");
+  let newDateEle = addNewElement(
+    field.id,
+    `Date${dateEleCount + 1}`,
+    `dateEle${dateEleCount}`,
+    pagex,
+    pagey,
+    field.width,
+    field.height
+  );
+  setDateElems(dateElems.concat(newDateEle));
+  setDateEleCount(dateEleCount + 1);
+  changeMode(newDateEle, true, selectedSigner);
 }
 
-function handleCheckBoxToolClick(event) {
-  console.log("@@@ handleCheckBoxToolClick: CALLED..... ");
-  
+// function handleDateBoxToolClick(event) {
+//   console.log("@@@ handleDateBoxToolClick: CALLED..... ");
+
+//   // console.log("@@@ DATE tool is selected!!! ");
+//   const field = fields.find(field => field.type === 'Date');
+
+//   switch (event.detail) {
+//     case 1: {
+//       setSelectedAssignerColor(selectedSignatoryColor);
+//       // console.log("Single click");
+//       let newDateEle = addNewElement(
+//         field.id,
+//         `Date${dateEleCount + 1}`,
+//         `dateEle${dateEleCount}`,
+//         field.width,
+//         field.height
+//       );
+//       setDateElems(dateElems.concat(newDateEle));
+//       setDateEleCount(dateEleCount + 1);
+//       changeMode(newDateEle, true, selectedSigner);
+//       break;
+//     }
+//     case 2: {
+//       // console.log("Double click");
+//       break;
+//     }
+//     default: {
+//       break;
+//     }
+//   }
+// }
+
+function handleCheckBoxToolDragEnd(event) {
   const field = fields.find(field => field.type === 'Checkbox');
-  switch (event.detail) {
-    case 1: {
-      setSelectedAssignerColor(selectedSignatoryColor);
-      // console.log("Single click");
-      let newCheckEle = addNewElement(
-        field.id,
-        `Checkbox${checkBoxEleCount + 1}`,
-        `checkBoxEle${checkBoxEleCount}`,
-        field.width,
-        field.height
-      );
-      setCheckBoxElems(checkBoxElems.concat(newCheckEle));
-      setCheckBoxEleCount(checkBoxEleCount + 1);
-      changeMode(newCheckEle, true, selectedSigner);
-      break;
-    }
-    case 2: {
-      // console.log("Double click");
-      break;
-    }
-    default: {
-      break;
-    }
-  }
-} 
+  const pagex = event.pageX - documentXDistanceFromLeftSideBar + randomWidth;
+  const pagey = event.pageY - randomHeight;
+
+  setSelectedAssignerColor(selectedSignatoryColor);
+  // console.log("Single click");
+  let newCheckEle = addNewElement(
+    field.id,
+    `Checkbox${checkBoxEleCount + 1}`,
+    `checkBoxEle${checkBoxEleCount}`,
+    pagex,
+    pagey,
+    field.width,
+    field.height
+  );
+  setCheckBoxElems(checkBoxElems.concat(newCheckEle));
+  setCheckBoxEleCount(checkBoxEleCount + 1);
+  changeMode(newCheckEle, true, selectedSigner);
+}
+
+// function handleCheckBoxToolClick(event) {
+//   console.log("@@@ handleCheckBoxToolClick: CALLED..... ");
+  
+//   const field = fields.find(field => field.type === 'Checkbox');
+//   switch (event.detail) {
+//     case 1: {
+//       setSelectedAssignerColor(selectedSignatoryColor);
+//       // console.log("Single click");
+//       let newCheckEle = addNewElement(
+//         field.id,
+//         `Checkbox${checkBoxEleCount + 1}`,
+//         `checkBoxEle${checkBoxEleCount}`,
+//         field.width,
+//         field.height
+//       );
+//       setCheckBoxElems(checkBoxElems.concat(newCheckEle));
+//       setCheckBoxEleCount(checkBoxEleCount + 1);
+//       changeMode(newCheckEle, true, selectedSigner);
+//       break;
+//     }
+//     case 2: {
+//       // console.log("Double click");
+//       break;
+//     }
+//     default: {
+//       break;
+//     }
+//   }
+// } 
 
 function handleDragStart(id, toolType, e) {
-  // let emptyArr = [];
-  // setSelectedEleUserDefaultValue(emptyArr);
-  console.log('@@@ handleDragStart: CALLED.....');
+  // console.log('@@@ handleDragStart: CALLED.....');
   setPanningState({disabled: true});
-  // console.log("@@@ handleDragStart");
-  // console.log("@@@ Id: handleDragStart: " + id);
-  // console.log("@@@ toolType: handleDragStart: " + toolType);
-  // console.log("@@@ SELECTED ELE: " + JSON.stringify(selectedElement));
   let ele;
 
   switch (toolType) {
@@ -650,7 +775,7 @@ function handleDragStart(id, toolType, e) {
       break;
     }
   }
-  console.log("@@@ ELE :" + JSON.stringify(ele));
+  // console.log("@@@ ELE :" + JSON.stringify(ele));
   setSelectedElement(ele[0]);
   setIsToolSelectionMode(true);
   setSelectedEleUserDefaultValue(
@@ -684,26 +809,26 @@ function handleDragStop(id, toolType, data, e) {
   }    
   let toolWidth = tempEle[0].width;
   let toolHeight = tempEle[0].height;    
-  if(data.x < 0){
-    data.x=0;
-  }
-  else if(data.x > 595 - toolWidth){
-    data.x = 595 - toolWidth;
-  }
-  else{
-    data.x = data.x;
-  }
-  if(data.y < 0){
-    data.y=0;
-  }
-  else if(data.y > 840 - toolHeight){
-    data.y = 840 - toolHeight;
-  }
-  else{
-    data.y = data.y;
-  }
+  // if(data.x < 0){
+  //   data.x=0;
+  // }
+  // else if(data.x > documentXDistanceFromLeftSideBar - toolWidth){
+  //   data.x = documentXDistanceFromLeftSideBar - toolWidth;
+  // }
+  // else{
+  //   data.x = data.x;
+  // }
+  // if(data.y < 0){
+  //   data.y=0;
+  // }
+  // else if(data.y > documentYDistanceFromTopSideBar - toolHeight){
+  //   data.y = documentYDistanceFromTopSideBar - toolHeight;
+  // }
+  // else{
+  //   data.y = data.y;
+  // }
   setPanningState({disabled: false});
-  console.log('@@@ handleDragStop: CALLED.....'+JSON.stringify(data));
+  // console.log('@@@ handleDragStop: CALLED.....'+JSON.stringify(data));
     setPreviousCoord({ x: data.x + 30, y: data.y + 30 });
     let eleValue = [];
     switch (toolType) {
@@ -816,19 +941,34 @@ function handleResize(id, toolType, data, e) {
   }
 }
 
+// function handlePaggination(index) {
+//   // console.log('INDEX: '+ index);
+//   if (index === activePage) return;
+//   setActivePage(index);
+//   changeMode({}, false);
+//   // getImage(index);
+//   // if(scrollContainer) {
+//   //   scrollContainer.current.scrollTop = 0;  
+//   //   const element = scrollImage.current.children[index];
+
+//   //   element?.scrollIntoView({ behavior: "smooth", block: "start" });
+//   // }
+// }
+
 function handlePaggination(index) {
   if (index === activePage) return;
   setActivePage(index);
   changeMode({}, false);
-  getImage(index);
-  scrollContainer.current.scrollTop = 0;  
+  // getImage(index);
+  scrollContainer.current.scrollTop = 0;
   const element = scrollImage.current.children[index];
-  element.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (element) {
+    const containerRect = scrollImage.current.getBoundingClientRect();
+    const elementRect = element.getBoundingClientRect();
+    const offsetTop = elementRect.top - containerRect.top;
+    scrollImage.current.scrollTop += offsetTop;
+  }
 }
-
-const getImage = async (index) => {
-  setImg(imgLst[index]);
-};
 
 function changeSignatoryIdToNull(finalDataList) {
   finalDataList.forEach(data => {
@@ -841,7 +981,7 @@ function handleContinue() {
   setIsFetching(false);
 
   const finalCoordData = [...signElems, ...textElems, ...dateElems, ...checkBoxElems];
-  console.log('HANDLE CONTINUE: '+JSON.stringify(finalCoordData));
+  // console.log('HANDLE CONTINUE: '+JSON.stringify(finalCoordData));
   const isValid = validateCoordinates(finalCoordData);
   
   if (!isValid) {
@@ -861,7 +1001,7 @@ function handleContinue() {
     uuid: uuid,
     templateInstanceUUID: template_instance_uuid
   };
-  console.log('@@@ BODY: '+ JSON.stringify(body));
+  // console.log('@@@ BODY: '+ JSON.stringify(body));
   fetch(`${process.env.REACT_APP_API_URL}/api/admin/setTemplateCoordinates`, {
       method: "POST",
       headers: {
@@ -871,13 +1011,17 @@ function handleContinue() {
     })
   .then((res) => res.json())
   .then((response) => {
-    window.parent.postMessage({"messageFrom": "EW Sign Editor", "status": true, "action": template_instance_uuid == null ? "Create Template" : "Create TI" }, "*");
-    console.log(JSON.stringify(response));
+    if(template_instance_uuid == null) {
+      window.parent.postMessage({"messageFrom": "EW Sign Editor", "status": true, "action": "Create Template" }, "*");
+    } else {
+      window.parent.postMessage({"messageFrom": "EW Sign Editor", "status": true, "action": "Create TI", "signatureFlow": signatureFlow, "uuid": uuid, "template_instance_uuid" : template_instance_uuid}, "*");
+    }
+    // console.log(JSON.stringify(response));
     setIsFileShared(true);
   })
   .catch((error) => {
     window.parent.postMessage({"messageFrom": "EW Sign Editor", "status": false, "action": template_instance_uuid == null ? "Create Template" : "Create TI", "errorMessage": JSON.stringify(error)}, "*");
-    console.log("@@@ Saved coordinate: " + JSON.stringify(error));
+    // console.log("@@@ Saved coordinate: " + JSON.stringify(error));
     toast.error(JSON.stringify(error));
   })
   .finally(() => {
@@ -921,7 +1065,6 @@ return (
                 fontFamily: "sans-serif",
               }}
             >
-              {/* <img src="https://www.eruditeworks.com/wp-content/uploads/2021/07/imgpsh_fullsize_anim.png" /> */}
               <img src={loadingGif} style={{minWidth:"150px", maxWidth:"250px"}} width="40%" />
               <br/>
               {isFetching ? <h4>Fetching...</h4> : <h4>Saving...</h4>}
@@ -972,9 +1115,13 @@ return (
               <div className="tools-title">Fields</div>
               <div className="flex-container">
                   <button
+                      ref={draggableEle}
                       type="button"
                       className="flex-item tool-btn signature-btn"
-                      onClick={handleSignToolClick}>
+                      onDragStart={handleSignToolDragStart}
+                      onDragEnd={handleSignToolDragEnd}
+                      draggable
+                      >
                       <RiBallPenLine className="tool-icon" />{" "}
                       <p>Signature</p>
                   </button>
@@ -982,7 +1129,9 @@ return (
                   <button
                       type="button"
                       className="tool-btn btn-margin"
-                      onClick={handleTextBoxToolClick}>
+                      onDragEnd={handleTextBoxToolDragEnd}
+                      draggable
+                      >
                     <BsTextareaT className="tool-icon" />{" "}
                     <p>Text</p>
                   </button>
@@ -990,7 +1139,9 @@ return (
                   <button
                       type="button"
                       className="tool-btn btn-margin flex-item "
-                      onClick={handleDateBoxToolClick}>
+                      onDragEnd={handleDateBoxToolDragEnd}
+                      draggable
+                      >
                       <BsCalendar2Date className="tool-icon" />
                       <p>Date</p>
                   </button>
@@ -998,7 +1149,9 @@ return (
                   <button
                       type="button"
                       className="tool-btn btn-margin flex-item "
-                      onClick={handleCheckBoxToolClick}>
+                      onDragEnd={handleCheckBoxToolDragEnd}
+                      draggable
+                      >
                       <BsCheck2Square className="tool-icon" />{" "}
                       <p>Checkbox</p>
                   </button>
@@ -1045,23 +1198,9 @@ return (
                 <div className="flex-item" style={{marginLeft: '67px'}}></div>
             </div>
         </div>
-        <div>       
-        {/* <div style={{backgroundColor: "#f9f9f9",  margin: "auto",width: "100%",padding: "10px"}}>
-            {activePage === 0 ? (<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
-            &#8678;
-            </button>): (<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handlePreviousPage} >
-            &#8678;
-            </button>)}            
-            <span>{`Page ${activePage + 1} of ${totalPage}`}</span>
-            {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
-            &#8680;
-            </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
-            &#8680;
-            </button> )}
-                 
-        </div>  */}
+        <div> 
              
-          <div className="document" id="center-img-div"  ref={scrollContainer}>                       
+          <div className="document" id="center-img-div"  ref={scrollContainer} onDrag={handleDrag} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave}>                       
           <TransformWrapper defaultScale={1} maxScale={2.5}       
             disablePan={true}
             centerZoomedOut
@@ -1073,33 +1212,15 @@ return (
             scale={scale}>
             {({ zoomIn, zoomOut }) => (
               <React.Fragment>
-                {/* <button onClick={() => handleZoomIn(zoomIn)}>Zoom In</button>
-                <button onClick={() => handleZoomOut(zoomOut)}>Zoom Out</button> */}
-                {isToolSelectionMode? null : (<footer className="footer">
-              <div class="pagination-container">
-              <div class="pagination-inner-container">    
-                {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage}>
-                      &#8678;
-                      </button>): (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn" onClick={handlePreviousPage} >
-                      &#8678;
-                      </button>)}            
-                      <span style={{color: "white"}}>&nbsp;{`Page ${activePage + 1} of ${totalPage}`}&nbsp;</span>
-                      {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
-                      &#8680;
-                      </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
-                      &#8680;              
-                      </button> )}
-                      &nbsp;
-              <button className="tool-btn" style={{height: "30px", width: "30px"}}  onClick={() => handleZoomOut(zoomOut)}><img class="zoom-icon" src={zoomOutImage} alt="Zoom Out" /></button>
-              &nbsp;        
-              <button  className="tool-btn" style={{height: "30px", width: "30px"}} onClick={() => handleZoomIn(zoomIn)}> <img class="zoom-icon" src={zoomInImage} alt="Zoom In" /></button>
-              </div>
-              </div>
-                </footer>)}
+                {isToolSelectionMode? null : (
+                <footer className="footer">
+                  <Paggination activePage={activePage} totalPage={totalPage} handlePaggination={handlePaggination}></Paggination>
+                </footer>
+                )}
                 <TransformComponent>
                   {signElems.map((ele) => {
                     if (ele.pageId === activePage) {
-                      console.log('@@@ RENDERING SIGNATURE: INSIDE: '+ JSON.stringify(ele));
+                      // console.log('@@@ RENDERING SIGNATURE: INSIDE: '+ JSON.stringify(ele));
                       const toolName = "Signature";
                       const bgColor = ele.bgColor;
                       const field = fields.find(
@@ -1110,6 +1231,7 @@ return (
                           isEditMode={
                             selectedElement && ele.eleId === selectedElement.eleId
                           }
+                          bounds={scrollContainer}
                           bgColor={bgColor}
                           toolType={toolName}
                           id={ele.eleId}
@@ -1143,7 +1265,7 @@ return (
                   {textElems.map((ele) => {
                     // console.log(ele);
                     if (ele && ele.pageId === activePage) {
-                      console.log('@@@ RENDERING TEXT: INSIDE: '+ JSON.stringify(ele));
+                      // console.log('@@@ RENDERING TEXT: INSIDE: '+ JSON.stringify(ele));
                       const toolName = "Text";
                       const bgColor = ele.bgColor;
                       const field = fields.find((field) => field.type === toolName);
@@ -1189,7 +1311,7 @@ return (
                   {dateElems.map((ele) => {
                     // console.log(ele);
                     if (ele && ele.pageId === activePage) {
-                      console.log('@@@ RENDERING DATE: INSIDE: '+ JSON.stringify(ele));
+                      // console.log('@@@ RENDERING DATE: INSIDE: '+ JSON.stringify(ele));
                       const toolName = "Date";
                       const bgColor = ele.bgColor;
                       const field = fields.find(field => field.type === toolName);
@@ -1235,7 +1357,7 @@ return (
                   {checkBoxElems.map((ele) => {
                     // console.log(ele);
                     if (ele && ele.pageId === activePage) {
-                      console.log('@@@ RENDERING DATE: INSIDE: '+ JSON.stringify(ele));
+                      // console.log('@@@ RENDERING DATE: INSIDE: '+ JSON.stringify(ele));
                       const toolName = "Checkbox";
                       const bgColor = ele.bgColor;
                       const field = fields.find(field => field.type === toolName);
@@ -1265,9 +1387,11 @@ return (
                             handleResize(ele.eleId, toolName, data, e)
                           }
                           toolIcon={
-                            <BsApp
-                              className={`${toolName.toLowerCase()}-tool-icon-position`}
-                            />
+                            <div></div>
+
+                            // <BsApp
+                            //   className={`${toolName.toLowerCase()}-tool-icon-position`}
+                            // />
                           }
                         />
                       );
@@ -1276,6 +1400,7 @@ return (
 
                   {/* {console.log(img)} */}
                   <div
+                    ref={documentContainer}
                     onClick={() => changeMode({}, false)}
                     style={{
                       position: "absolute",
@@ -1288,12 +1413,16 @@ return (
                         width:unfocusDivStyle.width
                     }}
                   ></div>
-                            
-                  <PdfViewer
-                    pdf={template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
-                    activePage={activePage}
-                    setPDFLoading={setIsPDFLoading}
-                  />
+                  {/* {console.log(template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`)}    */}
+                  <div  class="testing">
+                    <PdfViewer
+                      pdf={template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
+                      activePage={activePage}
+                      setPDFLoading={setIsPDFLoading}
+                      setPageCount={settotalPage}
+                      scale={defaultCanvasScale}
+                    />
+                  </div>
                 </TransformComponent>
               </React.Fragment>
             )}
@@ -1354,34 +1483,36 @@ return (
             </div>
           ) : null}
 
-          <div ref={scrollImage} style={{ position: "absolute" }}>
-            {imgLst &&
-              imgLst.map((item, index) => {
-                return (
-                  <div
-                    className="flexbox-container paggination"
-                    onClick={() => handlePaggination(index)}
-                    key={index}
-                  >
-                    <div className="flexbox-item">
-                      <div className="page-count">{index + 1}</div>
-                      <img
-                        loading="lazy" 
-                        className="page-img"
-                        style={{
-                          border: index === activePage ? "2px solid #6e859b" : "1px solid #b3b3b34d",
-                        }}
-                        src={imgLst[index]}
-                      />
-                    </div>
+          {/* <div ref={scrollImage} style={{ overflow: "scroll"}}> */}
+          <div ref={scrollImage} style={{ position: "relative", overflowY: "scroll", height: "100vh" }}>
+            {/* {console.log('@@@ pageCount: '+totalPage)} */}
+            {totalPage!==0 && Array.from(Array(totalPage), (e, i) => {
+              
+              return <div
+                className="flexbox-container paggination"
+                onClick={() => handlePaggination(i)}
+                key={i}
+              >
+                <div className="flexbox-item">
+                  <div className="page-count">{i + 1}</div>
+                  <div className="page-img" style={{border: i === activePage ? "2px solid #6e859b" : "1px solid #b3b3b34d",}}>
+                    <PdfViewer 
+                      pdf={template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`}
+                      activePage={i}
+                      setPDFLoading={setIsPDFLoading}
+                      setPageCount={settotalPage}
+                      scale={scaleForImages}
+                    />
                   </div>
-                );
-              })}
+                </div>
+              </div>
+            })}
           </div>
         </div>
 
         <div className="navbar">
-            <img src="https://eruditeworksprivatelimited4--partial.sandbox.file.force.com/servlet/servlet.ImageServer?id=0159D0000001Rlv&oid=00D9D0000008fSF&lastMod=1686396736000" class="logo"/>
+            {/* <img src="https://eruditeworksprivatelimited4--partial.sandbox.file.force.com/servlet/servlet.ImageServer?id=0159D0000001Rlv&oid=00D9D0000008fSF&lastMod=1686396736000" class="logo"/> */}
+            <img src={`${process.env.REACT_APP_API_URL}/api/admin/branding/fetchBrandLogo?orgId=${orgId}`} class="logo"/>
             
             {!isToolSelectionMode && (
                 <button className="continue-btn" onClick={handleContinue} >
@@ -1394,46 +1525,9 @@ return (
               </button>
            )}
         </div> 
-        {/* <div className="menubar">
-          <div style={{textAlign: 'center', marginLeft: "77px",paddingTop: '5px'}}>
-              {activePage === 0 ? (<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage} disabled={activePage === 0}>
-              &#8678;
-              </button>): (<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handlePreviousPage} >
-              &#8678;
-              </button>)}            
-              <span>&nbsp;{`Page ${activePage + 1} of ${totalPage}`}&nbsp;</span>
-              {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
-              &#8680;
-              </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
-              &#8680;
-              </button> )}
-                  
-          </div> 
-        </div>                    */}
+        
       </div>
     )}
-    {/* {!isLoading ?( <footer className="footer">
-        <div class="pagination-container">
-        <div class="pagination-inner-container">    
-          {activePage === 0 ? (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn disabled-btn" onClick={handlePreviousPage}>
-                &#8678;
-                </button>): (<button style={{height: "30px", width: "30px", marginLeft: "0px"}}className="tool-btn" onClick={handlePreviousPage} >
-                &#8678;
-                </button>)}            
-                <span>&nbsp;{`Page ${activePage + 1} of ${totalPage}`}&nbsp;</span>
-                {activePage === totalPage - 1 ?(<button style={{height: "30px", width: "30px"}}className="tool-btn disabled-btn" onClick={handleNextPage}>
-                &#8680;
-                </button> ) :(<button style={{height: "30px", width: "30px"}}className="tool-btn" onClick={handleNextPage}>
-                &#8680;              
-                </button> )}
-                &nbsp;
-        <button className="tool-btn" style={{height: "30px", width: "30px"}}  onClick={() => handleZoomOut(zoomIn)}><img class="zoom-icon" src={zoomOutImage} alt="Zoom Out" /></button>
-        &nbsp;        
-        <button  className="tool-btn" style={{height: "30px", width: "30px"}} onClick={() => handleZoomIn(zoomIn)}> <img class="zoom-icon" src={zoomInImage} alt="Zoom In" /></button>
-        </div>
-        </div>
-      </footer>)   : null} */}
-
   </>
 );
 }
