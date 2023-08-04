@@ -18,7 +18,7 @@ const CustomSelect = ({value, defaultValue, options, name, type, onChange, color
             color: `${valueColor}`,           
           }),      
           control: (provided) => ({
-            ...provided,
+            ...provided,            
             backgroundColor: `${color}`,
             fontSize: '14px', 
             cursor: 'pointer',
@@ -33,20 +33,15 @@ const CustomSelect = ({value, defaultValue, options, name, type, onChange, color
             border: '0.1px solid black',
             borderRadius: '3px',
             padding: '8px',     
-            // boxShadow: state.isSelected ? '0 2px 4px #2684ff' : '0 2px 4px rgba(0, 0, 0, 0.1)',    
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',    
+            boxShadow: state.isSelected ? '0 2px 4px #2684ff' :'0 2px 4px rgba(0, 0, 0, 0.1)',    
             color: "black",
-            cursor: 'pointer'                                
+            cursor: 'pointer',                                       
           }),
           dropdownIndicator: (provided) => ({
             ...provided,            
             color: `${valueColor}`,
             cursor: 'pointer'                     
-          }),
-          SelectContainer: (provided, state) => ({
-            ...provided,
-            color : 'red'
-          })          
+          })                
         }}
         defaultValue={options[0]}
         isDisabled={isDisabled}
