@@ -33,6 +33,7 @@ export const Paggination = ({totalPage, activePage, handlePaggination
 
   const handleTextChange = (e) => {
     try {
+
       const value = e.target.value;
 
       var oldValue = currentPageNo;
@@ -44,8 +45,11 @@ export const Paggination = ({totalPage, activePage, handlePaggination
 
       if (value !== 0 && value <= totalPage) {
         setCurrentPageNo(parseInt(value));
+        handlePaggination(parseInt(value) - 1);
+
       } else {
         setCurrentPageNo(oldValue);
+
       }
     } catch (err) {
       console.log(err);
@@ -53,6 +57,10 @@ export const Paggination = ({totalPage, activePage, handlePaggination
   };
   //
   const handleArrowKeyPress = (e) => {
+    console.log('handleArrowKeyPress');
+    const value = e.target.value;
+    console.log('value new' +value);
+
     try {
       const { keyCode } = e;
 
@@ -60,14 +68,14 @@ export const Paggination = ({totalPage, activePage, handlePaggination
         // handle up arrow key
         if (currentPageNo < totalPage) {
           setCurrentPageNo(currentPageNo + 1);
-          handlePaggination(currentPageNo + 1);
+          handlePaggination(parseInt(value));
         }
 
       } else if (keyCode === 40) {
         // handle down arrow key
         if (currentPageNo > 1) {
           setCurrentPageNo(currentPageNo - 1);
-          handlePaggination(currentPageNo - 1);
+          handlePaggination(parseInt(value) - 2);
         }
       }
     } catch (err) {
@@ -102,6 +110,7 @@ export const Paggination = ({totalPage, activePage, handlePaggination
         <div className="px-1">
           <BiChevronLeft style={{color: leftArrowShown ? "white" : "gray", cursor: leftArrowShown ? "pointer" : "no-drop"}} onClick={() => {navigateController('back')}}/>
         </div>
+
 
         <input
           className="currentpage-shown-container form-control custom-font"
