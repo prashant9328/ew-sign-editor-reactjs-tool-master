@@ -170,7 +170,7 @@ React.useEffect(() => {
       })
     .then((res) => res.json())
     .then((response) => {
-      // console.log("@@@ DATA FROM SERVER: " + JSON.stringify(response));
+      console.log("@@@ DATA FROM SERVER: EDITOR: " + JSON.stringify(response));
 
       // TODO: Add all elements which were saved by user previously.
       let data = response.data;
@@ -206,7 +206,7 @@ React.useEffect(() => {
         
         signatoryList.push(signatory);
         tempSignatoryIdList.push(signatory.id);
-      } else if ((signatureFlow === "AND" || signatureFlow === "SEQUENCE")&& data.signatoryList != null && data.signatoryList.length > 0){
+      } else if ((signatureFlow === "AND" || signatureFlow === "SEQUENCE" || signatureFlow === "INPERSONSIGNING") && data.signatoryList != null && data.signatoryList.length > 0){
         data.signatoryList.forEach((signatory, index) => {
           signatory.index = index;
           signatory.bgColor = colors[index];
@@ -218,7 +218,7 @@ React.useEffect(() => {
         });
       }
 
-      // console.log('@@@ signatoryIdList: FINAL : '+ tempSignatoryIdList);
+      console.log('@@@ signatoryIdList: FINAL : '+ tempSignatoryIdList);
 
       setSelectedSigner(signatoryList[0]);
       setSelectedSignatoryColor(signatoryList[0].toolColor);      
