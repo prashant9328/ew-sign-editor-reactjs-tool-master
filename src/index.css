@@ -1,3 +1,5 @@
+/* Minimal and focused on setting up essential global styles. */
+
 :root {
     --color-white: #ffffff;
     --color-black: #333333;
@@ -249,13 +251,19 @@
 .right-sidebar-tool-header{
     background-color: #fff;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
+    /* justify-content: center; */
+    /* align-items: center; */
     padding: 12px;
     border-bottom: 1px solid #ddd;
     text-transform: uppercase;
     font-family: sans-serif;
-    font-size: 20px;
+    /* font-size: 20px; */
+    font-size: 16px;
+}
+
+.right-sidebar-section {
+    padding: 10px 10px 0;
 }
 
 .input-field {
@@ -272,10 +280,11 @@
 }
 
 .field-lbl {
-    font-size: 13px;
+    font-size: 12px;
     color: rgb(85, 93, 101);
-    font-family: sans-serif;
-    text-transform: uppercase;
+    /* font-family: sans-serif; */
+    font-family: Arial;
+    /* text-transform: uppercase; */
 }
 
 .right-sidebar-tool-icon {
@@ -395,81 +404,16 @@
     cursor: not-allowed !important;
 }
 
-.tool-btn {  
-    opacity: 1;
-    color: #121519;
-    align-items: center;
-    width: 29.5%;
-    height: 89px;
-    border: none;
-    font-size: 19.7px;
-    /* cursor: pointer; */
-    /* cursor: all-scroll; */
-    cursor: grab;   
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    text-align: center;
-    background-color: #fff;
-}
-
-.tool-btn p {  
-    color: #555;
-    font-size: 12px;
-    text-transform: uppercase;
-    margin-top: 5px;
-}
-
-.tool-btn:hover {
-    box-shadow: 0 2px 10px #aaa;
-}
-
-.tool-btn .tool-icon {
-  color: #555;
-}
-
-.signature-btn {
-    margin-top: 12px;  
-}
-
-.signature-btn p {
-    color: #555;
-    font-size: 12px;
-    text-transform: uppercase;
-    margin-top: 5px;
-}
-
-.signature-btn .tool-icon {
-  color: #555;
-}
-
 .flex-container{
     display:flex;
     flex-flow:row wrap;
     justify-content: space-evenly;
 }
 
-.flex-item{
-    margin: 5px;
-}
-
-.btn-margin {
-    margin-top: 6px;
-}
-
-/* .signature-tool-icon-position {
-    position: absolute;
-    top: 5px;
-} */
-
 .initials-tool-icon-position {
     position: absolute;
     top: 3px;
 }
-
-/* .text-tool-icon-position, .date-tool-icon-position{
-position: absolute;
-top: 5.5px;
-} */
 
 .checkbox-tool-icon-position {
     position: absolute;
@@ -516,74 +460,11 @@ top: 5.5px;
     border-radius: 3px;
     border: 1px solid #ddd;
     background: #fff;
-    margin: 0 10px;
+    /* margin: 0 10px; */
     font-size: 16px;
     font-family: sans-serif;
 }
 
-
-/* pagination css starts*/
- 
-/* .pagination-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    bottom: 15px;
-    left: 0;
-    right: 0;
-    z-index: 1;
-    margin-left: 137px
-  }
-
-
-.pagination-inner-container {
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    width: 19%;
-    border-radius: 10px;
-    background-color: #455b66
-    ;
-  }
-  
-  @media screen and (max-width: 1200px) {
-    .pagination-inner-container {
-      width: 23% !important;
-      max-width: 220px;
-    }
-  }
-  
-  @media screen and (max-width: 992px) {
-    .pagination-inner-container {
-      width: 25% !important;
-      max-width: 220px;
-    }
-  }
-  @media screen and (max-width: 600px) {
-    .pagination-inner-container {
-      width: 30% !important;
-      min-width: 180px;
-    }
-  }
-  @media screen and (max-width: 480px) {
-    .pagination-inner-container {
-      width: 50% !important;
-      min-width: 200px;
-    }
-  }
-  
-  .pagination-inner-container > span {
-    font-weight: bold;
-  }
-  .zoom-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-  }  */
-/* pagination css ends */
-/* toggle-button css Start */
 .toggle-button {
     position: relative;
     display: inline-block;
@@ -628,7 +509,7 @@ top: 5.5px;
     box-shadow: 0 0 1px #2196f3;
   }
   
-  input:checked + .slider:before {
+  /* input:checked + .slider:before {
     transform: translateX(26px);
-  }
+  } */
   /* toggle-button css End */

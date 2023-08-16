@@ -1,0 +1,46 @@
+.tool-btn {  
+    opacity: 1;
+    color: #121519;
+    align-items: center;
+    width: 29.5%;
+    height: 89px;
+    border: none;
+    font-size: 19.7px;
+    cursor: grab;   
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    text-align: center;
+    background-color: #fff;
+    margin-top: 12px;
+}
+
+.tool-btn p {  
+    color: #555;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+
+.tool-btn:hover {
+    box-shadow: 0 2px 10px #aaa;
+}
+
+.tool-btn .tool-icon {
+  color: #555;
+}
+
+.signature-btn p {
+    color: #555;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+
+.signature-btn .tool-icon {
+  color: #555;
+}
+
+.disabled-btn {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+}
