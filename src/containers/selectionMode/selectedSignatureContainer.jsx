@@ -130,7 +130,7 @@ function SelectedSignatureContainer({}) {
           }}
           className="right-sidebar-section"
         >
-          <CustomToggle title="Is required" defaultValue={activeCoordinate.isRequired} onChange={(value) => {handleCurrentCoordIsRequiredChange(value)}}/>
+          <CustomToggle title="Required" defaultValue={activeCoordinate.isRequired} onChange={(value) => {handleCurrentCoordIsRequiredChange(value)}}/>
         </div>
 
   </div>

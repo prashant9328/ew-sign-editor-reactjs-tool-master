@@ -162,7 +162,9 @@ const activePageNumber = useSelector(
     const uuid = searchParams.get("uuid");
     const uuidTemplateInstance = searchParams.get("template_instance_uuid");
 
-    if (!uuid || !uuidTemplateInstance) {
+    console.log('@@@ uuid: '+ uuid);
+    console.log('@@@ uuidTemplateInstance: '+ uuidTemplateInstance);
+    if (uuid==null && uuidTemplateInstance==null) {
       navigate("/page-not-found", { replace: true });
       return;
     }
@@ -254,10 +256,8 @@ const activePageNumber = useSelector(
     }
   }
 
-  function changeSignatoryIdToNull(finalDataList) {
-    finalDataList.forEach((data) => {
-      data.signatory_id = null;
-    });
+  const changeSignatoryIdToNull = (finalDataList) => {
+    return finalDataList.map(data => ({...data, signatory_id: null}))
   }
 
   const resetSelectionMode = () => {
@@ -269,7 +269,7 @@ const activePageNumber = useSelector(
     setIsLoading(true);
     setIsFetching(false);
 
-    const finalCoordData = [
+    let finalCoordData = [
       ...signatureCoordinates,
       ...textBoxCoordinates,
       ...dateCoordinates,
@@ -286,13 +286,16 @@ const activePageNumber = useSelector(
 
     if (template_instance_uuid == null) {
       //
-      changeSignatoryIdToNull(finalCoordData);
+      finalCoordData = changeSignatoryIdToNull(finalCoordData);
     }
 
+    console.log('@@@ finalCoordData: '+ JSON.stringify(finalCoordData));
 
     try {
       await SetTemplateCoordinatesService(finalCoordData, uuid, template_instance_uuid);
-      
+
+      ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
+
       const message = {
         messageFrom: "EW Sign Editor",
         status: true,

@@ -237,14 +237,14 @@ function SelectedTextBoxContainer({}) {
           }}
           className="right-sidebar-section"
         >
-          <CustomToggle title="Is required" defaultValue={activeCoordinate.isRequired} onChange={(value) => {handleCurrentCoordIsRequiredChange(value)}}/>
+          <CustomToggle title="Required" defaultValue={activeCoordinate.isRequired} onChange={(value) => {handleCurrentCoordIsRequiredChange(value)}}/>
           <CustomToggle
-            title="Writeback to salesforce"
+            title="Writeback to Salesforce"
             defaultValue={activeCoordinate.writeBack}
             onChange={(value) => {handleCurrentCoordWriteBackSettingsChange(value)}}
           />
           <CustomToggle
-            title="Update from salesforce"
+            title="Update from Salesforce"
             defaultValue={activeCoordinate.updateFromSalesforce}
             onChange={(value) => {handleCurrentCoordUpdateFromSalesforceSettingsChange(value)}}
           />
