@@ -211,7 +211,6 @@ function SelectedCheckBoxContainer({}) {
                 type="checkbox"
                 defaultValue={activeCoordinate.value}
                 onChange={(event) => handleCurrentCoordValueChange(event.target.value)}
-                className="input-field"
               />
             </div>
           </div>
