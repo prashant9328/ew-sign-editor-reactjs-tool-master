@@ -25,7 +25,7 @@ function SelectedSignatureContainer({}) {
   );
 
   const handleEleDelete = () => {
-    const updatedCoords = removeCoordinate(signatureCoordinates, activeCoordinate.eleId);    
+    const updatedCoords = removeCoordinate(signatureCoordinates, activeCoordinate.eleId);
     dispatch(setSignatureCoordinates({signatureCoordinates: []}));
     setTimeout(() => {
       dispatch(setSignatureCoordinates({signatureCoordinates: updatedCoords}));

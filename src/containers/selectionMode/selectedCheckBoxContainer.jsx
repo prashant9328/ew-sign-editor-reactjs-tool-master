@@ -37,7 +37,7 @@ function SelectedCheckBoxContainer({}) {
     dispatch(setCheckBoxCoordinates({checkBoxCoordinates: []}));
     setTimeout(()=>{
       dispatch(setCheckBoxCoordinates({checkBoxCoordinates: updatedCoords}));
-    },0)
+    },0);
     dispatch(setActiveCoordinate({activeCoordinate: {}, isSelectionMode: false}));
   }
 
