@@ -26,10 +26,11 @@ function SelectedSignatureContainer({}) {
 
   const handleEleDelete = () => {
     const updatedCoords = removeCoordinate(signatureCoordinates, activeCoordinate.eleId);
+    dispatch(setSignatureCoordinates({signatureCoordinates: []}));
     setTimeout(() => {
       dispatch(setSignatureCoordinates({signatureCoordinates: updatedCoords}));
-      dispatch(setActiveCoordinate({activeCoordinate: {}, isSelectionMode: false}));
     }, 0);
+    dispatch(setActiveCoordinate({activeCoordinate: {}, isSelectionMode: false}));
   }
 
   const handleCurrentCoordSignatoryChange = (e) => { 

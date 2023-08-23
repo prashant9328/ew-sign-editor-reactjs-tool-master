@@ -34,7 +34,10 @@ function SelectedCheckBoxContainer({}) {
 
   const handleEleDelete = () => {
     const updatedCoords = removeCoordinate(checkBoxCoordinates, activeCoordinate.eleId);
-    dispatch(setCheckBoxCoordinates({checkBoxCoordinates: updatedCoords}));
+    dispatch(setCheckBoxCoordinates({checkBoxCoordinates: []}));
+    setTimeout(()=>{
+      dispatch(setCheckBoxCoordinates({checkBoxCoordinates: updatedCoords}));
+    },0);
     dispatch(setActiveCoordinate({activeCoordinate: {}, isSelectionMode: false}));
   }
 

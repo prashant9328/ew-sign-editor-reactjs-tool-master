@@ -34,7 +34,10 @@ function SelectedTextBoxContainer({}) {
 
   const handleEleDelete = () => {
     const updatedCoords = removeCoordinate(textBoxCoordinates, activeCoordinate.eleId);
-    dispatch(setTextBoxCoordinates({textBoxCoordinates: updatedCoords}));
+    dispatch(setTextBoxCoordinates({textBoxCoordinates: []}));
+    setTimeout(()=> {
+      dispatch(setTextBoxCoordinates({textBoxCoordinates: updatedCoords}));
+    },0);
     dispatch(setActiveCoordinate({activeCoordinate: {}, isSelectionMode: false}));
   }
 
