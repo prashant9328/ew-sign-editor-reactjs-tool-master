@@ -42,12 +42,13 @@ function SelectedDateContainer({}) {
       dateCoordinates,
       activeCoordinate.eleId
     );
+    dispatch(setDateCoordinates({ dateCoordinates: [] }));
     setTimeout(() => {
       dispatch(setDateCoordinates({ dateCoordinates: updatedCoords }));
-      dispatch(
-        setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
-      );
     }, 0);
+    dispatch(
+      setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
+    );
   };
 
   const handleCurrentCoordSignatoryChange = (e) => {

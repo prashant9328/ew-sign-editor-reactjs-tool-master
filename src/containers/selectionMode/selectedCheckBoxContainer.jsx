@@ -42,7 +42,10 @@ function SelectedCheckBoxContainer({}) {
       checkBoxCoordinates,
       activeCoordinate.eleId
     );
-    dispatch(setCheckBoxCoordinates({ checkBoxCoordinates: updatedCoords }));
+    dispatch(setCheckBoxCoordinates({ checkBoxCoordinates: [] }));
+    setTimeout(() => {
+      dispatch(setCheckBoxCoordinates({ checkBoxCoordinates: updatedCoords }));
+    }, 0);
     dispatch(
       setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
     );
