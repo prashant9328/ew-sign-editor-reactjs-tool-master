@@ -69,6 +69,10 @@ export default function Home() {
     (state) => state.checkBoxCoordinates.checkBoxCoordinates
   );
 
+  const generalDocumentData = useSelector(
+    (state) => state.generalDocumentData.generalDocumentData
+  );
+
   const defaultCanvasScale = "1";
   const scaleForImages = "0.3";
 
@@ -89,7 +93,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFetching, setIsFetching] = React.useState(true);
   const [isFileShared, setIsFileShared] = React.useState(false);
-  let signatureFlow;
 
   const uuid = searchParams.get("uuid");
   const template_instance_uuid =
@@ -129,7 +132,6 @@ export default function Home() {
       );
       setOrgId(data.orgId);
       // signature flow will remain constant
-      signatureFlow = data.signatureFlow;
       dispatch(setGeneralDocumentData({generalDocumentData: {
         orgId: data.orgId,
         templateUUID: uuid,
@@ -295,11 +297,11 @@ export default function Home() {
     console.log("@@@ finalCoordData: " + JSON.stringify(finalCoordData));
 
     try {
-      await SetTemplateCoordinatesService(
-        finalCoordData,
-        uuid,
-        template_instance_uuid
-      );
+      // await SetTemplateCoordinatesService(
+      //   finalCoordData,
+      //   uuid,
+      //   template_instance_uuid
+      // );
 
       ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
 
@@ -311,10 +313,13 @@ export default function Home() {
       };
 
       if (template_instance_uuid != null) {
-        message.signatureFlow = signatureFlow;
+        console.log('TI NOT NULL');
+        console.log('@@@ signatureFlow: '+generalDocumentData.signatureFlow);
+        message.signatureFlow = generalDocumentData.signatureFlow;
         message.uuid = uuid;
         message.template_instance_uuid = template_instance_uuid;
       }
+      console.log('POST MESSAGE: '+ JSON.stringify(message));
       window.parent.postMessage(message, "*");
       setIsLoading(false);
     } catch (error) {
