@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import loadingGif from "../images/loading-cropped.gif";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Paggination } from "../components/common/paggination";
-import {ShowToast} from "../utils/showToast";
+import { ShowToast } from "../utils/showToast";
 import fetchDocumentDataService from "../services/fetchDocumentDataService";
 import SetTemplateCoordinatesService from "../services/setTemplateCoordinatesService";
 import SignatureButtonContainer from "../containers/buttons/signatureButtonContainer";
@@ -23,45 +23,31 @@ import TextBoxCoordinatesContainer from "../containers/coordinates/textBoxCoordi
 import DateCoordinatesContainer from "../containers/coordinates/dateCoordinatesContainer";
 import CheckBoxCoordinatesContainer from "../containers/coordinates/checkBoxCoordinatesContainer";
 import SelectionModeContainer from "../containers/selectionMode/selectionModeContainer";
-import {
-  setGeneralDocumentData
-} from "../redux/slices/generalDocumentReducer";
-import {
-  setActiveSignatory
-} from "../redux/slices/activeSignatoryReducer";
-import {
-  setActivePageNumber
-} from "../redux/slices/activePageNumberReducer";
-import {
-  setActiveCoordinate
-} from "../redux/slices/activeCoordinateReducer";
-import {
-  setSupportedFields
-} from "../redux/slices/supportedFieldsReducer";
-import {
-  setSignatoryList
-} from "../redux/slices/signatoryListReducer";
-import {
-  setSalesforceFieldsMetadata
-} from "../redux/slices/salesforceFieldsMetadataReducer";
+import { setGeneralDocumentData } from "../redux/slices/generalDocumentReducer";
+import { setActiveSignatory } from "../redux/slices/activeSignatoryReducer";
+import { setActivePageNumber } from "../redux/slices/activePageNumberReducer";
+import { setActiveCoordinate } from "../redux/slices/activeCoordinateReducer";
+import { setSupportedFields } from "../redux/slices/supportedFieldsReducer";
+import { setSignatoryList } from "../redux/slices/signatoryListReducer";
+import { setSalesforceFieldsMetadata } from "../redux/slices/salesforceFieldsMetadataReducer";
 import { ToastTypeEnum } from "../constants/toastTypeEnum";
 
 export default function Home() {
   const signatoryList = useSelector(
     (state) => state.signatoryList.signatoryList
-);
+  );
 
   const activeSignatory = useSelector(
-      (state) => state.activeSignatory.activeSignatory
+    (state) => state.activeSignatory.activeSignatory
   );
 
   const activeCoordinate = useSelector(
     (state) => state.activeCoordinate.activeCoordinate
-);
+  );
 
-const activePageNumber = useSelector(
-  (state) => state.activePageNumber.activePageNumber
-);
+  const activePageNumber = useSelector(
+    (state) => state.activePageNumber.activePageNumber
+  );
 
   const isSelectionMode = useSelector(
     (state) => state.activeCoordinate.isSelectionMode
@@ -86,7 +72,6 @@ const activePageNumber = useSelector(
   const defaultCanvasScale = "1";
   const scaleForImages = "0.3";
 
-  
   const [orgId, setOrgId] = React.useState("");
 
   // const [signatoryIdList, setSignatoryIdList] = React.useState([]);
@@ -126,14 +111,22 @@ const activePageNumber = useSelector(
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
-  
+
   const getDocumentData = async (uuid, uuidTemplateInstance) => {
     try {
-      const apiResult = await fetchDocumentDataService(uuid, uuidTemplateInstance);
+      const apiResult = await fetchDocumentDataService(
+        uuid,
+        uuidTemplateInstance
+      );
       const data = apiResult.data;
       const sobjectAPIName = apiResult.sobjectAPIName;
       const signatoryList = apiResult.signatoryList;
-      dispatch(setSalesforceFieldsMetadata({sobjectAPIName: sobjectAPIName, salesforceFieldsMetadata: data.sobjectFields}));
+      dispatch(
+        setSalesforceFieldsMetadata({
+          sobjectAPIName: sobjectAPIName,
+          salesforceFieldsMetadata: data.sobjectFields,
+        })
+      );
       setOrgId(data.orgId);
       // signature flow will remain constant
       signatureFlow = data.signatureFlow;
@@ -147,7 +140,7 @@ const activePageNumber = useSelector(
       dispatch(setSignatoryList({signatoryList: signatoryList}));
       dispatch(
         setActiveSignatory({
-          activeSignatory: signatoryList[0]
+          activeSignatory: signatoryList[0],
         })
       );
       setTimeout(() => {
@@ -158,15 +151,15 @@ const activePageNumber = useSelector(
         setIsLoading(false);
       }, 500);
     }
-  }
+  };
 
   React.useEffect(() => {
     const uuid = searchParams.get("uuid");
     const uuidTemplateInstance = searchParams.get("template_instance_uuid");
 
-    console.log('@@@ uuid: '+ uuid);
-    console.log('@@@ uuidTemplateInstance: '+ uuidTemplateInstance);
-    if (uuid==null && uuidTemplateInstance==null) {
+    console.log("@@@ uuid: " + uuid);
+    console.log("@@@ uuidTemplateInstance: " + uuidTemplateInstance);
+    if (uuid == null && uuidTemplateInstance == null) {
       navigate("/page-not-found", { replace: true });
       return;
     }
@@ -206,13 +199,15 @@ const activePageNumber = useSelector(
   }
 
   const handleGlobalSignatoryChange = (selectedSignatory) => {
-    dispatch(setActiveCoordinate({activeCoordinate: {}, isSelectionMode: false}));
-      dispatch(
-        setActiveSignatory({
-          activeSignatory: selectedSignatory
-        })
-      );
-  }
+    dispatch(
+      setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
+    );
+    dispatch(
+      setActiveSignatory({
+        activeSignatory: selectedSignatory,
+      })
+    );
+  };
 
   function handleDragLeave(event) {
     // console.log('CURRENT: '+ documentContainer.current);
@@ -245,7 +240,7 @@ const activePageNumber = useSelector(
   function handlePaggination(index) {
     if (index === activePageNumber) return;
 
-    dispatch(setActivePageNumber({activePageNumber: index}));
+    dispatch(setActivePageNumber({ activePageNumber: index }));
     resetSelectionMode();
     // getImage(index);
     scrollContainer.current.scrollTop = 0;
@@ -259,13 +254,15 @@ const activePageNumber = useSelector(
   }
 
   const changeSignatoryIdToNull = (finalDataList) => {
-    return finalDataList.map(data => ({...data, signatory_id: null}))
-  }
+    return finalDataList.map((data) => ({ ...data, signatory_id: null }));
+  };
 
   const resetSelectionMode = () => {
-    console.log('resetSelectionMode');
-    dispatch(setActiveCoordinate({activeCoordinate: {}, isSelectionMode: false}));
-  }
+    console.log("resetSelectionMode");
+    dispatch(
+      setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
+    );
+  };
 
   const handleContinue = async () => {
     setIsLoading(true);
@@ -277,12 +274,16 @@ const activePageNumber = useSelector(
       ...dateCoordinates,
       ...checkBoxCoordinates,
     ];
-    console.log('HANDLE CONTINUE: '+JSON.stringify(finalCoordData));
+    console.log("HANDLE CONTINUE: " + JSON.stringify(finalCoordData));
+
     const isValid = validateCoordinates(finalCoordData);
 
     if (!isValid) {
       setIsLoading(false);
-      ShowToast(ToastTypeEnum.ERROR, "Please add atleast one field for each user.");
+      ShowToast(
+        ToastTypeEnum.ERROR,
+        "Please add atleast one field for each user."
+      );
       return;
     }
 
@@ -291,19 +292,24 @@ const activePageNumber = useSelector(
       finalCoordData = changeSignatoryIdToNull(finalCoordData);
     }
 
-    console.log('@@@ finalCoordData: '+ JSON.stringify(finalCoordData));
+    console.log("@@@ finalCoordData: " + JSON.stringify(finalCoordData));
 
     try {
-      await SetTemplateCoordinatesService(finalCoordData, uuid, template_instance_uuid);
+      await SetTemplateCoordinatesService(
+        finalCoordData,
+        uuid,
+        template_instance_uuid
+      );
 
       ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
 
       const message = {
         messageFrom: "EW Sign Editor",
         status: true,
-        action: template_instance_uuid == null ? "Create Template" : "Create TI",
+        action:
+          template_instance_uuid == null ? "Create Template" : "Create TI",
       };
-      
+
       if (template_instance_uuid != null) {
         message.signatureFlow = signatureFlow;
         message.uuid = uuid;
@@ -312,20 +318,19 @@ const activePageNumber = useSelector(
       window.parent.postMessage(message, "*");
       setIsLoading(false);
     } catch (error) {
-      const message =
-        {
-          messageFrom: "EW Sign Editor",
-          status: false,
-          action:
-            template_instance_uuid == null ? "Create Template" : "Create TI",
-          errorMessage: JSON.stringify(error),
-        };
+      const message = {
+        messageFrom: "EW Sign Editor",
+        status: false,
+        action:
+          template_instance_uuid == null ? "Create Template" : "Create TI",
+        errorMessage: JSON.stringify(error),
+      };
       window.parent.postMessage(message, "*");
       // console.log("@@@ Saved coordinate: " + JSON.stringify(error));
       ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -406,7 +411,6 @@ const activePageNumber = useSelector(
           <div className="left-sidebar">
             <div className="tools-title">Signer</div>
             <CustomSelect
-
               value={activeSignatory}
               name="signer"
               options={signatoryList}
@@ -432,6 +436,16 @@ const activePageNumber = useSelector(
               ref={scrollContainer}
               onDragEnter={handleDragEnter}
               onDragLeave={handleDragLeave}
+              onDragOver={(event) => {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "move"; 
+                event.target.style.cursor = "copy";
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                event.target.style.cursor = "auto";
+                handleDragLeave();
+              }}
             >
               <TransformWrapper
                 defaultScale={1}
@@ -455,12 +469,20 @@ const activePageNumber = useSelector(
                           handlePaggination={handlePaggination}
                         ></Paggination>
                       </footer>
-                    ) : null }
+                    ) : null}
                     <TransformComponent>
-                      <SignatureCoordinatesContainer scrollContainer={scrollContainer}/>
-                      <TextBoxCoordinatesContainer scrollContainer={scrollContainer}/>
-                      <DateCoordinatesContainer scrollContainer={scrollContainer}/>
-                      <CheckBoxCoordinatesContainer scrollContainer={scrollContainer}/>
+                      <SignatureCoordinatesContainer
+                        scrollContainer={scrollContainer}
+                      />
+                      <TextBoxCoordinatesContainer
+                        scrollContainer={scrollContainer}
+                      />
+                      <DateCoordinatesContainer
+                        scrollContainer={scrollContainer}
+                      />
+                      <CheckBoxCoordinatesContainer
+                        scrollContainer={scrollContainer}
+                      />
                       <div
                         ref={documentContainer}
                         onClick={() => resetSelectionMode()}
@@ -476,7 +498,7 @@ const activePageNumber = useSelector(
                         }}
                       ></div>
                       {/* {console.log(template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`)}    */}
-                      <div class="testing">
+                      <div className="testing">
                         <PdfViewer
                           pdf={
                             template_instance_uuid != null &&
@@ -501,7 +523,7 @@ const activePageNumber = useSelector(
             id="right-sidebar-div"
             style={{ position: "relative", paddingRight: "10px" }}
           >
-            {isSelectionMode && activeCoordinate && <SelectionModeContainer />}    
+            {isSelectionMode && activeCoordinate && <SelectionModeContainer />}
             <div
               ref={scrollImage}
               style={{
@@ -552,7 +574,8 @@ const activePageNumber = useSelector(
           <div className="navbar">
             <img
               src={`${process.env.REACT_APP_API_URL}/api/admin/branding/fetchBrandLogo?orgId=${orgId}`}
-              class="logo"
+              className="logo"
+              alt="logo img"
             />
 
             {!isSelectionMode && (
@@ -566,7 +589,12 @@ const activePageNumber = useSelector(
               <button
                 className="continue-btn"
                 onClick={() => {
-                  dispatch(setActiveCoordinate({activeCoordinate: {}, isSelectionMode: false}));
+                  dispatch(
+                    setActiveCoordinate({
+                      activeCoordinate: {},
+                      isSelectionMode: false,
+                    })
+                  );
                 }}
               >
                 Done

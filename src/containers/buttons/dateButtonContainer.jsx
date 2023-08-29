@@ -1,38 +1,35 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BsCalendar2Date } from "react-icons/bs";
-import {
-  setDateCoordinates
-} from "../../redux/slices/dateCoordinatesReducer";
-import {
-  setActiveCoordinate
-} from "../../redux/slices/activeCoordinateReducer";
+import { setDateCoordinates } from "../../redux/slices/dateCoordinatesReducer";
+import { setActiveCoordinate } from "../../redux/slices/activeCoordinateReducer";
 import { FieldTypeEnum } from "../../constants/fieldTypeEnum";
 
 function DateButtonContainer({ documentBounding }) {
   const dispatch = useDispatch();
   const supportedFields = useSelector(
-      (state) => state.supportedFields.supportedFields
+    (state) => state.supportedFields.supportedFields
   );
   const activeSignatory = useSelector(
-      (state) => state.activeSignatory.activeSignatory
+    (state) => state.activeSignatory.activeSignatory
   );
 
   const activePageNumber = useSelector(
-      (state) => state.activePageNumber.activePageNumber
+    (state) => state.activePageNumber.activePageNumber
   );
 
   const dateCoordinates = useSelector(
-      (state) => state.dateCoordinates.dateCoordinates
+    (state) => state.dateCoordinates.dateCoordinates
   );
-  
 
   const onDragEnd = (event) => {
-    const pagex = event.pageX - documentBounding.left;
-    const pagey = event.pageY - documentBounding.top;
-    
-    const field = supportedFields.find((field) => field.type === FieldTypeEnum.DATE);
+    const field = supportedFields.find(
+      (field) => field.type === FieldTypeEnum.DATE
+    );
     const coordsLength = dateCoordinates.length;
+
+    const pagex = event.pageX - documentBounding.left - field.width / 2;
+    const pagey = event.pageY - documentBounding.top - field.height / 2;
 
     let newEle = {
       field_id: field.id,
@@ -50,23 +47,19 @@ function DateButtonContainer({ documentBounding }) {
       isRequired: true,
       writeBack: false,
       updateFromSalesforce: false,
-      mappingField: {label: "", value: "", type: ""}
+      mappingField: { label: "", value: "", type: "" },
     };
 
     dispatch(
-      setDateCoordinates({dateCoordinates: dateCoordinates.concat(newEle)})
+      setDateCoordinates({ dateCoordinates: dateCoordinates.concat(newEle) })
     );
-    dispatch(setActiveCoordinate({activeCoordinate: newEle, isSelectionMode: true}));
-
-  }
+    dispatch(
+      setActiveCoordinate({ activeCoordinate: newEle, isSelectionMode: true })
+    );
+  };
 
   return (
-    <button
-      type="button"
-      className="tool-btn"
-      onDragEnd={onDragEnd}
-      draggable
-    >
+    <button type="button" className="tool-btn" onDragEnd={onDragEnd} draggable>
       <BsCalendar2Date className="tool-icon" /> <p>Date</p>
     </button>
   );

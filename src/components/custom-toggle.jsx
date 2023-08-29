@@ -1,19 +1,21 @@
-import React from 'react'
-import Toggle from 'react-toggle'
+import React from "react";
+import Toggle from "react-toggle";
 
-function CustomToggle({title, defaultValue, onChange}) {
+function CustomToggle({ title, defaultValue, onChange, toggleValue }) {
   return (
     <label className="label">
-    <Toggle
+      <Toggle
+        checked={defaultValue}
         defaultChecked={defaultValue}
         onChange={(event) => {
-          console.log(`:::`+event.target.checked);
-          onChange(event.target.checked)}} />
-    <div className="field-container">
+          onChange(event.target.checked);
+        }}
+      />
+      <div className="field-container">
         <span className="field">{title}</span>
-    </div>
+      </div>
     </label>
-  )
+  );
 }
 
-export default CustomToggle
+export default CustomToggle;
