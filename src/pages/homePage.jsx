@@ -89,7 +89,7 @@ const activePageNumber = useSelector(
   
   const [orgId, setOrgId] = React.useState("");
 
-  const [signatoryIdList, setSignatoryIdList] = React.useState([]);
+  // const [signatoryIdList, setSignatoryIdList] = React.useState([]);
 
   const [scale, setScale] = React.useState(1.0);
   const [panningState, setPanningState] = React.useState({ disabled: false });
@@ -104,7 +104,7 @@ const activePageNumber = useSelector(
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFetching, setIsFetching] = React.useState(true);
   const [isFileShared, setIsFileShared] = React.useState(false);
-  const [signatureFlow, setSignatureFlow] = React.useState(null);
+  let signatureFlow;
 
   const uuid = searchParams.get("uuid");
   const template_instance_uuid =
@@ -135,6 +135,8 @@ const activePageNumber = useSelector(
       const signatoryList = apiResult.signatoryList;
       dispatch(setSalesforceFieldsMetadata({sobjectAPIName: sobjectAPIName, salesforceFieldsMetadata: data.sobjectFields}));
       setOrgId(data.orgId);
+      // signature flow will remain constant
+      signatureFlow = data.signatureFlow;
       dispatch(setGeneralDocumentData({generalDocumentData: {
         orgId: data.orgId,
         templateUUID: uuid,
