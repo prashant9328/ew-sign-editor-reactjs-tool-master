@@ -297,11 +297,11 @@ export default function Home() {
     console.log("@@@ finalCoordData: " + JSON.stringify(finalCoordData));
 
     try {
-      // await SetTemplateCoordinatesService(
-      //   finalCoordData,
-      //   uuid,
-      //   template_instance_uuid
-      // );
+      await SetTemplateCoordinatesService(
+        finalCoordData,
+        uuid,
+        template_instance_uuid
+      );
 
       ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
 
