@@ -74,7 +74,7 @@ export default function Home() {
 
   const [orgId, setOrgId] = React.useState("");
 
-  const [signatoryIdList, setSignatoryIdList] = React.useState([]);
+  // const [signatoryIdList, setSignatoryIdList] = React.useState([]);
 
   const [scale, setScale] = React.useState(1.0);
   const [panningState, setPanningState] = React.useState({ disabled: false });
@@ -89,7 +89,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFetching, setIsFetching] = React.useState(true);
   const [isFileShared, setIsFileShared] = React.useState(false);
-  const [signatureFlow, setSignatureFlow] = React.useState(null);
+  let signatureFlow;
 
   const uuid = searchParams.get("uuid");
   const template_instance_uuid =
@@ -128,18 +128,16 @@ export default function Home() {
         })
       );
       setOrgId(data.orgId);
-      dispatch(
-        setGeneralDocumentData({
-          generalDocumentData: {
-            orgId: data.orgId,
-            templateUUID: uuid,
-            documentUUID: uuidTemplateInstance,
-            signatureFlow: data.signatureFlow,
-          },
-        })
-      );
-      dispatch(setSupportedFields({ supportedFields: data.allFieldsData }));
-      dispatch(setSignatoryList({ signatoryList: signatoryList }));
+      // signature flow will remain constant
+      signatureFlow = data.signatureFlow;
+      dispatch(setGeneralDocumentData({generalDocumentData: {
+        orgId: data.orgId,
+        templateUUID: uuid,
+        documentUUID: uuidTemplateInstance,
+        signatureFlow: data.signatureFlow
+      }}));
+      dispatch(setSupportedFields({supportedFields: data.allFieldsData}));
+      dispatch(setSignatoryList({signatoryList: signatoryList}));
       dispatch(
         setActiveSignatory({
           activeSignatory: signatoryList[0],
