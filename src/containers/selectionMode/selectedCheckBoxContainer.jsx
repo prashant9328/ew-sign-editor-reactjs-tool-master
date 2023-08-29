@@ -293,7 +293,7 @@ function SelectedCheckBoxContainer({}) {
       </div> ) : null }
       {
           !activeCoordinate.updateFromSalesforce ? 
-          <div key={activeCoordinate.value} className="right-sidebar-section">
+          (<div key={activeCoordinate.value} className="right-sidebar-section">
             <label className="field-lbl">
               Value
             </label>
