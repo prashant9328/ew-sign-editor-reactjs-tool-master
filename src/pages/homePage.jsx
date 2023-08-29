@@ -427,6 +427,16 @@ const activePageNumber = useSelector(
               ref={scrollContainer}
               onDragEnter={handleDragEnter}
               onDragLeave={handleDragLeave}
+              onDragOver={(event) => {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "move"; 
+                event.target.style.cursor = "copy";
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                event.target.style.cursor = "auto";
+                handleDragLeave();
+              }}
             >
               <TransformWrapper
                 defaultScale={1}
