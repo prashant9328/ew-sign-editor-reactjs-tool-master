@@ -290,24 +290,23 @@ function SelectedCheckBoxContainer({}) {
               handleCurrentCoordMappingFieldChange(e);
             }}
           ></CustomSelect>
+      </div> ) : null }
+      {
+          !activeCoordinate.updateFromSalesforce ? 
+          <div key={activeCoordinate.value} className="right-sidebar-section">
+            <label className="field-lbl">
+              Value
+            </label>
+            <div>
+              <input
+                type="checkbox"
+                defaultValue={activeCoordinate.value}
+                onChange={(event) => handleCurrentCoordValueChange(event.target.value)}
+              />
+            </div>
         </div>
       ) : null}
 
-      {!activeCoordinate.updateFromSalesforce ? (
-        <div key={activeCoordinate.value} className="right-sidebar-section">
-          <label className="field-lbl">Value</label>
-          <div>
-            <input
-              type="checkbox"
-              defaultValue={activeCoordinate.value}
-              onChange={(event) =>
-                handleCurrentCoordValueChange(event.target.checked)
-              }
-              className="input-field"
-            />
-          </div>
-        </div>
-      ) : null}
       <div
         style={{
           display: "flex",
