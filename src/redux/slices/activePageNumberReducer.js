@@ -9,7 +9,7 @@ export const activePageNumberSlice = createSlice({
     setActivePageNumber: (currentState, action) => {
       const { activePageNumber } = action.payload;
       currentState.activePageNumber = activePageNumber;
-    }
+    },
   },
 });
 
