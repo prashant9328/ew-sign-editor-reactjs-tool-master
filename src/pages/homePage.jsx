@@ -132,14 +132,18 @@ export default function Home() {
       );
       setOrgId(data.orgId);
       // signature flow will remain constant
-      dispatch(setGeneralDocumentData({generalDocumentData: {
-        orgId: data.orgId,
-        templateUUID: uuid,
-        documentUUID: uuidTemplateInstance,
-        signatureFlow: data.signatureFlow
-      }}));
-      dispatch(setSupportedFields({supportedFields: data.allFieldsData}));
-      dispatch(setSignatoryList({signatoryList: signatoryList}));
+      dispatch(
+        setGeneralDocumentData({
+          generalDocumentData: {
+            orgId: data.orgId,
+            templateUUID: uuid,
+            documentUUID: uuidTemplateInstance,
+            signatureFlow: data.signatureFlow,
+          },
+        })
+      );
+      dispatch(setSupportedFields({ supportedFields: data.allFieldsData }));
+      dispatch(setSignatoryList({ signatoryList: signatoryList }));
       dispatch(
         setActiveSignatory({
           activeSignatory: signatoryList[0],
@@ -189,7 +193,11 @@ export default function Home() {
 
   function validateCoordinates(finalCoordData) {
     // check if minimum one field is set for all the users
-    if (finalCoordData.length === 0) return false;
+    if (finalCoordData.length === 0)
+      return {
+        isValidate: false,
+        msg: "Please add atleast one field for each user.",
+      };
 
     const finalCoordSignatoryIdList = [];
     for (let i = 0; i < finalCoordData.length; i++) {
@@ -197,7 +205,42 @@ export default function Home() {
     }
 
     let checker = (arr, target) => target.every((v) => arr.includes(v.id));
-    return checker(finalCoordSignatoryIdList, signatoryList);
+
+    if (!checker(finalCoordSignatoryIdList, signatoryList)) {
+      return {
+        isValidate: false,
+        msg: "Please add atleast one field for each user.",
+      };
+    }
+
+    let salesforceFieldData = { isValidate: true, item: "" };
+
+    finalCoordData.forEach((item) => {
+      if (
+        (item.writeBack || item.updateFromSalesforce) &&
+        Object.values(item.mappingField).filter(
+          (innerItem) => innerItem.length === 0
+        ).length > 0
+      ) {
+        salesforceFieldData.isValidate = false;
+        salesforceFieldData.item = item;
+      }
+    });
+
+    if (!salesforceFieldData.isValidate) {
+      dispatch(
+        setActiveCoordinate({
+          activeCoordinate: salesforceFieldData.item,
+          isSelectionMode: true,
+        })
+      );
+
+      return {
+        isValidate: false,
+        msg: "Please add field mapping for this field",
+      };
+    }
+    return { isValidate: true, msg: "done" };
   }
 
   const handleGlobalSignatoryChange = (selectedSignatory) => {
@@ -278,14 +321,11 @@ export default function Home() {
     ];
     console.log("HANDLE CONTINUE: " + JSON.stringify(finalCoordData));
 
-    const isValid = validateCoordinates(finalCoordData);
+    const validation = validateCoordinates(finalCoordData);
 
-    if (!isValid) {
+    if (!validation.isValidate) {
       setIsLoading(false);
-      ShowToast(
-        ToastTypeEnum.ERROR,
-        "Please add atleast one field for each user."
-      );
+      ShowToast(ToastTypeEnum.ERROR, validation.msg);
       return;
     }
 
@@ -313,13 +353,13 @@ export default function Home() {
       };
 
       if (template_instance_uuid != null) {
-        console.log('TI NOT NULL');
-        console.log('@@@ signatureFlow: '+generalDocumentData.signatureFlow);
+        console.log("TI NOT NULL");
+        console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
         message.signatureFlow = generalDocumentData.signatureFlow;
         message.uuid = uuid;
         message.template_instance_uuid = template_instance_uuid;
       }
-      console.log('POST MESSAGE: '+ JSON.stringify(message));
+      console.log("POST MESSAGE: " + JSON.stringify(message));
       window.parent.postMessage(message, "*");
       setIsLoading(false);
     } catch (error) {
@@ -443,7 +483,7 @@ export default function Home() {
               onDragLeave={handleDragLeave}
               onDragOver={(event) => {
                 event.preventDefault();
-                event.dataTransfer.dropEffect = "move"; 
+                event.dataTransfer.dropEffect = "move";
                 event.target.style.cursor = "copy";
               }}
               onDrop={(event) => {
