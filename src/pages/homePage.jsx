@@ -1,36 +1,47 @@
 import * as React from "react";
-import CustomSelect from "../components/custom-select";
-import CustomToggle from "../components/custom-toggle";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import PdfViewer from "../components/PDFViewer";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import loadingGif from "../images/loading-cropped.gif";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { Paggination } from "../components/common/paggination";
-import { ShowToast } from "../utils/showToast";
-import fetchDocumentDataService from "../services/fetchDocumentDataService";
-import SetTemplateCoordinatesService from "../services/setTemplateCoordinatesService";
-import SignatureButtonContainer from "../containers/buttons/signatureButtonContainer";
-import TextBoxButtonContainer from "../containers/buttons/textboxButtonContainer";
-import DateButtonContainer from "../containers/buttons/dateButtonContainer";
-import CheckboxButtonContainer from "../containers/buttons/checkBoxButtonContainer";
-import EmailButtonContainer from "../containers/buttons/emailButtonContainer";
-import DateSignedButtonContainer from "../containers/buttons/dateSignedButtonContainer";
-import SignatureCoordinatesContainer from "../containers/coordinates/signatureCoordinatesContainer";
-import TextBoxCoordinatesContainer from "../containers/coordinates/textBoxCoordinatesContainer";
-import DateCoordinatesContainer from "../containers/coordinates/dateCoordinatesContainer";
-import CheckBoxCoordinatesContainer from "../containers/coordinates/checkBoxCoordinatesContainer";
-import SelectionModeContainer from "../containers/selectionMode/selectionModeContainer";
-import { setGeneralDocumentData } from "../redux/slices/generalDocumentReducer";
-import { setActiveSignatory } from "../redux/slices/activeSignatoryReducer";
-import { setActivePageNumber } from "../redux/slices/activePageNumberReducer";
-import { setActiveCoordinate } from "../redux/slices/activeCoordinateReducer";
-import { setSupportedFields } from "../redux/slices/supportedFieldsReducer";
-import { setSignatoryList } from "../redux/slices/signatoryListReducer";
-import { setSalesforceFieldsMetadata } from "../redux/slices/salesforceFieldsMetadataReducer";
-import { ToastTypeEnum } from "../constants/toastTypeEnum";
+
+//
+import CustomSelect from "components/custom-select";
+import PdfViewer from "components/PDFViewer";
+import { Paggination } from "components/common/paggination";
+//
+import { ShowToast } from "utils/showToast";
+//
+import fetchDocumentDataService from "services/fetchDocumentDataService";
+import SetTemplateCoordinatesService from "services/setTemplateCoordinatesService";
+//
+import {
+  CheckboxButtonContainer,
+  DateButtonContainer,
+  DateSignedButtonContainer,
+  EmailButtonContainer,
+  SignatureButtonContainer,
+  TextBoxButtonContainer,
+  //
+  SignatureCoordinatesContainer,
+  CheckBoxCoordinatesContainer,
+  DateCoordinatesContainer,
+  TextBoxCoordinatesContainer,
+} from "containers";
+//
+import SelectionModeContainer from "containers/selectionMode/selectionModeContainer";
+
+//
+import { setGeneralDocumentData } from "redux/slices/generalDocumentReducer";
+import { setActiveSignatory } from "redux/slices/activeSignatoryReducer";
+import { setActivePageNumber } from "redux/slices/activePageNumberReducer";
+import { setActiveCoordinate } from "redux/slices/activeCoordinateReducer";
+import { setSupportedFields } from "redux/slices/supportedFieldsReducer";
+import { setSignatoryList } from "redux/slices/signatoryListReducer";
+import { setSalesforceFieldsMetadata } from "redux/slices/salesforceFieldsMetadataReducer";
+//
+import { ToastTypeEnum } from "constants/toastTypeEnum";
+
+//
+import loadingGif from "images/loading-cropped.gif";
 
 export default function Home() {
   const signatoryList = useSelector(
@@ -379,18 +390,6 @@ export default function Home() {
 
   return (
     <>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={true}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
       {isLoading || isPDFLoading ? (
         <div
           style={{
