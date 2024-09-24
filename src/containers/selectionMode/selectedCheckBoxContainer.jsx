@@ -295,15 +295,14 @@ function SelectedCheckBoxContainer({}) {
           !activeCoordinate.updateFromSalesforce ? 
           (<div key={activeCoordinate.value} className="right-sidebar-section">
             <label className="field-lbl">
-              Value
+              Default Value 
             </label>
-            <div>
-              <input
+              <input 
+                className="checkbox-input" 
                 type="checkbox"
                 defaultValue={activeCoordinate.value}
                 onChange={(event) => handleCurrentCoordValueChange(event.target.value)}
               />
-            </div>
         </div>
       ) : null}
 

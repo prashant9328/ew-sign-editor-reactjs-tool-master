@@ -21,6 +21,7 @@ const fetchDocumentDataService = async (uuid, tiUUID) => {
     });
 
     console.log("@@@ DATA FROM SERVER: EDITOR: " + JSON.stringify(data));
+    const sobjectAPIName = data.sobjectAPIName;
     const signatureFlow = data.signatureFlow;
     let signatoryList = [];
     if (signatureFlow === SignatureFlowEnum.OR) {
@@ -50,7 +51,7 @@ const fetchDocumentDataService = async (uuid, tiUUID) => {
       }));
     }
 
-    return { data: data, signatoryList: signatoryList };
+    return { data: data, signatoryList: signatoryList , sobjectAPIName: sobjectAPIName };
   } catch (error) {
     // console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
     // throw new Error("Something went wrong, failed to fetch data from server.");

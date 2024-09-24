@@ -134,6 +134,7 @@ export default function Home() {
       );
       const data = apiResult.data;
       const sobjectAPIName = apiResult.sobjectAPIName;
+  console.log("homepage sobject",sobjectAPIName);
       const signatoryList = apiResult.signatoryList;
       dispatch(
         setSalesforceFieldsMetadata({

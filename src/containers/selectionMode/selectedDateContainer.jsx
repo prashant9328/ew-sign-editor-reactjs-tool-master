@@ -295,7 +295,7 @@ function SelectedDateContainer({}) {
 
       {!activeCoordinate.updateFromSalesforce ? (
         <div key={activeCoordinate.value} className="right-sidebar-section">
-          <label className="field-lbl">Value</label>
+          <label className="field-lbl">Default Value</label>
           <input
             type="date"
             defaultValue={activeCoordinate.value}
