@@ -278,7 +278,7 @@ function SelectedCheckBoxContainer({}) {
 
       {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
         <div className="right-sidebar-section">
-          <label className="field-lbl">Map with {sobjectAPIName}'s field</label>
+          <label className="field-lbl">Map with {sobjectAPIName}'s field of Salesforce</label>
           <CustomSelect
             value={activeCoordinate.mappingField}
             name="signer"
@@ -291,7 +291,7 @@ function SelectedCheckBoxContainer({}) {
             }}
           ></CustomSelect>
       </div> ) : null }
-      {
+      {/* {
           !activeCoordinate.updateFromSalesforce ? 
           (<div key={activeCoordinate.value} className="right-sidebar-section">
             <label className="field-lbl">
@@ -304,7 +304,7 @@ function SelectedCheckBoxContainer({}) {
                 onChange={(event) => handleCurrentCoordValueChange(event.target.value)}
               />
         </div>
-      ) : null}
+      ) : null} */}
 
       <div
         style={{
@@ -313,13 +313,13 @@ function SelectedCheckBoxContainer({}) {
         }}
         className="right-sidebar-section"
       >
-        <CustomToggle
+        {/* <CustomToggle
           title="Required"
           defaultValue={activeCoordinate.isRequired}
           onChange={(value) => {
             handleCurrentCoordIsRequiredChange(value);
           }}
-        />
+        /> */}
         <CustomToggle
           title="Writeback to Salesforce"
           defaultValue={activeCoordinate.writeBack}
