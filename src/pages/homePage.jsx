@@ -133,6 +133,7 @@ export default function Home() {
         uuidTemplateInstance
       );
       const data = apiResult.data;
+      console.log("data",data);
       const sobjectAPIName = apiResult.sobjectAPIName;
   console.log("homepage sobject",sobjectAPIName);
       const signatoryList = apiResult.signatoryList;
