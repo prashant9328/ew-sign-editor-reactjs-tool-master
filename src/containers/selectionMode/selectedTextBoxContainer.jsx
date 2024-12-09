@@ -268,7 +268,7 @@
           </div>
         </div>
 
-        <div key={activeCoordinate.name} className="right-sidebar-section">
+        {/* <div key={activeCoordinate.name} className="right-sidebar-section">
           <label className="field-lbl">
             Name<span style={{ color: "red" }}>*</span>
           </label>
@@ -277,7 +277,7 @@
             onChange={(event) => handleCurrentCoordNameChange(event)}
             className="input-field"
           />
-        </div>
+        </div> */}
 
         {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
           <div className="right-sidebar-section">

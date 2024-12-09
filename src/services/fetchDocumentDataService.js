@@ -22,6 +22,7 @@ const fetchDocumentDataService = async (uuid, tiUUID) => {
 
     console.log("@@@ DATA FROM SERVER: EDITOR: " + JSON.stringify(data));
     const sobjectAPIName = data.sobjectAPIName;
+    console.log("sobjectAPIName",sobjectAPIName);
     const signatureFlow = data.signatureFlow;
     let signatoryList = [];
     if (signatureFlow === SignatureFlowEnum.OR) {

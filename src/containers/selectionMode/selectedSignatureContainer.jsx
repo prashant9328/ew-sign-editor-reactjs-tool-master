@@ -160,7 +160,7 @@ function SelectedSignatureContainer({}) {
         </div>
       </div>
 
-      <div key={activeCoordinate.name} className="right-sidebar-section">
+      {/* <div key={activeCoordinate.name} className="right-sidebar-section">
         <label className="field-lbl">
           Name<span style={{ color: "red" }}>*</span>
         </label>
@@ -169,7 +169,7 @@ function SelectedSignatureContainer({}) {
           onChange={(event) => handleCurrentCoordNameChange(event)}
           className="input-field"
         />
-      </div>
+      </div> */}
 
       <div
         style={{
