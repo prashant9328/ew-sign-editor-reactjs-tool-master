@@ -263,7 +263,9 @@
 }
 
 .right-sidebar-section {
-    padding: 10px 10px 0;
+    position: relative;
+    width: 100%;
+    /* padding: 10px 10px 0; */
 }
 
 .input-field {
@@ -292,11 +294,13 @@
 }
 
 .right-sidebar-tool-detail {
-    position: fixed;
+    position: absolute;
+    padding: 0;
     z-index: 99; 
     background-color: #f9f9f9;
     height: 100%;
     border-left: 1px solid #eee;
+    width: 100%;
 }
 
 .continue-btn {

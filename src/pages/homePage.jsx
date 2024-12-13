@@ -12,6 +12,7 @@ import { ShowToast } from "utils/showToast";
 //
 import fetchDocumentDataService from "services/fetchDocumentDataService";
 import SetTemplateCoordinatesService from "services/setTemplateCoordinatesService";
+import updateInstanceStatus from "services/updateInstanceStatus";
 //
 import {
   CheckboxButtonContainer,
@@ -194,8 +195,6 @@ export default function Home() {
           height: element.style.height,
           width: element.style.width,
         };
-
-        // console.log("style: "+ JSON.stringify(style));
         setUnfocusDivStyle(style);
 
         clearInterval(intervalStamp);
@@ -204,18 +203,23 @@ export default function Home() {
     return () => {};
   }, []);
 
+
   function validateCoordinates(finalCoordData) {
     // check if minimum one field is set for all the users
-    if (finalCoordData.length === 0)
+    console.log("sinalcoordinateData",finalCoordData);
+    console.log("sinalcoordinateData",JSON.stringify(finalCoordData));
+    if (finalCoordData.length === 0 )
       return {
         isValidate: false,
         msg: "Please add atleast one field for each user.",
       };
+  
 
     const finalCoordSignatoryIdList = [];
     for (let i = 0; i < finalCoordData.length; i++) {
       finalCoordSignatoryIdList.push(finalCoordData[i].signatory_id);
     }
+
 
     let checker = (arr, target) => target.every((v) => arr.includes(v.id));
 
@@ -224,7 +228,28 @@ export default function Home() {
         isValidate: false,
         msg: "Please add atleast one field for each user.",
       };
+    }    
+
+    let missingRequiredCoordinate = false;
+
+  if(missingRequiredCoordinate == false){
+    for (let i = 0; i < finalCoordData.length; i++) {
+      const coord = finalCoordData[i];
+    if (coord.isRequired === true) {
+      missingRequiredCoordinate = true; 
     }
+  }
+}
+
+  if (!missingRequiredCoordinate) {
+    return {
+      isValidate: false,
+      msg: "Please add at least one required field for each user.",
+    };
+  }
+  
+      
+      
 
     let salesforceFieldData = { isValidate: true, item: "" };
 
@@ -239,6 +264,7 @@ export default function Home() {
         salesforceFieldData.item = item;
       }
     });
+
 
     if (!salesforceFieldData.isValidate) {
       dispatch(
@@ -255,6 +281,10 @@ export default function Home() {
     }
     return { isValidate: true, msg: "done" };
   }
+
+
+  
+  
 
   const handleGlobalSignatoryChange = (selectedSignatory) => {
     dispatch(
@@ -275,9 +305,6 @@ export default function Home() {
   }
 
   function handleDragEnter(event) {
-    // console.log("DRAG...enter: ");
-    // console.log("DRAG...enter: X: " + event.pageX);
-    // console.log("DRAG...enter: X: " + event.pageY);
     var rect = documentContainer.current.getBoundingClientRect();
     console.log(rect.top, rect.right, rect.bottom, rect.left);
     setDocumentBounding({
@@ -290,9 +317,6 @@ export default function Home() {
     const element = documentContainer.current;
     element.style.backgroundColor = "#000000";
     element.style.opacity = 0.1;
-
-    // const dragElement = draggableEle.current;
-    // dragElement.dropEffect = "copy";
   }
 
   function handlePaggination(index) {
@@ -356,6 +380,8 @@ export default function Home() {
         template_instance_uuid
       );
 
+      await updateInstanceStatus(template_instance_uuid);
+
       ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
 
       const message = {
@@ -388,6 +414,8 @@ export default function Home() {
       ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
       setIsLoading(false);
     }
+
+
   };
 
   return (
