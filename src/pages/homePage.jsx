@@ -204,86 +204,168 @@ export default function Home() {
   }, []);
 
 
-  function validateCoordinates(finalCoordData) {
-    // check if minimum one field is set for all the users
-    console.log("sinalcoordinateData",finalCoordData);
-    console.log("sinalcoordinateData",JSON.stringify(finalCoordData));
-    if (finalCoordData.length === 0 )
-      return {
-        isValidate: false,
-        msg: "Please add atleast one field for each user.",
-      };
+//   function validateCoordinates(finalCoordData) {
+//     // check if minimum one field is set for all the users
+//     console.log("sinalcoordinateData",finalCoordData);
+//     console.log("sinalcoordinateData",JSON.stringify(finalCoordData));
+//     if (finalCoordData.length === 0 )
+//       return {
+//         isValidate: false,
+//         msg: "Please add atleast one field for each user.",
+//       };
   
 
-    const finalCoordSignatoryIdList = [];
-    for (let i = 0; i < finalCoordData.length; i++) {
-      finalCoordSignatoryIdList.push(finalCoordData[i].signatory_id);
-    }
+//     const finalCoordSignatoryIdList = [];
+//     for (let i = 0; i < finalCoordData.length; i++) {
+//       finalCoordSignatoryIdList.push(finalCoordData[i].signatory_id);
+//     }
 
 
-    let checker = (arr, target) => target.every((v) => arr.includes(v.id));
+//     let checker = (arr, target) => target.every((v) => arr.includes(v.id));
 
-    if (!checker(finalCoordSignatoryIdList, signatoryList)) {
-      return {
-        isValidate: false,
-        msg: "Please add atleast one field for each user.",
-      };
-    }    
+//     if (!checker(finalCoordSignatoryIdList, signatoryList)) {
+//       return {
+//         isValidate: false,
+//         msg: "Please add atleast one field for each user.",
+//       };
+//     }    
 
-    let missingRequiredCoordinate = false;
+//     let missingRequiredCoordinate = false;
 
-  if(missingRequiredCoordinate == false){
-    for (let i = 0; i < finalCoordData.length; i++) {
-      const coord = finalCoordData[i];
-    if (coord.isRequired === true) {
-      missingRequiredCoordinate = true; 
-    }
-  }
-}
+//   // if(missingRequiredCoordinate == false){
+//   //   console.log("inside if");
+//     for (let i = 0; i < finalCoordData.length; i++) {
+//       const coord = finalCoordData[i];
+//     if (coord.isRequired === true) {
+//       missingRequiredCoordinate = true; 
+//     }
+//   }
+// // }
 
-  if (!missingRequiredCoordinate) {
+//   if (!missingRequiredCoordinate) {
+//     return {
+//       isValidate: false,
+//       msg: "Please add at least one required field for each user.",
+//     };
+//   }
+  
+      
+      
+
+//     let salesforceFieldData = { isValidate: true, item: "" };
+
+//     finalCoordData.forEach((item) => {
+//       if (
+//         (item.writeBack || item.updateFromSalesforce) &&
+//         Object.values(item.mappingField).filter(
+//           (innerItem) => innerItem.length === 0
+//         ).length > 0
+//       ) {
+//         salesforceFieldData.isValidate = false;
+//         salesforceFieldData.item = item;
+//       }
+//     });
+
+
+//     if (!salesforceFieldData.isValidate) {
+//       dispatch(
+//         setActiveCoordinate({
+//           activeCoordinate: salesforceFieldData.item,
+//           isSelectionMode: true,
+//         })
+//       );
+
+//       return {
+//         isValidate: false,
+//         msg: "Please add field mapping for this field",
+//       };
+//     }
+//     return { isValidate: true, msg: "done" };
+//   }
+
+
+function validateCoordinates(finalCoordData) {
+  console.log("finalCoordData", finalCoordData);
+  console.log("finalCoordData", JSON.stringify(finalCoordData));
+
+  if (finalCoordData.length === 0) {
     return {
       isValidate: false,
-      msg: "Please add at least one required field for each user.",
+      msg: "Please add at least one field for each user.",
     };
   }
-  
-      
-      
 
-    let salesforceFieldData = { isValidate: true, item: "" };
+  const finalCoordSignatoryIdList = finalCoordData.map(coord => coord.signatory_id);
 
-    finalCoordData.forEach((item) => {
-      if (
-        (item.writeBack || item.updateFromSalesforce) &&
-        Object.values(item.mappingField).filter(
-          (innerItem) => innerItem.length === 0
-        ).length > 0
-      ) {
-        salesforceFieldData.isValidate = false;
-        salesforceFieldData.item = item;
-      }
-    });
+  let isValidSignatories = finalCoordSignatoryIdList.every(signatoryId =>
+    signatoryList.some(signatory => signatory.id === signatoryId)
+  );
 
-
-    if (!salesforceFieldData.isValidate) {
-      dispatch(
-        setActiveCoordinate({
-          activeCoordinate: salesforceFieldData.item,
-          isSelectionMode: true,
-        })
-      );
-
-      return {
-        isValidate: false,
-        msg: "Please add field mapping for this field",
-      };
-    }
-    return { isValidate: true, msg: "done" };
+  if (!isValidSignatories) {
+    return {
+      isValidate: false,
+      msg: "Please add at least one field for each user.",
+    };
   }
 
+  let missingRequiredCoordinate = false;
+  let signatoryIdx = 0;
 
-  
+  for (let i = 0; i < finalCoordSignatoryIdList.length; i++) {
+    const signatoryId = finalCoordSignatoryIdList[i];
+    
+    for (let j = 0; j < finalCoordData.length; j++) {
+      const coord = finalCoordData[j];
+
+      if (coord.signatory_id === signatoryId) {
+        if (coord.isRequired === true) {
+          missingRequiredCoordinate = true;
+          break; 
+        }
+      }
+    }
+
+    if (!missingRequiredCoordinate) {
+      return {
+        isValidate: false,
+        msg: "Please add at least one required field for each user.",
+      };
+    }
+
+    missingRequiredCoordinate = false;
+  }
+
+  let salesforceFieldData = { isValidate: true, item: "" };
+
+  finalCoordData.forEach((item) => {
+    if (
+      (item.writeBack || item.updateFromSalesforce) &&
+      Object.values(item.mappingField).filter(
+        (innerItem) => innerItem.length === 0
+      ).length > 0
+    ) {
+      salesforceFieldData.isValidate = false;
+      salesforceFieldData.item = item;
+    }
+  });
+
+  if (!salesforceFieldData.isValidate) {
+    dispatch(
+      setActiveCoordinate({
+        activeCoordinate: salesforceFieldData.item,
+        isSelectionMode: true,
+      })
+    );
+
+    return {
+      isValidate: false,
+      msg: "Please add field mapping for this field",
+    };
+  }
+
+  return { isValidate: true, msg: "done" };
+}
+
   
 
   const handleGlobalSignatoryChange = (selectedSignatory) => {
