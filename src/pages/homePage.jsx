@@ -379,8 +379,8 @@ export default function Home() {
         uuid,
         template_instance_uuid
       );
-
-      await updateInstanceStatus(template_instance_uuid);
+      let state="SENT";
+      await updateInstanceStatus(template_instance_uuid,state);
 
       ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
 

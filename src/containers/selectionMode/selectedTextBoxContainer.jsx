@@ -96,6 +96,7 @@
         ...activeCoordinate,
         name: name,
       };
+      console.log("updatedActiveCoordinates");
       dispatch(
         setActiveCoordinate({
           activeCoordinate: updatedActiveCoordinates,
@@ -105,6 +106,7 @@
     };
 
     const handleCurrentCoordValueChange = (value) => {
+      console.log("handleCurrentCoordValueChange");
       dispatch(
         setTextBoxCoordinates({
           textBoxCoordinates: updateCoordinateValue(
@@ -114,11 +116,12 @@
           ),
         })
       );
-
+      
       const updatedActiveCoordinates = {
         ...activeCoordinate,
         value: value,
       };
+      console.log("updatedActiveCoordinates");
       dispatch(
         setActiveCoordinate({
           activeCoordinate: updatedActiveCoordinates,
@@ -128,6 +131,7 @@
     };
 
     const handleCurrentCoordIsRequiredChange = (value) => {
+      console.log("handleCurrentCoordIsRequiredChange");
       dispatch(
         setTextBoxCoordinates({
           textBoxCoordinates: updateCoordinateIsRequired(
@@ -137,11 +141,12 @@
           ),
         })
       );
-
+      
       const updatedActiveCoordinates = {
         ...activeCoordinate,
         isRequired: value,
       };
+      console.log("updatedActiveCoordinates");
       dispatch(
         setActiveCoordinate({
           activeCoordinate: updatedActiveCoordinates,
