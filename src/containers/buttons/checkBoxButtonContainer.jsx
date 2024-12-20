@@ -44,7 +44,7 @@ function CheckboxButtonContainer({ documentBounding }) {
       y: pagey,
       width: field.width,
       height: field.height,
-      isRequired: true,
+      isRequired: false,
       writeBack: false,
       updateFromSalesforce: false,
       mappingField: { label: "", value: "", type: "" },

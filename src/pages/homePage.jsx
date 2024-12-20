@@ -280,7 +280,7 @@ export default function Home() {
 //         msg: "Please add field mapping for this field",
 //       };
 //     }
-//     return { isValidate: true, msg: "done" };
+//     return { isValidate: true, msg: "" };
 //   }
 
 
