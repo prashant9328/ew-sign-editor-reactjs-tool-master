@@ -10,15 +10,12 @@ import { postRequest } from "helpers/axios";
 //
 import { API_ROUTES } from "constants/apis";
 
-const fetchDocumentDataService = async (uuid, tiUUID) => {
+const fetchDocumentDataService = async (reqBody) => {
   try {
     console.log(" i am here");
     const {
       data: { data },
-    } = await postRequest(API_ROUTES.FETCH_DOCUMENT_DATA_API_URL, false, {
-      uuid: uuid,
-      templateInstanceUUID: tiUUID,
-    });
+    } = await postRequest(API_ROUTES.FETCH_DOCUMENT_DATA_API_URL, true, reqBody);
 
     console.log("@@@ DATA FROM SERVER: EDITOR: " + JSON.stringify(data));
     const sobjectAPIName = data.sobjectAPIName;
@@ -58,6 +55,7 @@ const fetchDocumentDataService = async (uuid, tiUUID) => {
     // throw new Error("Something went wrong, failed to fetch data from server.");
 
     console.log(error.message);
+    
   }
 };
 

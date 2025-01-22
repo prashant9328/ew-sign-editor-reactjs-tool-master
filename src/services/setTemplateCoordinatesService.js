@@ -12,7 +12,7 @@ const SetTemplateCoordinatesService = async (finalCoordData, uuid, tiUUID) => {
       {
         data: finalCoordData,
         uuid: uuid,
-        templateInstanceUUID: tiUUID,
+        templateInstanceUUID: tiUUID
       }
     );
 

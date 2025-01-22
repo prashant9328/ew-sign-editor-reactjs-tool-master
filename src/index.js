@@ -12,6 +12,8 @@ import { AllRoutes } from "./routes";
 import "./index.css";
 import "./styles";
 import "react-toastify/dist/ReactToastify.css";
+import Modal from 'react-modal';
+Modal.setAppElement('#root');
 
 //
 const root = ReactDOM.createRoot(document.getElementById("root"));

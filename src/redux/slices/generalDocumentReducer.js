@@ -8,6 +8,8 @@ export const generalDocumentSlice = createSlice({
       templateUUID: '',
       documentUUID: '',
       signatureFlow: '',
+      iv: '',
+      token: ''
     }
   },
   reducers: {

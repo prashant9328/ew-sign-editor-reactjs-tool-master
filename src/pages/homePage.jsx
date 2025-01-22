@@ -43,6 +43,8 @@ import { ToastTypeEnum } from "constants/toastTypeEnum";
 
 //
 import loadingGif from "images/loading-cropped.gif";
+import SessionTimer from "components/session-timer";
+import CustomModal from "components/common/custom-modal";
 
 export default function Home() {
   const signatoryList = useSelector(
@@ -105,6 +107,10 @@ export default function Home() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFetching, setIsFetching] = React.useState(true);
   const [isFileShared, setIsFileShared] = React.useState(false);
+  const [isSessionEnded, setIsSessionEnded] = React.useState(false);
+  const [isSessionEndedModalOpen, setIsSessionEndedModalOpen] = React.useState(false);
+
+  const sessionTime = new Date();
 
   const uuid = searchParams.get("uuid");
   const template_instance_uuid =
@@ -127,11 +133,24 @@ export default function Home() {
 
   const dispatch = useDispatch();
 
-  const getDocumentData = async (uuid, uuidTemplateInstance) => {
+  const getDocumentData = async (reqBody, token) => {
+    const {uuid, uuidTemplateInstance, iv, orgId} = reqBody;
+
+    dispatch(
+      setGeneralDocumentData({
+        generalDocumentData: {
+          templateUUID: uuid,
+          documentUUID: uuidTemplateInstance,
+          iv: iv,
+          token: token,
+          orgId: orgId
+        },
+      })
+    );
+
     try {
       const apiResult = await fetchDocumentDataService(
-        uuid,
-        uuidTemplateInstance
+        reqBody
       );
       const data = apiResult.data;
       console.log("data",data);
@@ -153,6 +172,8 @@ export default function Home() {
             templateUUID: uuid,
             documentUUID: uuidTemplateInstance,
             signatureFlow: data.signatureFlow,
+            iv: iv,
+            token: token,
           },
         })
       );
@@ -176,15 +197,22 @@ export default function Home() {
   React.useEffect(() => {
     const uuid = searchParams.get("uuid");
     const uuidTemplateInstance = searchParams.get("template_instance_uuid");
-
+    const iv = searchParams.get("iv");
+    const token = searchParams.get("token");
+    const orgId = searchParams.get("orgId");
     console.log("@@@ uuid: " + uuid);
     console.log("@@@ uuidTemplateInstance: " + uuidTemplateInstance);
-    if (uuid == null && uuidTemplateInstance == null) {
+
+    if (uuid == null && uuidTemplateInstance == null && (token == null || iv == null)) {
       navigate("/page-not-found", { replace: true });
       return;
-    }
+    }   
 
-    getDocumentData(uuid, uuidTemplateInstance);
+    // sessionTime.setSeconds(sessionTime.getSeconds() + 10); // 2 hour timer
+    
+    sessionTime.setSeconds(sessionTime.getSeconds() + (3600 * 2)); // 2 hour timer
+    const reqBody = {uuid, templateInstanceUUID: uuidTemplateInstance, iv, orgId};
+    getDocumentData(reqBody, token);
   }, []);
 
   React.useEffect(() => {
@@ -497,11 +525,31 @@ function validateCoordinates(finalCoordData) {
       setIsLoading(false);
     }
 
-
   };
+
+  const handleSessionExpired = () => {
+    console.log('Session expired...');
+    // session has expired
+    // warn user to click "Send To Sign" button in 10 minutes other you will loose all your changes.
+
+    setIsSessionEndedModalOpen(true);
+  }
+  
+  const closeModal = () => {
+    setIsSessionEnded(true);
+    setIsSessionEndedModalOpen(false);
+    setTimeout(() => {
+      // Reload the page
+      navigate("/session-expired", { replace: true });
+      return;
+    }, 600000);
+  }
+
+  const modalChildren = <p style={{padding: "20px"}}>Your editor access session will expire in 10 minutes. Please save your work before then, as you won't be able to save it after that time and risk losing all of your changes. The system will be reloaded automatically after 10 minutes.</p>;
 
   return (
     <>
+      {isSessionEndedModalOpen ? <CustomModal modalHeaderTitle={"Session Will Expire Soon"} children={modalChildren} closeModal={closeModal}/> : null}
       {isLoading || isPDFLoading ? (
         <div
           style={{
@@ -584,6 +632,11 @@ function validateCoordinates(finalCoordData) {
               <EmailButtonContainer onDragEnd={() => {}} />
               <DateSignedButtonContainer onDragEnd={() => {}} />
             </div>
+              {!isSessionEnded ? 
+                <SessionTimer expiryTimestamp={sessionTime} onSessionExpired={handleSessionExpired} />
+                : null
+              }
+            
           </div>
           <div>
             <div

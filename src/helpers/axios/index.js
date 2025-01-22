@@ -1,7 +1,5 @@
 import axios from "axios";
 import { store } from "redux/store";
-
-
 //
 import config from "./config";
 
@@ -16,9 +14,15 @@ const axiosInstance = axios.create({
 
 const setTokenForAPICall = (authRequired) => {
   if (authRequired) {
+    // grab current state
+    const state = store.getState();
+    console.log('@@@ state::'+JSON.stringify(state));
+    const data = state.generalDocumentData.generalDocumentData;
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+
     //applying token
-    axiosInstance.defaults.headers.common["Authorization"] =
-      store.getState().common?.userTokens?.IdToken || "";
+    // axiosInstance.defaults.headers.common["Authorization"] =
+    //   store.getState().common?.userTokens?.IdToken || "";
   } else {
     //deleting the token from header
     delete axiosInstance.defaults.headers.common["Authorization"];
@@ -50,6 +54,11 @@ export const getRequest = (api, authRequired, queryString, controller) => {
 
 export const postRequest = (api, authRequired, data) => {
   setTokenForAPICall(authRequired);
+  // grab current state
+  const state = store.getState();
+  const storeData = state.generalDocumentData.generalDocumentData;
+
+  data = {...data, iv: storeData.iv, orgId: storeData.orgId};
   return new Promise((resolve, reject) => {
     axiosInstance
       .post(api, data)
