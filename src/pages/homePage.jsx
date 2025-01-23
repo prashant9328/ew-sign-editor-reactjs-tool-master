@@ -109,9 +109,11 @@ export default function Home() {
   const [isFileShared, setIsFileShared] = React.useState(false);
   const [isSessionEnded, setIsSessionEnded] = React.useState(false);
   const [isSessionEndedModalOpen, setIsSessionEndedModalOpen] = React.useState(false);
-
-  const sessionTime = new Date();
-
+  const [isFinalCountdownActive, setIsFinalCountdownActive] = React.useState(false);
+  const [finalCountDownTime, setFinalCountDownTime] = React.useState(0);
+  // const sessionTime = 10; // 10 seconds
+  const sessionTime = 3600 * 2; // 2 hours session
+  
   const uuid = searchParams.get("uuid");
   const template_instance_uuid =
     searchParams.get("template_instance_uuid") ?? null;
@@ -192,6 +194,11 @@ export default function Home() {
         setIsLoading(false);
       }, 500);
       
+      if(error && error.message && error.message.includes('Session has expired')) {
+        navigate("/session-expired", { replace: true });
+        return;
+      }
+      
     }
   };
 
@@ -215,8 +222,6 @@ export default function Home() {
     token = decodeURIComponent(token).trim();
     orgId = orgId.trim();
 
-    // sessionTime.setSeconds(sessionTime.getSeconds() + 10); // 2 hour timer
-    sessionTime.setSeconds(sessionTime.getSeconds() + (3600 * 2)); // 2 hour timer
     const reqBody = {uuid, templateInstanceUUID: uuidTemplateInstance};
     getDocumentData(reqBody, iv, orgId, token);
   }, []);
@@ -417,7 +422,7 @@ function validateCoordinates(finalCoordData) {
         template_instance_uuid
       );
       let state="SENT";
-      await updateInstanceStatus(template_instance_uuid,state);
+      // await updateInstanceStatus(template_instance_uuid,state);
 
       ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
 
@@ -463,8 +468,10 @@ function validateCoordinates(finalCoordData) {
   }
   
   const closeModal = () => {
+    setFinalCountDownTime((10 * 60) + sessionTime);
     setIsSessionEnded(true);
     setIsSessionEndedModalOpen(false);
+    setIsFinalCountdownActive(true);
     setTimeout(() => {
       // Reload the page
       navigate("/session-expired", { replace: true });
@@ -476,7 +483,7 @@ function validateCoordinates(finalCoordData) {
 
   return (
     <>
-      {isSessionEndedModalOpen ? <CustomModal modalHeaderTitle={"Session Will Expire Soon"} children={modalChildren} closeModal={closeModal}/> : null}
+      {isSessionEndedModalOpen && !isFinalCountdownActive ? <CustomModal modalHeaderTitle={"Session Will Expire Soon"} children={modalChildren} closeModal={closeModal}/> : null}
       {isLoading || isPDFLoading ? (
         <div
           style={{
@@ -560,10 +567,14 @@ function validateCoordinates(finalCoordData) {
               <DateSignedButtonContainer onDragEnd={() => {}} />
             </div>
               {!isSessionEnded ? 
-                <SessionTimer expiryTimestamp={sessionTime} onSessionExpired={handleSessionExpired} />
+                <SessionTimer timeInSeconds={sessionTime} onSessionExpired={handleSessionExpired} />
                 : null
               }
             
+              {isFinalCountdownActive ? 
+                <SessionTimer timeInSeconds={finalCountDownTime} onSessionExpired={() => {}} />
+                : null
+              }
           </div>
           <div>
             <div

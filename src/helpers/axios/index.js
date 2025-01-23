@@ -18,7 +18,7 @@ const setTokenForAPICall = (authRequired) => {
     const state = store.getState();
     console.log('@@@ state::'+JSON.stringify(state));
     const data = state.generalDocumentData.generalDocumentData;
-    const editorIdentifier = '%EDT';
+    const editorIdentifier = "%EDT";
     axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${data.token}${editorIdentifier}`;
 
     //applying token
@@ -30,19 +30,6 @@ const setTokenForAPICall = (authRequired) => {
   }
 };
 
-// export const getRequest = (
-//   api: string,
-//   authRequired: boolean,
-//   controller?: AbortController
-// ) => {
-//   setTokenForAPICall(authRequired);
-//   return new Promise<AxiosResponse>((resolve, reject) => {
-//     axiosInstance
-//       .get(api, { signal: controller?.signal })
-//       .then((result) => resolve(result))
-//       .catch((error) => reject(error));
-//   });
-// };
 export const getRequest = (api, authRequired, queryString, controller) => {
   setTokenForAPICall(authRequired);
   return new Promise((resolve, reject) => {
@@ -64,8 +51,14 @@ export const postRequest = (api, authRequired, data) => {
   return new Promise((resolve, reject) => {
     axiosInstance
       .post(api, data)
-      .then((result) => resolve(result))
-      .catch((error) => reject(error));
+      .then((result) => {
+        console.log('@@@ result::'+JSON.stringify(result));
+        resolve(result)
+      })
+      .catch((error) => {
+        console.log('@@@ error::'+JSON.stringify(error));
+        reject(error)
+      });
   });
 };
 

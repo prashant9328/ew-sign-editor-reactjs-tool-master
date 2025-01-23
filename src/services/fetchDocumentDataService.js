@@ -54,7 +54,7 @@ const fetchDocumentDataService = async (reqBody) => {
     // console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
     // throw new Error("Something went wrong, failed to fetch data from server.");
 
-    console.log(error.message);
+    console.log('@@@ ERROR::'+error.message);
     throw new Error(error.message);
   }
 };
