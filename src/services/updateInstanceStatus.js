@@ -8,7 +8,7 @@ const updateInstanceStatus = async (tiUUID,state) => {
   try {
     const response = await postRequest(
       API_ROUTES.UPDATE_INSTANCE_STATUS,
-      false,
+      true,
       {
         templateInstanceUUID: tiUUID,
         state: state
