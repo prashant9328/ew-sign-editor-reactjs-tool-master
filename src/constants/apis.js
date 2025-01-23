@@ -1,7 +1,7 @@
 export const API_ROUTES = {
   FETCH_DOCUMENT_DATA_API_URL: "/admin/fetchImagesData",
   SET_COORDINATES_DATA_API_URL: "/admin/setTemplateCoordinates",
-  UPDATE_INSTANCE_STATUS: "admin/updateInstanceStatus",
+  // UPDATE_INSTANCE_STATUS: "admin/updateInstanceStatus",
 };
 
 export const STATUS_CODE = {
