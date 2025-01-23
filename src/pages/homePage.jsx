@@ -133,8 +133,8 @@ export default function Home() {
 
   const dispatch = useDispatch();
 
-  const getDocumentData = async (reqBody, token) => {
-    const {uuid, uuidTemplateInstance, iv, orgId} = reqBody;
+  const getDocumentData = async (reqBody, iv, orgId, token) => {
+    const {uuid, uuidTemplateInstance} = reqBody;
 
     dispatch(
       setGeneralDocumentData({
@@ -191,28 +191,34 @@ export default function Home() {
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
+      
     }
   };
 
   React.useEffect(() => {
+    // setup function
     const uuid = searchParams.get("uuid");
     const uuidTemplateInstance = searchParams.get("template_instance_uuid");
-    const iv = searchParams.get("iv");
-    const token = searchParams.get("token");
-    const orgId = searchParams.get("orgId");
+    let iv = searchParams.get("iv");
+    let token = searchParams.get("token");
+    let orgId = searchParams.get("orgId");
+    
     console.log("@@@ uuid: " + uuid);
     console.log("@@@ uuidTemplateInstance: " + uuidTemplateInstance);
-
-    if (uuid == null && uuidTemplateInstance == null && (token == null || iv == null)) {
+    
+    if (uuid == null && uuidTemplateInstance == null && (token == null || iv == null || orgId == null)) {
       navigate("/page-not-found", { replace: true });
       return;
-    }   
+    }
+
+    iv = decodeURIComponent(iv).trim();
+    token = decodeURIComponent(token).trim();
+    orgId = orgId.trim();
 
     // sessionTime.setSeconds(sessionTime.getSeconds() + 10); // 2 hour timer
-    
     sessionTime.setSeconds(sessionTime.getSeconds() + (3600 * 2)); // 2 hour timer
-    const reqBody = {uuid, templateInstanceUUID: uuidTemplateInstance, iv, orgId};
-    getDocumentData(reqBody, token);
+    const reqBody = {uuid, templateInstanceUUID: uuidTemplateInstance};
+    getDocumentData(reqBody, iv, orgId, token);
   }, []);
 
   React.useEffect(() => {
@@ -228,89 +234,10 @@ export default function Home() {
         clearInterval(intervalStamp);
       }
     }, 2000);
-    return () => {};
+    return () => {
+      clearInterval(intervalStamp);
+    };
   }, []);
-
-
-//   function validateCoordinates(finalCoordData) {
-//     // check if minimum one field is set for all the users
-//     console.log("sinalcoordinateData",finalCoordData);
-//     console.log("sinalcoordinateData",JSON.stringify(finalCoordData));
-//     if (finalCoordData.length === 0 )
-//       return {
-//         isValidate: false,
-//         msg: "Please add atleast one field for each user.",
-//       };
-  
-
-//     const finalCoordSignatoryIdList = [];
-//     for (let i = 0; i < finalCoordData.length; i++) {
-//       finalCoordSignatoryIdList.push(finalCoordData[i].signatory_id);
-//     }
-
-
-//     let checker = (arr, target) => target.every((v) => arr.includes(v.id));
-
-//     if (!checker(finalCoordSignatoryIdList, signatoryList)) {
-//       return {
-//         isValidate: false,
-//         msg: "Please add atleast one field for each user.",
-//       };
-//     }    
-
-//     let missingRequiredCoordinate = false;
-
-//   // if(missingRequiredCoordinate == false){
-//   //   console.log("inside if");
-//     for (let i = 0; i < finalCoordData.length; i++) {
-//       const coord = finalCoordData[i];
-//     if (coord.isRequired === true) {
-//       missingRequiredCoordinate = true; 
-//     }
-//   }
-// // }
-
-//   if (!missingRequiredCoordinate) {
-//     return {
-//       isValidate: false,
-//       msg: "Please add at least one required field for each user.",
-//     };
-//   }
-  
-      
-      
-
-//     let salesforceFieldData = { isValidate: true, item: "" };
-
-//     finalCoordData.forEach((item) => {
-//       if (
-//         (item.writeBack || item.updateFromSalesforce) &&
-//         Object.values(item.mappingField).filter(
-//           (innerItem) => innerItem.length === 0
-//         ).length > 0
-//       ) {
-//         salesforceFieldData.isValidate = false;
-//         salesforceFieldData.item = item;
-//       }
-//     });
-
-
-//     if (!salesforceFieldData.isValidate) {
-//       dispatch(
-//         setActiveCoordinate({
-//           activeCoordinate: salesforceFieldData.item,
-//           isSelectionMode: true,
-//         })
-//       );
-
-//       return {
-//         isValidate: false,
-//         msg: "Please add field mapping for this field",
-//       };
-//     }
-//     return { isValidate: true, msg: "" };
-//   }
-
 
 function validateCoordinates(finalCoordData) {
   console.log("finalCoordData", finalCoordData);

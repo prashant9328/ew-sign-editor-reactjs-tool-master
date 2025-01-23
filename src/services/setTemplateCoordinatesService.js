@@ -8,7 +8,7 @@ const SetTemplateCoordinatesService = async (finalCoordData, uuid, tiUUID) => {
   try {
     const response = await postRequest(
       API_ROUTES.SET_COORDINATES_DATA_API_URL,
-      false,
+      true,
       {
         data: finalCoordData,
         uuid: uuid,

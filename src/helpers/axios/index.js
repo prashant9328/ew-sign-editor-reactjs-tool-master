@@ -18,7 +18,8 @@ const setTokenForAPICall = (authRequired) => {
     const state = store.getState();
     console.log('@@@ state::'+JSON.stringify(state));
     const data = state.generalDocumentData.generalDocumentData;
-    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+    const editorIdentifier = '%EDT';
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${data.token}${editorIdentifier}`;
 
     //applying token
     // axiosInstance.defaults.headers.common["Authorization"] =
@@ -58,7 +59,8 @@ export const postRequest = (api, authRequired, data) => {
   const state = store.getState();
   const storeData = state.generalDocumentData.generalDocumentData;
 
-  data = {...data, iv: storeData.iv, orgId: storeData.orgId};
+  data = {...data, IV: storeData.iv, orgId: storeData.orgId};
+  console.log('@@@@ Request Body::'+JSON.stringify(data));
   return new Promise((resolve, reject) => {
     axiosInstance
       .post(api, data)
