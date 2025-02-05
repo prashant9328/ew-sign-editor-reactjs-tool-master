@@ -231,7 +231,143 @@
     box-shadow: 0 2px 10px #ccc;
 }
 @media only screen and (max-width: 768px){
+    .confirmationDiv{
+        position: fixed;
+        font-family: Arial, Helvetica, sans-serif;
+        top: 0;
+        z-index: 99;
+        /* background-color: white; */
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        margin: auto;
+        background-color: rgba(94, 94, 94, 0.405);
+        
+    }
+    .inner-confirmationDiv{
+        width: 90vw;
+        max-height: 50vh;
+        min-height: 30vh;
+        background-color: white;
+        margin: auto;
+        border-radius: 10px;
+        /* padding: 10px; */
+        padding-top: 0;
+        border : rgb(216, 216, 216) solid 1px;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        position: relative;
+    }
+    .inner-confirmationDiv h3{
+        text-align: center;
+        font-size: large;
+        background-color: #455b66;
+        color: white;
+        padding: 15px;
+        border-radius: 10px 10px 0 0;
+        margin: -1px;
 
+    }
+    .salesforce-Buttons{
+        margin: auto;
+        /* width: 20vw; */
+        /* display: flex; */
+        /* justify-content: center; */
+        /* bottom: 0; */
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin-bottom: 10px;
+        padding: 10px;
+        /* border: gray solid 1px; */
+        background-color: white;
+        color: white;
+        border-radius : 5px;
+        text-align:center   
+
+    }
+    .confirm-Button{
+        background-color: #455b66;
+        padding: 10px;
+        border-radius : 5px;
+
+    }
+    .confirm-Button-disabled{
+        background-color: gray;
+        padding: 10px;
+        border-radius : 5px;
+    }
+    .confirm-Button:hover{
+        cursor:pointer;
+        background-color: #324047;
+    }
+    .confirm-Button-disabled:hover {
+        cursor: not-allowed;
+    }
+    .pillSwitch{
+       
+        margin-top: 10px;
+        border-radius: 20px;
+        color: white;
+        text-align: center;
+        display: flex;
+        justify-content: space-around;
+        border: #455b66 solid 3px;
+    }
+    .pillSwitch div{
+        padding: 10px;
+        width: 50%;
+    }
+    .return-btn{
+        position: absolute;
+        right: 0;
+        color: white;
+        margin-top: 10px;
+        /* margin: auto; */
+        margin-right: 10px;
+        /* cursor: pointer; */
+        font-weight: bolder;
+    }
+    .return-btn :hover{
+        cursor: pointer;
+    }
+    .return-btn svg{
+        align-content: center;
+        /* background-color: #455b66; */
+        border-radius : 100%;
+        padding: 2px;
+        scale: 1.2;
+
+    }
+    .salesforceFields{
+        /* display: flex; */
+        padding: 20px;
+        padding-bottom: 0;
+        padding-top: 0;
+        max-height: 30vh;
+        overflow-y: scroll;
+    }
+    .nestedSalesforceDiv{
+        /* width: 50%; */
+        margin: auto;
+        /* min-height: 15vh; */
+        max-height: 30vh;
+        text-align: left;
+        margin-top: 10px;
+       /* margin-bottom: 10vh; */
+
+    }
+    .nestedDataField{
+        max-height: min-content;
+        color: rgb(79, 79, 79);
+        margin-top: 5px;
+        /* overflow-y: scroll; */
+        /* min-height: 15vh; */
+        max-height: 40vh;
+        /* text-align: left; */
+        margin-bottom: 15px;
+    }
     .left-sidebar-mobile{
         /* background-color: aqua; */
         width: 100%;
@@ -350,7 +486,8 @@
 @media only screen and (min-width: 768px){
 
     .confirmationDiv{
-        position: absolute;
+        position: fixed;
+        top: 0;
         z-index: 99;
         /* background-color: white; */
         width: 100vw;

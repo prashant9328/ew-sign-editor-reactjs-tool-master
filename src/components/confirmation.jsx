@@ -62,7 +62,10 @@ const Confirmation = (props) => {
               <h4>Update from Salesforce</h4>
               <div className='nestedDataField' >
               {[...new Map(updateFields.map(i => [i.mappingField.apiName, i.mappingField.label])).values()].map(label => (
+                            <div>
                                 <span key={label}>{label}, </span>
+                                
+                            </div>
                             ))}
               </div>
             </div>
@@ -75,7 +78,10 @@ const Confirmation = (props) => {
 <h4>Writeback to Salesforce</h4>
 <div className='nestedDataField' >
 {[...new Map(writebackFields.map(i => [i.mappingField.apiName, i.mappingField.label])).values()].map(label => (
+                          <div>
                                 <span key={label}>{label}, </span>
+                                
+                          </div>
                             ))}
 
 </div>

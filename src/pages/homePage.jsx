@@ -623,6 +623,7 @@ function validateCoordinates(finalCoordData) {
   };
 
   const getContinueEventFromConfirmation = (evt) => {
+    setConfirmationPopup(false);
     setAgreeToTnC(evt);
   };
 
@@ -931,6 +932,7 @@ function validateCoordinates(finalCoordData) {
               {/* <EmailButtonContainer onDragEnd={() => {}} /> */}
               {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
             </div>
+            
               {!isSessionEnded ? 
                 <SessionTimer timeInSeconds={sessionTime} onSessionExpired={handleSessionExpired} />
                 : null
@@ -941,10 +943,9 @@ function validateCoordinates(finalCoordData) {
                 : null
               }
           </div>
-          
           {confirmationPopup && ( 
             <div className="confirmationDiv">
-                   <Confirmation
+                  <Confirmation
                    closePopup={closePopup}
                    getContinueEventFromConfirmation={getContinueEventFromConfirmation}
                    writebackFields={writebackFieldsData} // Pass writebackFields as prop
@@ -952,6 +953,7 @@ function validateCoordinates(finalCoordData) {
                  />
                  </div>
               )}
+          
           <div>
             <div
               className="document"
