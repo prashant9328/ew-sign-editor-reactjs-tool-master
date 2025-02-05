@@ -2,6 +2,8 @@ import React from "react";
 import { BsCalendar2Date } from "react-icons/bs";
 import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import { IoMdArrowDropdown } from "react-icons/io";
+// import handleSalesforceFields from "../selectionMode/handleSalesforceFields"
 import {
   removeCoordinate,
   updateCoordinateMappingField,
@@ -16,9 +18,12 @@ import { setDateCoordinates } from "../../redux/slices/dateCoordinatesReducer";
 import { setActiveCoordinate } from "../../redux/slices/activeCoordinateReducer";
 import CustomSelect from "../../components/custom-select";
 import CustomToggle from "../../components/custom-toggle";
+import { useState } from "react";
 import { SalesforceFieldTypeEnum } from "../../constants/salesforceFieldTypeEnum";
+import { TbMenu2 } from  "react-icons/tb";
 
-function SelectedDateContainer({}) {
+
+function SelectedDateContainer({sendSalesforceData}) {
   const dispatch = useDispatch();
   const activeCoordinate = useSelector(
     (state) => state.activeCoordinate.activeCoordinate
@@ -36,6 +41,8 @@ function SelectedDateContainer({}) {
   const salesforceFieldsMetadata = useSelector(
     (state) => state.salesforceFieldsMetadata.salesforceFieldsMetadata
   );
+
+  const [dropdown,setDropdown]=useState(true);
 
   const handleEleDelete = () => {
     const updatedCoords = removeCoordinate(
@@ -102,9 +109,39 @@ function SelectedDateContainer({}) {
     );
   };
 
+  const [writeback,setWriteback]=useState(false)
+  const [updateFieldFromSalesforce,setUpdateFieldFromSalesforce]=useState(false)
+  const toggleUpdateFieldFromSalesforce = ()=>{
+    if(updateFieldFromSalesforce===true){
+      setUpdateFieldFromSalesforce(false)
+      console.log("false")
+
+    }
+    if(updateFieldFromSalesforce===false){
+      setUpdateFieldFromSalesforce(true)
+      console.log("true")
+
+    }
+  }
+  const toggleWriteback = ()=>{
+    if(writeback===true){
+      setWriteback(false)
+      console.log("false")
+    }
+    if(writeback===false){
+      setWriteback(true)
+      console.log("true")
+    }
+  }
   const handleCurrentCoordMappingFieldChange = (e) => {
     console.log("VALUE: " + JSON.stringify(e));
-
+    // if(writeback){
+      console.log("values:",writeback)
+    // }
+    const updatedObj = {...e, "writeback":writeback, "updateFromSalesforce":updateFieldFromSalesforce }
+    console.log("updated Object :" + JSON.stringify(updatedObj))
+    sendSalesforceData(JSON.stringify(updatedObj))
+    // handleSalesforceFields(JSON.stringify(e))
     dispatch(
       setDateCoordinates({
         dateCoordinates: updateCoordinateMappingField(
@@ -220,123 +257,329 @@ function SelectedDateContainer({}) {
     );
   };
 
+  const toggleDropdown = ()=>{
+    if (dropdown === false){
+      setDropdown(true)
+      console.log(true)
+    }
+    // console.log(dropdown)
+    if(dropdown === true){
+      setDropdown(false)
+      console.log(false)
+    }
+  }
   return (
-    <div className="right-sidebar-tool-detail">
-      <div className="right-sidebar-tool-header">
-        <div>
-          <BsCalendar2Date
-            style={{ color: "#555d65", margin: "0px 5px -3px 0px" }}
-          />
-          <span
-            style={{
-              fontSize: "16px",
-              color: "#555d65",
-            }}
+    <>
+  <div
+  style={{
+    display: "block",
+    width: "100vw",
+    backgroundColor: "white",
+    overflowY: "auto",
+  }}
+  className="right-sidebar-tool-detail-mobile"
+>
+  <div className="right-sidebar-tool-header">
+    <div style={{marginLeft :"30px", alignSelf:"center"}}>
+      <BsCalendar2Date
+        style={{ color: "#555d65", margin: "0px 5px -3px 0px" }}
+      />
+      <span
+        style={{
+          fontSize: "12px",
+          color: "#555d65",
+          alignSelf : "center"
+        }}
+      >
+        DATE
+      </span>
+    </div>
+    <MdDelete
+      style={{
+        cursor: "pointer",
+        backgroundColor: "red",
+        padding: "5px",
+        borderRadius: "100%",
+        fontSize: "16px",
+        marginRight: "50px",
+        color: "white",
+      }}
+      onClick={handleEleDelete}
+    />
+  </div>
+
+    {dropdown && (
+      <>
+  <div style={{ display: "flex" }} className="right-sidebar-segment">
+        <div
+          className="right-sidebar-section"
+          style={{ overflowY: "visible"}}
+        >
+          <label
+            htmlFor="currentCoordSigner"
+            style={{ fontSize: "12px" }}
+            className="field-lbl"
           >
-            DATE
-          </span>
+            Assigned to
+          </label>
+          <div id="date-name-select" style={{ height: "30px" }}>
+            <CustomSelect
+              value={signatoryList.find(
+                (signatory) =>
+                  signatory.id === activeCoordinate.signatory_id
+              )}
+              name="currentCoordSigner"
+              options={signatoryList}
+              onChange={(e) => {
+                handleCurrentCoordSignatoryChange(e);
+              }}
+            />
+          </div>
         </div>
-        <MdDelete
+
+        {!activeCoordinate.updateFromSalesforce ? (
+          <div
+            key={activeCoordinate.value}
+            className="right-sidebar-section"
+          >
+            <label className="field-lbl">Default Value</label>
+            <input
+              type="date"
+              defaultValue={activeCoordinate.value}
+              onChange={(event) =>
+                handleCurrentCoordValueChange(event.target.value)
+              }
+              className="input-field"
+            />
+          </div>
+        ) : null}
+        
+    </div>
+        <div
+          className="right-sidebar-section-toggles"
+        >
+          <CustomToggle
+            title="Required"
+            defaultValue={activeCoordinate.isRequired}
+            onChange={(value) => {
+              handleCurrentCoordIsRequiredChange(value);
+            }}
+          />
+          <CustomToggle
+            title="Writeback to Salesforce"
+            defaultValue={activeCoordinate.writeBack}
+            onChange={(value) => {
+              // setWriteback(true)
+              handleCurrentCoordWriteBackSettingsChange(value);
+            }}
+          />
+          <CustomToggle
+            title="Update from Salesforce"
+            defaultValue={activeCoordinate.updateFromSalesforce}
+            onChange={(value) => {
+              // toggleUpdateFieldFromSalesforce()
+              handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+            }}
+          />
+
+          {activeCoordinate.updateFromSalesforce ||
+          activeCoordinate.writeBack ? (
+            <>
+            
+            <hr
+              style={{
+                marginTop: "2px",
+                width: "100vw",
+                margin: "5px 0",
+              }}
+            />
+            <div
+              style={{ margin: "0 auto" }}
+              className="right-sidebar-section"
+            >
+              <label
+                style={{
+                  width: "40px",
+                  fontSize: "x-small",
+                  marginBottom: "2px",
+                }}
+                className="field-lbl"
+              >
+                Map with {sobjectAPIName}'s Label
+              </label>
+              <CustomSelect
+                value={activeCoordinate.mappingField}
+                name="signer"
+                options={salesforceFieldsMetadata.filter(
+                  (field) =>
+                    field.type === SalesforceFieldTypeEnum.DATE
+                )}
+                useFor="MAPPING"
+                onChange={(e) => {
+                  // toggleWriteback()
+                  handleCurrentCoordMappingFieldChange(e);
+                }}
+              />
+            </div>
+            </>
+          ) : null}
+        </div>
+      </>
+    )}
+
+  <div className="mobile-dropdown" style={{ marginTop: "4px"}}>
+    <div onClick={toggleDropdown} className="dropdown-toggle-btn">
+      < IoMdArrowDropdown
+
+        style={{
+          margin: "10px",
+          marginTop : "16px",
+          position : "absolute",
+          top : "0",
+          fontSize : "x-large",
+          left : "0",
+          padding: "0px",
+          // backgroundColor: "#4D4D4D",
+          color: "black",
+          borderRadius: "100%",
+          // fontSize: "medium",
+        }}
+      />
+    </div>
+  </div>
+
+  <hr style={{ marginTop: "0px" }} />
+</div>
+
+    <div className="right-sidebar-tool-detail-desktop">
+    <div className="right-sidebar-tool-header">
+      <div>
+        <BsCalendar2Date
+          style={{ color: "#555d65", margin: "0px 5px -3px 0px" }}
+          />
+        <span
           style={{
-            cursor: "pointer",
             fontSize: "16px",
-            marginRight: "10px",
             color: "#555d65",
           }}
-          onClick={handleEleDelete}
-        />
+          >
+          DATE
+        </span>
       </div>
-
-      <div className="right-sidebar-section">
-        <label htmlFor="currentCoordSigner" className="field-lbl">
-          Assigned to
-        </label>
-        <div>
-          <CustomSelect
-            value={signatoryList.find(
-              (signatory) => signatory.id === activeCoordinate.signatory_id
-            )}
-            name="currentCoordSigner"
-            options={signatoryList}
-            onChange={(e) => {
-              handleCurrentCoordSignatoryChange(e);
-            }}
-          ></CustomSelect>
-        </div>
-      </div>
-
-      {/* <div key={activeCoordinate.name} className="right-sidebar-section">
-        <label className="field-lbl">
-          Name<span style={{ color: "red" }}>*</span>
-        </label>
-        <input
-          defaultValue={activeCoordinate.name}
-          onChange={(event) => handleCurrentCoordNameChange(event)}
-          className="input-field"
-        />
-      </div> */}
-
-      {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
-        <div className="right-sidebar-section">
-          <label className="field-lbl">Map with {sobjectAPIName}'s field</label>
-          <CustomSelect
-            value={activeCoordinate.mappingField}
-            name="signer"
-            options={salesforceFieldsMetadata.filter(
-              (field) => field.type === SalesforceFieldTypeEnum.DATE
-            )}
-            useFor="MAPPING"
-            onChange={(e) => {
-              handleCurrentCoordMappingFieldChange(e);
-            }}
-          ></CustomSelect>
-        </div>
-      ) : null}
-
-      {!activeCoordinate.updateFromSalesforce ? (
-        <div key={activeCoordinate.value} className="right-sidebar-section">
-          <label className="field-lbl">Default Value</label>
-          <input
-            type="date"
-            defaultValue={activeCoordinate.value}
-            onChange={(event) =>
-              handleCurrentCoordValueChange(event.target.value)
-            }
-            className="input-field"
-          />
-        </div>
-      ) : null}
-
-      <div
+      <MdDelete
         style={{
-          display: "flex",
-          flexDirection: "column",
+          cursor: "pointer",
+          fontSize: "16px",
+          marginRight: "10px",
+          color: "#555d65",
         }}
-        className="right-sidebar-section"
-      >
-        <CustomToggle
-          title="Required"
-          defaultValue={activeCoordinate.isRequired}
-          onChange={(value) => {
-            handleCurrentCoordIsRequiredChange(value);
-          }}
+        onClick={handleEleDelete}
         />
-        <CustomToggle
-          title="Writeback to Salesforce"
-          defaultValue={activeCoordinate.writeBack}
-          onChange={(value) => {
-            handleCurrentCoordWriteBackSettingsChange(value);
+    </div>
+
+    <div className="right-sidebar-section">
+      <label htmlFor="currentCoordSigner" className="field-lbl">
+        Assigned to
+      </label>
+      <div>
+        <CustomSelect
+          value={signatoryList.find(
+            (signatory) => signatory.id === activeCoordinate.signatory_id
+          )}
+          name="currentCoordSigner"
+          options={signatoryList}
+          onChange={(e) => {
+            handleCurrentCoordSignatoryChange(e);
           }}
-        />
-        <CustomToggle
-          title="Update from Salesforce"
-          defaultValue={activeCoordinate.updateFromSalesforce}
-          onChange={(value) => {
-            handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
-          }}
-        />
+        ></CustomSelect>
       </div>
     </div>
+
+    {/* <div key={activeCoordinate.name} className="right-sidebar-section">
+      <label className="field-lbl">
+        Name<span style={{ color: "red" }}>*</span>
+      </label>
+      <input
+        defaultValue={activeCoordinate.name}
+        onChange={(event) => handleCurrentCoordNameChange(event)}
+        className="input-field"
+      />
+    </div> */}
+
+    {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
+      <div className="right-sidebar-section">
+        <label className="field-lbl">Map with {sobjectAPIName}'s field</label>
+        <CustomSelect
+          value={activeCoordinate.mappingField}
+          name="signer"
+          options={salesforceFieldsMetadata.filter(
+            (field) => field.type === SalesforceFieldTypeEnum.DATE
+          )}
+          useFor="MAPPING"
+          onChange={(e) => {
+            // toggleWriteback()
+            handleCurrentCoordMappingFieldChange(e);
+          }}
+        ></CustomSelect>
+      </div>
+    ) : null}
+
+    {!activeCoordinate.updateFromSalesforce ? (
+      <div key={activeCoordinate.value} className="right-sidebar-section">
+        <label className="field-lbl">Default Value</label>
+        <input
+          type="date"
+          defaultValue={activeCoordinate.value}
+          onChange={(event) =>
+            handleCurrentCoordValueChange(event.target.value)
+          }
+          className="input-field"
+        />
+      </div>
+    ) : null}
+
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+      }}
+      className="right-sidebar-section"
+    >
+      <div>
+
+      <CustomToggle
+        title="Required"
+        defaultValue={activeCoordinate.isRequired}
+        onChange={(value) => {
+          handleCurrentCoordIsRequiredChange(value);
+        }}
+        />
+        </div>
+        <div>
+
+      <CustomToggle
+        title="Writeback to Salesforce"
+        defaultValue={activeCoordinate.writeBack}
+        onChange={(value) => {
+          toggleWriteback()
+          handleCurrentCoordWriteBackSettingsChange(value);
+        }}
+        />
+        </div>
+        <div>
+
+      <CustomToggle
+        title="Update from Salesforce"
+        defaultValue={activeCoordinate.updateFromSalesforce}
+        onChange={(value) => {
+          toggleUpdateFieldFromSalesforce()
+          handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+        }}
+        />
+        </div>
+    </div>
+  </div>
+  </>
   );
 }
 

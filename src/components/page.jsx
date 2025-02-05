@@ -36,7 +36,18 @@ export const Page = ({ page, dimensions, updateDimensions }) => {
 
   return (
     <div>
-      <canvas
+      <div className="mobile-canvas">
+
+      <canvas className="mobile-canvas"
+        ref={canvasRef}
+        //  width={width} height={height}
+        width={595}
+        height={840}
+        // style={{width:"100vw",height:"auto"}}
+      />
+      </div>
+      <canvas 
+      className="desktop-canvas"
         ref={canvasRef}
         //  width={width} height={height}
         width={595}

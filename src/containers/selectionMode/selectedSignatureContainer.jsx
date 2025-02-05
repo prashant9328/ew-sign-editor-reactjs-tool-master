@@ -2,6 +2,10 @@ import React from "react";
 import { RiBallPenLine } from "react-icons/ri";
 import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { TbMenu2 } from  "react-icons/tb";
+import { IoMdArrowDropdown } from "react-icons/io";
+
 import {
   removeCoordinate,
   updateCoordinateName,
@@ -114,9 +118,126 @@ function SelectedSignatureContainer({}) {
       })
     );
   };
+  
+  const [dropdown,setDropdown]=useState(true);
+  
+  const toggleDropdown = ()=>{
+    if (dropdown === false){
+      setDropdown(true)
+      console.log(true)
+    }
+    // console.log(dropdown)
+    if(dropdown === true){
+      setDropdown(false)
+      console.log(false)
+    }
+  }
 
   return (
-    <div className="right-sidebar-tool-detail">
+    <>
+    
+    <div className="right-sidebar-tool-detail-mobile">
+      <div className="right-sidebar-tool-header">
+        <div style={{alignSelf:"center", marginLeft:"28px", marginTop :"3px"}}>
+          <RiBallPenLine
+            style={{ color: "#555d65", margin: "0px 5px -3px 0px" }}
+          />
+          <span
+            style={{
+              fontSize: "12px",
+              color: "#555d65",
+            }}
+          >
+            SIGNATURE
+          </span>
+        </div>
+        <MdDelete
+          style={{
+            cursor: "pointer",
+        backgroundColor: "red",
+        padding: "5px",
+        borderRadius: "100%",
+        fontSize: "16px",
+        marginRight: "50px",
+        color: "white",
+          }}
+          onClick={handleEleDelete}
+        />
+      </div>
+      {dropdown && (
+        <>  
+      <div className="right-sidebar-section">
+        <label htmlFor="currentCoordSigner" className="field-lbl">
+          Assigned to
+        </label>
+        <div>
+          <CustomSelect
+            value={signatoryList.find(
+              (signatory) => signatory.id === activeCoordinate.signatory_id
+            )}
+            name="currentCoordSigner"
+            options={signatoryList}
+            onChange={(e) => {
+              handleCurrentCoordSignatoryChange(e);
+            }}
+          ></CustomSelect>
+        </div>
+      </div>
+
+      {/* <div key={activeCoordinate.name} className="right-sidebar-section">
+        <label className="field-lbl">
+          Name<span style={{ color: "red" }}>*</span>
+        </label>
+        <input
+          defaultValue={activeCoordinate.name}
+          onChange={(event) => handleCurrentCoordNameChange(event)}
+          className="input-field"
+        />
+      </div> */}
+
+      <div
+        style={{
+          display: "flex",
+          // flexDirection: "column",
+          width:"100wv",
+          justifyContent:"space-between"
+        }}
+        className="right-sidebar-section"
+      >
+        <CustomToggle
+          title="Required"
+          defaultValue={activeCoordinate.isRequired}
+          onChange={(value) => {
+            handleCurrentCoordIsRequiredChange(value);
+          }}
+        />
+      </div>
+      <hr style={{marginTop:"5px"}} />
+      </>
+    )}
+    <div className="mobile-dropdown" style={{ marginTop: "4px"}}>
+        <div onClick={toggleDropdown} className="dropdown-toggle-btn">
+          < IoMdArrowDropdown
+
+    
+            style={{
+              margin: "10px",
+              marginTop : "16px",
+              position : "absolute",
+              top : "0",
+              fontSize : "x-large",
+              left : "0",
+              padding: "0px",
+              // backgroundColor: "#4D4D4D",
+              color: "black",
+              borderRadius: "100%",
+              // fontSize: "medium",
+            }}
+          />
+        </div>
+      </div>
+    </div>
+    <div className="right-sidebar-tool-detail-desktop">
       <div className="right-sidebar-tool-header">
         <div>
           <RiBallPenLine
@@ -146,7 +267,7 @@ function SelectedSignatureContainer({}) {
         <label htmlFor="currentCoordSigner" className="field-lbl">
           Assigned to
         </label>
-        <div>
+        <div >
           <CustomSelect
             value={signatoryList.find(
               (signatory) => signatory.id === activeCoordinate.signatory_id
@@ -187,6 +308,7 @@ function SelectedSignatureContainer({}) {
         />
       </div>
     </div>
+    </>
   );
 }
 

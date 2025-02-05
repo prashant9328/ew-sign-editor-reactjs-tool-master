@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from "../pages/homePage";
 import PageNotFound from "../pages/pageNotFound";
 import SessionExpired from "../pages/sessionExpired";
+import UnexpectedError from "pages/unexpectedError";
 
 const AllRoutes = () => {
   return (
@@ -13,6 +14,8 @@ const AllRoutes = () => {
         <Route path="/" Component={HomePage} />
         <Route path="/page-not-found" Component={PageNotFound} />
         <Route path="/session-expired" Component={SessionExpired} />
+        <Route path="/unexpected-error" Component={UnexpectedError} />
+
       </Routes>
     </Router>
   );

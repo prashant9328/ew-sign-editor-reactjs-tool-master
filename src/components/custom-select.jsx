@@ -27,6 +27,7 @@ const CustomSelect = ({
             ...provided,
             backgroundColor: `${value.toolColor}`,
             fontSize: "14px",
+            height:"50px",
             cursor: "pointer",
             fontFamily: "Arial",
           }),
@@ -44,6 +45,7 @@ const CustomSelect = ({
               : "0 2px 4px rgba(0, 0, 0, 0.1)",
             color: "black",
             cursor: "pointer",
+            
           }),
           dropdownIndicator: (provided) => ({
             ...provided,
@@ -56,6 +58,7 @@ const CustomSelect = ({
   return (
     <>
       <Select
+        id="select-name"
         styles={customStyles}
         defaultValue={options[0]}
         isDisabled={isDisabled}
@@ -65,7 +68,7 @@ const CustomSelect = ({
         isSearchable={isSearchable}
         name={name}
         onFocus={() => {
-          setValueColor("#919191");
+          setValueColor("#919191"); 
         }}
         onBlur={() => {
           setValueColor("black");

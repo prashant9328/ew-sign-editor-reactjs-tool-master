@@ -54,7 +54,9 @@ const fetchDocumentDataService = async (reqBody) => {
     // console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
     // throw new Error("Something went wrong, failed to fetch data from server.");
 
-    console.log('@@@ ERROR::'+error.message);
+    console.log('@@@ ERROR::'+error.message);  
+    localStorage.setItem('unexpected-error',error.stack)
+    // window.location.href='/unexpected-error'    
     throw new Error(error.message);
   }
 };

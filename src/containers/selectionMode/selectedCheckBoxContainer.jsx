@@ -1,7 +1,12 @@
 import React from "react";
 import { BsCheck2Square } from "react-icons/bs";
 import { MdDelete } from "react-icons/md";
+import { IoMdArrowDropdown } from "react-icons/io";
+
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { TbMenu2 } from  "react-icons/tb";
+
 import {
   removeCoordinate,
   updateCoordinateMappingField,
@@ -220,16 +225,30 @@ function SelectedCheckBoxContainer({}) {
     );
   };
 
+    const [dropdown,setDropdown]=useState(true);
+  
+    const toggleDropdown = ()=>{
+      if (dropdown === false){
+        setDropdown(true)
+        console.log(true)
+      }
+      // console.log(dropdown)
+      if(dropdown === true){
+        setDropdown(false)
+        console.log(false)
+      }
+    }
   return (
-    <div className="right-sidebar-tool-detail">
+    <>
+    <div className="right-sidebar-tool-detail-mobile">
       <div className="right-sidebar-tool-header">
-        <div>
+        <div style={{marginLeft:"30px",alignSelf:"center"}}>
           <BsCheck2Square
             style={{ color: "#555d65", margin: "0px 5px -3px 0px" }}
           />
           <span
             style={{
-              fontSize: "16px",
+              fontSize: "12px",
               color: "#555d65",
             }}
           >
@@ -239,15 +258,19 @@ function SelectedCheckBoxContainer({}) {
         <MdDelete
           style={{
             cursor: "pointer",
-            fontSize: "16px",
-            marginRight: "10px",
-            color: "#555d65",
+        backgroundColor: "red",
+        padding: "5px",
+        borderRadius: "100%",
+        fontSize: "16px",
+        marginRight: "50px",
+        color: "white",
           }}
           onClick={handleEleDelete}
         />
       </div>
-
-      <div className="right-sidebar-section">
+      {dropdown && (
+        <>
+        <div className="right-sidebar-section">
         <label htmlFor="currentCoordSigner" className="field-lbl">
           Assigned to
         </label>
@@ -275,22 +298,7 @@ function SelectedCheckBoxContainer({}) {
           className="input-field"
         />
       </div> */}
-
-      {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
-        <div className="right-sidebar-section">
-          <label className="field-lbl">Map with {sobjectAPIName}'s field of Salesforce</label>
-          <CustomSelect
-            value={activeCoordinate.mappingField}
-            name="signer"
-            options={salesforceFieldsMetadata.filter(
-              (field) => field.type === SalesforceFieldTypeEnum.BOOLEAN
-            )}
-            useFor="MAPPING"
-            onChange={(e) => {
-              handleCurrentCoordMappingFieldChange(e);
-            }}
-          ></CustomSelect>
-      </div> ) : null }
+      
       {/* {
           !activeCoordinate.updateFromSalesforce ? 
           (<div key={activeCoordinate.value} className="right-sidebar-section">
@@ -310,6 +318,8 @@ function SelectedCheckBoxContainer({}) {
         style={{
           display: "flex",
           flexDirection: "column",
+          width :"95vw",
+          margin : "0 auto"
         }}
         className="right-sidebar-section"
       >
@@ -334,8 +344,167 @@ function SelectedCheckBoxContainer({}) {
             handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
           }}
         />
+        <div>
+      {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
+        <div className="right-sidebar-section" style={{width:"95vw", margin:"0 auto"}}>
+          <hr style={{margin:"5px 0", width:"100vw"}} />
+          <label  className="field-lbl">Map with {sobjectAPIName}'s field of Salesforce</label>
+          <CustomSelect
+          
+            value={activeCoordinate.mappingField}
+            name="signer"
+            options={salesforceFieldsMetadata.filter(
+              (field) => field.type === SalesforceFieldTypeEnum.BOOLEAN
+            )}
+            useFor="MAPPING"
+            onChange={(e) => {
+              handleCurrentCoordMappingFieldChange(e);
+            }}
+          ></CustomSelect>
+      </div> ) : null }
+      </div>
+      </div>
+      </>
+      )}
+      <div className="mobile-dropdown" style={{ marginTop: "4px"}}>
+        <div onClick={toggleDropdown} className="dropdown-toggle-btn">
+          < IoMdArrowDropdown
+    
+            style={{
+              margin: "10px",
+              marginTop : "16px",
+              position : "absolute",
+              top : "0",
+              fontSize : "x-large",
+              left : "0",
+              padding: "0px",
+              // backgroundColor: "#4D4D4D",
+              color: "black",
+              borderRadius: "100%",
+              // fontSize: "medium",
+            }}
+          />
+        </div>
+      </div>
+      <hr />
+    </div>
+    
+    <div className="right-sidebar-tool-detail-desktop">
+    <div className="right-sidebar-tool-header">
+      <div>
+        <BsCheck2Square
+          style={{ color: "#555d65", margin: "0px 5px -3px 0px" }}
+        />
+        <span
+          style={{
+            fontSize: "16px",
+            color: "#555d65",
+          }}
+        >
+          CHECKBOX
+        </span>
+      </div>
+      <MdDelete
+        style={{
+          cursor: "pointer",
+          fontSize: "16px",
+          marginRight: "10px",
+          color: "#555d65",
+        }}
+        onClick={handleEleDelete}
+      />
+    </div>
+
+    <div className="right-sidebar-section">
+      <label htmlFor="currentCoordSigner" className="field-lbl">
+        Assigned to
+      </label>
+      <div>
+        <CustomSelect
+          value={signatoryList.find(
+            (signatory) => signatory.id === activeCoordinate.signatory_id
+          )}
+          options={signatoryList}
+          name="currentCoordSigner"
+          onChange={(e) => {
+            handleCurrentCoordSignatoryChange(e);
+          }}
+        ></CustomSelect>
       </div>
     </div>
+
+    {/* <div key={activeCoordinate.name} className="right-sidebar-section">
+      <label className="field-lbl">
+        Name<span style={{ color: "red" }}>*</span>
+      </label>
+      <input
+        defaultValue={activeCoordinate.name}
+        onChange={(event) => handleCurrentCoordNameChange(event)}
+        className="input-field"
+      />
+    </div> */}
+
+    {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
+      <div className="right-sidebar-section">
+        <label className="field-lbl">Map with {sobjectAPIName}'s field of Salesforce</label>
+        <CustomSelect
+          value={activeCoordinate.mappingField}
+          name="signer"
+          options={salesforceFieldsMetadata.filter(
+            (field) => field.type === SalesforceFieldTypeEnum.BOOLEAN
+          )}
+          useFor="MAPPING"
+          onChange={(e) => {
+            handleCurrentCoordMappingFieldChange(e);
+          }}
+        ></CustomSelect>
+    </div> ) : null }
+    {/* {
+        !activeCoordinate.updateFromSalesforce ? 
+        (<div key={activeCoordinate.value} className="right-sidebar-section">
+          <label className="field-lbl">
+            Default Value 
+          </label>
+            <input 
+              className="checkbox-input" 
+              type="checkbox"
+              defaultValue={activeCoordinate.value}
+              onChange={(event) => handleCurrentCoordValueChange(event.target.value)}
+            />
+      </div>
+    ) : null} */}
+
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+      }}
+      className="right-sidebar-section"
+    >
+      {/* <CustomToggle
+        title="Required"
+        defaultValue={activeCoordinate.isRequired}
+        onChange={(value) => {
+          handleCurrentCoordIsRequiredChange(value);
+        }}
+      /> */}
+      <CustomToggle
+        title="Writeback to Salesforce"
+        defaultValue={activeCoordinate.writeBack}
+        onChange={(value) => {
+          handleCurrentCoordWriteBackSettingsChange(value);
+        }}
+      />
+      <CustomToggle
+        title="Update from Salesforce"
+        defaultValue={activeCoordinate.updateFromSalesforce}
+        onChange={(value) => {
+          handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+        }}
+      />
+    </div>
+  </div>
+  </>
   );
 }
 

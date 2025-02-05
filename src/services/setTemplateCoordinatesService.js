@@ -3,6 +3,7 @@ import { postRequest } from "helpers/axios";
 
 //
 import { API_ROUTES } from "constants/apis";
+import { Navigate } from "react-router-dom";
 
 const SetTemplateCoordinatesService = async (finalCoordData, uuid, tiUUID) => {
   try {
@@ -19,6 +20,9 @@ const SetTemplateCoordinatesService = async (finalCoordData, uuid, tiUUID) => {
     return response;
   } catch (error) {
     console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
+    localStorage.setItem('unexpected-error',error.stack)
+
+    // window.location.href='/unexpected-error'    
     throw new Error("Something went wrong, failed to fetch data from server.");
   }
 };

@@ -1,7 +1,8 @@
 //
 import { postRequest } from "helpers/axios";
-
+import { useNavigate,Navigate } from "react-router-dom";
 //
+import React from "react";
 import { API_ROUTES } from "constants/apis";
 
 const updateInstanceStatus = async (tiUUID,state) => {
@@ -18,8 +19,11 @@ const updateInstanceStatus = async (tiUUID,state) => {
     // return response;
   } catch (error) {
     console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
+    localStorage.setItem('unexpected-error',error.stack)
+    // window.location.href='/unexpected-error'    
+
     throw new Error("Something went wrong, failed to fetch data from server.");
-  }
+  } 
 };
 
 export default updateInstanceStatus;

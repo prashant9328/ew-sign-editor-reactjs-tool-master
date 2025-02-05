@@ -2,7 +2,6 @@ import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
 //
 import CustomSelect from "components/custom-select";
 import PdfViewer from "components/PDFViewer";
@@ -10,10 +9,12 @@ import { Paggination } from "components/common/paggination";
 //
 import { ShowToast } from "utils/showToast";
 //
+import { TiTick } from "react-icons/ti";
 import fetchDocumentDataService from "services/fetchDocumentDataService";
 import SetTemplateCoordinatesService from "services/setTemplateCoordinatesService";
 import updateInstanceStatus from "services/updateInstanceStatus";
 //
+import { useState,useEffect } from "react";
 import {
   CheckboxButtonContainer,
   DateButtonContainer,
@@ -45,6 +46,9 @@ import { ToastTypeEnum } from "constants/toastTypeEnum";
 import loadingGif from "images/loading-cropped.gif";
 import SessionTimer from "components/session-timer";
 import CustomModal from "components/common/custom-modal";
+import { List } from "antd";
+import { type } from "@testing-library/user-event/dist/type";
+import Confirmation from "components/confirmation";
 
 export default function Home() {
   const signatoryList = useSelector(
@@ -87,6 +91,26 @@ export default function Home() {
     (state) => state.generalDocumentData.generalDocumentData
   );
 
+  const allCoordinates = [
+    ...signatureCoordinates,
+    ...textBoxCoordinates,
+    ...dateCoordinates,
+    ...checkBoxCoordinates,
+  ];
+  const writebackFields = allCoordinates.filter((coord) => coord.writeBack);
+  const updateFromSalesforceFields = allCoordinates.filter((coord) => coord.updateFromSalesforce);
+  console.log("updateFromSalesforceFields",updateFromSalesforceFields);
+  console.log("updateFromSalesforceFields",JSON.stringify(updateFromSalesforceFields));
+ // Create a mapping of fields from `writeback` or `updateFromSalesforce` and their corresponding `mappingField`
+ const writebackFieldsData = writebackFields.map((field) => ({
+  mappingField: field.mappingField,
+}));
+
+const updateFromSalesforceFieldsData = updateFromSalesforceFields.map((field) => ({
+  mappingField: field.mappingField,
+}));
+console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforceFieldsData));
+
   const defaultCanvasScale = "1";
   const scaleForImages = "0.3";
 
@@ -102,7 +126,7 @@ export default function Home() {
   const scrollImage = React.useRef(null);
   const documentContainer = React.useRef(null);
   const [searchParams] = useSearchParams();
-
+  const [popup, setPopup]= useState(false) 
   const [isPDFLoading, setIsPDFLoading] = React.useState(true);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFetching, setIsFetching] = React.useState(true);
@@ -388,17 +412,116 @@ function validateCoordinates(finalCoordData) {
     );
   };
 
-  const handleContinue = async () => {
-    setIsLoading(true);
-    setIsFetching(false);
+  const [confirmationPopup,setConfirmationPopup]=useState(false)
 
+  const [agreeToTnC, setAgreeToTnC]=useState(false)
+
+ // const continueHandleContinue = async () =>{
+  //   let finalCoordData = [
+  //     ...signatureCoordinates,
+  //     ...textBoxCoordinates,
+  //     ...dateCoordinates,
+  //     ...checkBoxCoordinates,
+  //   ];
+  //   console.log("HANDLE CONTINUE: " + JSON.stringify(finalCoordData));
+
+  //   const validation = validateCoordinates(finalCoordData);
+
+  //   if (!validation.isValidate) {
+  //     setIsLoading(false);
+  //     ShowToast(ToastTypeEnum.ERROR, validation.msg);
+  //     return;
+  //   }
+
+  //   if (template_instance_uuid == null) {
+  //     //
+  //     finalCoordData = changeSignatoryIdToNull(finalCoordData);
+  //   }
+
+  //   console.log("@@@ finalCoordData: " + JSON.stringify(finalCoordData));
+
+  //   try {
+  //     await SetTemplateCoordinatesService(
+  //       finalCoordData,
+  //       uuid,
+  //       template_instance_uuid
+  //     );
+  //     let state="SENT";
+  //     // await updateInstanceStatus(template_instance_uuid,state);
+
+  //     ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
+
+  //     const message = {
+  //       messageFrom: "EW Sign Editor",
+  //       status: true,
+  //       action:
+  //         template_instance_uuid == null ? "Create Template" : "Create TI",
+  //     };
+
+  //     if (template_instance_uuid != null) {
+  //       console.log("TI NOT NULL");
+  //       console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
+  //       message.signatureFlow = generalDocumentData.signatureFlow;
+  //       message.uuid = uuid;
+  //       message.template_instance_uuid = template_instance_uuid;
+  //     }
+  //     console.log("POST MESSAGE: " + JSON.stringify(message));
+  //     window.parent.postMessage(message, "*");
+  //     setIsLoading(false);
+  //     setConfirmationPopup(false)
+  //   } catch (error) {
+  //     const message = {
+  //       messageFrom: "EW Sign Editor",
+  //       status: false,
+  //       action:
+  //         template_instance_uuid == null ? "Create Template" : "Create TI",
+  //       errorMessage: JSON.stringify(error),
+  //     };
+  //     window.parent.postMessage(message, "*");
+  //     // console.log("@@@ Saved coordinate: " + JSON.stringify(error));
+  //     ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
+  //     setIsLoading(false);
+  //   }
+
+  // }
+  // const handleContinue = async () => {
+  //   setIsFetching(false);
+  //   if(confirmationPopup===false){
+  //     setConfirmationPopup(true)
+  //   }else{
+
+  //     setConfirmationPopup(false);
+  //   }
+  //   handleAgreeToTnc()
+
+  // };
+  // const handleAgreeToTnc=()=>{
+  //   if(agreeToTnC===true){
+  //     setIsLoading(true);
+  //     continueHandleContinue()
+  //     // setConfirmationPopup(false)
+  //   }
+  // }
+  // const closePopup=()=>{  
+  //   setConfirmationPopup(false)
+  // }
+  // useEffect(()=>{
+  //   handleAgreeToTnc();
+  // },[agreeToTnC])
+
+  // const getContinueEventFromConfirmation=(evt)=>{
+  //   setAgreeToTnC(evt)
+  //   console.log('setTNC TO TRUE')
+  //   console.log(agreeToTnC)
+  // }
+
+  const continueHandleContinue = async () => {
     let finalCoordData = [
       ...signatureCoordinates,
       ...textBoxCoordinates,
       ...dateCoordinates,
       ...checkBoxCoordinates,
     ];
-    console.log("HANDLE CONTINUE: " + JSON.stringify(finalCoordData));
 
     const validation = validateCoordinates(finalCoordData);
 
@@ -408,56 +531,104 @@ function validateCoordinates(finalCoordData) {
       return;
     }
 
-    if (template_instance_uuid == null) {
-      //
-      finalCoordData = changeSignatoryIdToNull(finalCoordData);
-    }
+    // try {
+    //   await SetTemplateCoordinatesService(finalCoordData, uuid, template_instance_uuid);
+    //   ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
+    //   const message = {
+    //     messageFrom: "EW Sign Editor",
+    //     status: true,
+    //     action:
+    //       template_instance_uuid == null ? "Create Template" : "Create TI",
+    //   };
 
-    console.log("@@@ finalCoordData: " + JSON.stringify(finalCoordData));
+    //   if (template_instance_uuid != null) {
+    //     console.log("TI NOT NULL");
+    //     console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
+    //     message.signatureFlow = generalDocumentData.signatureFlow;
+    //     message.uuid = uuid;
+    //     message.template_instance_uuid = template_instance_uuid;
+    //   }
+    //   console.log("POST MESSAGE: " + JSON.stringify(message));
+    //   window.parent.postMessage(message, "*");
 
+    //   setIsLoading(false);
+    //   setConfirmationPopup(false); // Close the popup after save
+    // } catch (error) {
+    //   ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
+    //   setIsLoading(false);
+    // }
     try {
-      await SetTemplateCoordinatesService(
-        finalCoordData,
-        uuid,
-        template_instance_uuid
-      );
-      let state="SENT";
-      // await updateInstanceStatus(template_instance_uuid,state);
-
-      ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
-
-      const message = {
-        messageFrom: "EW Sign Editor",
-        status: true,
-        action:
-          template_instance_uuid == null ? "Create Template" : "Create TI",
-      };
-
-      if (template_instance_uuid != null) {
-        console.log("TI NOT NULL");
-        console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
-        message.signatureFlow = generalDocumentData.signatureFlow;
-        message.uuid = uuid;
-        message.template_instance_uuid = template_instance_uuid;
-      }
-      console.log("POST MESSAGE: " + JSON.stringify(message));
-      window.parent.postMessage(message, "*");
-      setIsLoading(false);
-    } catch (error) {
-      const message = {
-        messageFrom: "EW Sign Editor",
-        status: false,
-        action:
-          template_instance_uuid == null ? "Create Template" : "Create TI",
-        errorMessage: JSON.stringify(error),
-      };
-      window.parent.postMessage(message, "*");
-      // console.log("@@@ Saved coordinate: " + JSON.stringify(error));
-      ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
-      setIsLoading(false);
-    }
-
+          await SetTemplateCoordinatesService(
+            finalCoordData,
+            uuid,
+            template_instance_uuid
+          );
+          let state="SENT";
+          // await updateInstanceStatus(template_instance_uuid,state);
+    
+          ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
+    
+          const message = {
+            messageFrom: "EW Sign Editor",
+            status: true,
+            action:
+              template_instance_uuid == null ? "Create Template" : "Create TI",
+          };
+    
+          if (template_instance_uuid != null) {
+            console.log("TI NOT NULL");
+            console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
+            message.signatureFlow = generalDocumentData.signatureFlow;
+            message.uuid = uuid;
+            message.template_instance_uuid = template_instance_uuid;
+          }
+          console.log("POST MESSAGE: " + JSON.stringify(message));
+          window.parent.postMessage(message, "*");
+          setIsLoading(false);
+          setConfirmationPopup(false)
+        } catch (error) {
+          const message = {
+            messageFrom: "EW Sign Editor",
+            status: false,
+            action:
+              template_instance_uuid == null ? "Create Template" : "Create TI",
+            errorMessage: JSON.stringify(error),
+          };
+          window.parent.postMessage(message, "*");
+          // console.log("@@@ Saved coordinate: " + JSON.stringify(error));
+          ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
+          setIsLoading(false);
+        }
   };
+
+  const handleContinue = async () => {
+    setIsFetching(false);
+    if (confirmationPopup === false) {
+      setConfirmationPopup(true); // Open confirmation popup
+    } else {
+      setConfirmationPopup(false); // Close confirmation popup
+    }
+    handleAgreeToTnc();
+  };
+
+  const handleAgreeToTnc = () => {
+    if (agreeToTnC === true) {
+      setIsLoading(true);
+      continueHandleContinue();
+    }
+  };
+
+  const closePopup = () => {
+    setConfirmationPopup(false);
+  };
+
+  const getContinueEventFromConfirmation = (evt) => {
+    setAgreeToTnC(evt);
+  };
+
+  useEffect(() => {
+    handleAgreeToTnc();
+  }, [agreeToTnC]);
 
   const handleSessionExpired = () => {
     console.log('Session expired...');
@@ -476,15 +647,142 @@ function validateCoordinates(finalCoordData) {
       // Reload the page
       navigate("/session-expired", { replace: true });
       return;
-    }, 600000);
+    }, 200);
   }
 
   const modalChildren = <p style={{padding: "20px"}}>Your editor access session will expire in 10 minutes. Please save your work before then, as you won't be able to save it after that time and risk losing all of your changes. The system will be reloaded automatically after 10 minutes.</p>;
+
+  const [salesforceFields,setSalesforceFields]=useState({})
+ 
+  const handleSalesforceFields = async (data) => {
+    const dt =  await data
+    console.log("Data received in parent:", dt);
+    setSalesforceFields(dt)  
+    const a = await dt
+    console.log(a)
+    setSalesforceFields(a)
+    // return dt
+  };
+
+  // const [dateList, setDateList]=useState([])
+  // const updateSalesforceData = async () => {
+  //   // We will update the lists conditionally based on writeBack and updateFromSalesforce
+  //   const obj2 = JSON.parse(salesforceFields)
+  //   console.log(obj2.writeback)
+  //   console.log(obj2.updateFromSalesforce)
+  //   let dateList = []
+
+  //   if(dateList[0] == undefined || dateList[0]== null){
+  //     dateList=[...dateList,obj2]
+  //     // console.log("undefined")
+  //     console.log(dateList)
+  //   }else{
+  //     console.log("map")
+  //     dateList.map((obj,index)=>{
+  //       if(obj.apiName === obj2.apiName){
+  //         console.log("exists : "+obj2.apiName)
+  //         console.log(index)
+  //       }
+  //       else if(obj.apiName !== obj2.apiName){
+  //         dateList=[ ...dateList,obj2]  //[ ...dateList, obj2]
+  //         console.log(dateList)
+  //         console.log(index)
+  //       }else{
+  //         console.error("error")
+  //       }
+
+        
+  //     })
+  //   }
+  //   console.log(dateList.length)
+  // };
+  const [dateFieldList,setDateFieldList]=useState([])
+  const updateSalesforceData = async () => {
+
+    // let dateList = []; // Initialize the dateList array
+    // Parse obj2 from the Salesforce fields
+    const obj2 = JSON.parse(salesforceFields);
+    console.log(obj2.writeback);
+    console.log(obj2.updateFromSalesforce);
+    
+    console.log("Type of datelist : ", typeof(datelist))
+    // Check if the first element of dateList is undefined or null
+    if (dateFieldList[0]) {
+      console.log("Checking for existing apiName...");
+  
+      // Check if obj2 already exists based on apiName
+
+      const exists = dateFieldList.some((obj) => obj.apiName === obj2.apiName);
+      
+      if (exists) {
+        console.log("exists : " + obj2.apiName);
+        // Optionally, log the index of the existing item
+        const index = dateFieldList.findIndex((obj) => obj.apiName === obj2.apiName);
+        console.log("Index of existing obj2:", index);
+      } else {
+        // If obj2 doesn't exist in dateList, add it to the array
+        setDateFieldList([...dateFieldList, obj2]);
+        console.log("obj2 added to the array:", dateFieldList);
+      }
+
+
+     
+    } else {
+       // If dateList is empty, add obj2 to it
+       const element = obj2
+       setDateFieldList(element);
+       // dateList.push("demo")
+       console.log("dateList after adding obj2 (initial case):", dateFieldList);
+       console.log("Type of datelist : " , typeof(dateFieldList))
+    }
+  
+    console.log("Final dateList:", typeof(dateFieldList));
+    console.log("Length of dateList:", dateFieldList.length);
+  };
+
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [isError, setIsError] = useState(false); // For error handling
+
+  const generatePdfUrl = () => {
+    try {
+      let url;
+      // Assuming uuid and template_instance_uuid are available here
+      if (template_instance_uuid != null && template_instance_uuid.length > 0) {
+        url = `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}`;
+      } else {
+        url = `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`;
+      }
+
+      setPdfUrl(url); // Set the generated URL to state
+      setIsError(false); // Reset error if URL is successfully generated
+    } catch (error) {
+      console.error('Error generating PDF URL:', error);
+      setIsError(true); // Set error state to true if an error occurs
+      window.location.href='/unexpected-error'
+    }
+  };
+
+  useEffect(() => {
+    generatePdfUrl(); // Call the function when the component mounts
+  }, [uuid, template_instance_uuid]); // Dependencies if uuid/template_instance_uuid change
+
+  
+
+
+
+
+
+
+
+
+
+  
 
   return (
     <>
       {isSessionEndedModalOpen && !isFinalCountdownActive ? <CustomModal modalHeaderTitle={"Session Will Expire Soon"} children={modalChildren} closeModal={closeModal}/> : null}
       {isLoading || isPDFLoading ? (
+        
         <div
           style={{
             position: "fixed",
@@ -546,7 +844,74 @@ function validateCoordinates(finalCoordData) {
         </div>
       ) : (
         <div className="container">
-          <div className="left-sidebar">
+          <div className="navbar">
+            <div className="nav-flex">
+            <div>
+            <img
+              src={`${process.env.REACT_APP_API_URL}/api/admin/branding/fetchBrandLogo?orgId=${orgId}`}
+              className="logo"
+              id="amazon-logo"
+              alt="logo img"
+            />
+            </div>
+            <div>
+
+            {!isSelectionMode && (
+              <button className="continue-btn" onClick={handleContinue}>
+                {template_instance_uuid == null
+                  ? "SAVE TEMPLATE"
+                  : "SEND TO SIGN"}
+              </button>
+            )}
+            {isSelectionMode && (
+              <button
+              className="continue-btn"
+              onClick={() => {
+                updateSalesforceData()
+                dispatch(
+                    setActiveCoordinate({
+                      activeCoordinate: {},
+                      isSelectionMode: false,
+                    })
+                  );
+                }}
+                >
+                Done
+              </button>
+            )}
+            </div>
+            </div>
+          </div>
+          <div className="mobile-navbar">
+          <div className="left-sidebar-mobile"> 
+          {/* <div className="tools-title"></div> */}
+
+          
+            {/* <div className="tools-title">Fields</div> */}
+          <div className="signer">
+
+            <CustomSelect
+              value={activeSignatory}
+              name="signer"
+              id="signer"
+              options={signatoryList}
+              onChange={(e) => {
+                handleGlobalSignatoryChange(e);
+              }}
+              ></CustomSelect>
+              </div>
+              
+          </div>
+            <div className="flex-nav-mobile">
+              <SignatureButtonContainer documentBounding={documentBounding} />
+              <TextBoxButtonContainer documentBounding={documentBounding} />
+              <DateButtonContainer documentBounding={documentBounding} />
+              <CheckboxButtonContainer documentBounding={documentBounding} />
+              {/* <EmailButtonContainer onDragEnd={() => {}} /> */}
+              {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
+            </div>
+          </div>
+          <div className="left-sidebar-desktop">
             <div className="tools-title">Signer</div>
             <CustomSelect
               value={activeSignatory}
@@ -563,8 +928,8 @@ function validateCoordinates(finalCoordData) {
               <TextBoxButtonContainer documentBounding={documentBounding} />
               <DateButtonContainer documentBounding={documentBounding} />
               <CheckboxButtonContainer documentBounding={documentBounding} />
-              <EmailButtonContainer onDragEnd={() => {}} />
-              <DateSignedButtonContainer onDragEnd={() => {}} />
+              {/* <EmailButtonContainer onDragEnd={() => {}} /> */}
+              {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
             </div>
               {!isSessionEnded ? 
                 <SessionTimer timeInSeconds={sessionTime} onSessionExpired={handleSessionExpired} />
@@ -576,6 +941,17 @@ function validateCoordinates(finalCoordData) {
                 : null
               }
           </div>
+          
+          {confirmationPopup && ( 
+            <div className="confirmationDiv">
+                   <Confirmation
+                   closePopup={closePopup}
+                   getContinueEventFromConfirmation={getContinueEventFromConfirmation}
+                   writebackFields={writebackFieldsData} // Pass writebackFields as prop
+                   updateFields={updateFromSalesforceFieldsData} // Pass updateFromSalesforceFields as prop
+                 />
+                 </div>
+              )}
           <div>
             <div
               className="document"
@@ -594,7 +970,10 @@ function validateCoordinates(finalCoordData) {
                 handleDragLeave();
               }}
             >
+            
+
               <TransformWrapper
+             
                 defaultScale={1}
                 maxScale={2.5}
                 disablePan={true}
@@ -611,6 +990,7 @@ function validateCoordinates(finalCoordData) {
                     {!(isLoading || isPDFLoading) && !isSelectionMode ? (
                       <footer className="footer">
                         <Paggination
+                          
                           activePage={activePageNumber}
                           totalPage={totalPage}
                           handlePaggination={handlePaggination}
@@ -641,12 +1021,14 @@ function validateCoordinates(finalCoordData) {
                           right: 0,
                           zIndex: 1,
                           height: unfocusDivStyle.height,
-                          width: unfocusDivStyle.width,
+                          // width: unfocusDivStyle.width,
+                          width:"100vw"
                         }}
                       ></div>
                       {/* {console.log(template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`)}    */}
                       <div className="testing">
-                        <PdfViewer
+                       
+                      <PdfViewer
                           pdf={
                             template_instance_uuid != null &&
                             template_instance_uuid.length > 0
@@ -658,6 +1040,14 @@ function validateCoordinates(finalCoordData) {
                           setPageCount={settotalPage}
                           scale={defaultCanvasScale}
                         />
+                          {/* <PdfViewer
+                            pdf={pdfUrl}
+                            activePage={activePageNumber}
+                            setPDFLoading={setIsPDFLoading}
+                            setPageCount={settotalPage}
+                            scale={defaultCanvasScale}
+                          /> */}
+                     
                       </div>
                     </TransformComponent>
                   </React.Fragment>
@@ -666,20 +1056,22 @@ function validateCoordinates(finalCoordData) {
             </div>
           </div>
           <div
-            className="right-sidebar"
+            className="right-sidebar-desktop"
             id="right-sidebar-div"
             style={{ position: "relative", paddingRight: "10px" }}
-          >
-            {isSelectionMode && activeCoordinate && <SelectionModeContainer />}
+          > 
+            {/* <SelectionModeContainer handleSalesforceFields={handleSalesforceFields} style={{display:"none"}} /> */}
+            {isSelectionMode && activeCoordinate && <SelectionModeContainer handleSalesforceFields={handleSalesforceFields} />
+          }
             <div
               ref={scrollImage}
               style={{
                 position: "absolute",
-                overflowY: "scroll",
+                overflowY: "hidden",
                 height: "92vh",
               }}
             >
-              {totalPage !== 0 &&
+              {!isSelectionMode && totalPage !== 0 &&
                 Array.from(Array(totalPage), (e, i) => {
                   return (
                     <div
@@ -717,25 +1109,13 @@ function validateCoordinates(finalCoordData) {
                 })}
             </div>
           </div>
-
-          <div className="navbar">
-            <img
-              src={`${process.env.REACT_APP_API_URL}/api/admin/branding/fetchBrandLogo?orgId=${orgId}`}
-              className="logo"
-              alt="logo img"
-            />
-
-            {!isSelectionMode && (
-              <button className="continue-btn" onClick={handleContinue}>
-                {template_instance_uuid == null
-                  ? "SAVE TEMPLATE"
-                  : "SEND TO SIGN"}
-              </button>
-            )}
-            {isSelectionMode && (
+          <div className="right-sidebar-mobile">
+          {isSelectionMode && activeCoordinate && <SelectionModeContainer handleSalesforceFields={handleSalesforceFields}  />}
+          {isSelectionMode && (
               <button
-                className="continue-btn"
-                onClick={() => {
+              className="done-btn"
+              onClick={() => {
+                  updateSalesforceData()
                   dispatch(
                     setActiveCoordinate({
                       activeCoordinate: {},
@@ -743,11 +1123,66 @@ function validateCoordinates(finalCoordData) {
                     })
                   );
                 }}
-              >
-                Done
+                >
+                <TiTick/>
+
               </button>
             )}
+            <div
+              ref={scrollImage}
+              style={{
+                position: "fixed",
+                left :"0",
+                right : "0",
+                bottom :"0",
+                zIndex:"999",
+                width : "fit-content",
+                // overflowY: "scroll",
+                height: "20vh",
+                marginBottom :"50px"
+              }}
+            >
+              {totalPage !== 0 &&
+                Array.from(Array(totalPage), (e, i) => {
+                  return (
+                    <div
+                      className="flexbox-container paggination"
+                      onClick={() => handlePaggination(i)}
+                      key={i}
+                    >
+                      <div className="flexbox-item">
+                        <div className="page-count">{i + 1}</div>
+                        <div
+                          className="page-img"
+                          style={{
+                            width:"120px",
+                            objectFit : "contain",
+                            border:
+                              i === activePageNumber
+                                ? "2px solid #6e859b"
+                                : "1px solid #b3b3b34d",
+                          }}
+                        >
+                          <PdfViewer
+                            pdf={
+                              template_instance_uuid != null &&
+                              template_instance_uuid.length > 0
+                                ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}`
+                                : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
+                            }
+                            activePage={i}
+                            setPDFLoading={setIsPDFLoading}
+                            setPageCount={settotalPage}
+                            scale={0.2}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
+          
         </div>
       )}
     </>

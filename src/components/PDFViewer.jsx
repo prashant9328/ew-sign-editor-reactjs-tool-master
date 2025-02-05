@@ -25,8 +25,10 @@ const PdfViewer = ({ pdf, activePage, setPDFLoading, setPageCount, scale }) => {
   };
 
   return (
-    <div>
+    <div className="pdff">
       <PDF
+        // style={{width:"100vw"}}
+         
         scale={scale}
         rotate={0}
         file={pdf}

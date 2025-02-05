@@ -2,6 +2,10 @@
   import { BsTextareaT } from "react-icons/bs";
   import { MdDelete } from "react-icons/md";
   import { useDispatch, useSelector } from "react-redux";
+  import { useState } from "react";
+  import { TbMenu2 } from  "react-icons/tb";
+  import { IoMdArrowDropdown } from "react-icons/io";
+
   import {
     removeCoordinate,
     updateCoordinateMappingField,
@@ -227,9 +231,194 @@
       );
     };
 
+    const [dropdown,setDropdown]=useState(true);
+    
+    const toggleDropdown = ()=>{
+      if (dropdown === false){
+        setDropdown(true)
+        console.log(true)
+      }
+      // console.log(dropdown)
+      if(dropdown === true){
+        setDropdown(false)
+        console.log(false)
+      }
+    }
     console.log("salesforce",JSON.stringify(salesforceFieldsMetadata));
     return (
-      <div className="right-sidebar-tool-detail">
+      <>
+      <div className="right-sidebar-tool-detail-mobile">
+        <div style={{marginLeft:"30px"}} className="right-sidebar-tool-header">
+          <div style={{alignSelf:"center"}}>
+            <BsTextareaT
+              style={{ color: "#555d65", margin: "0px 5px -3px 0px" }}
+            />
+            <span
+              style={{
+                fontSize: "12px",
+                alignSelf:"center",
+                color: "#555d65",
+              }}
+            >
+              TEXT
+            </span>
+          </div>
+          <MdDelete
+            style={{
+              cursor: "pointer",
+        backgroundColor: "red",
+        padding: "5px",
+        borderRadius: "100%",
+        fontSize: "16px",
+        marginRight: "50px",
+        color: "white",
+            }}
+            onClick={handleEleDelete}
+          />
+        </div>
+        {dropdown && (
+      <>
+        <div className="right-sidebar-section">
+          <label htmlFor="currentCoordSigner" className="field-lbl">
+            Assigned to
+          </label>
+          <div>
+            <CustomSelect
+              value={signatoryList.find(
+                (signatory) => signatory.id === activeCoordinate.signatory_id
+              )}
+              name="currentCoordSigner"
+              options={signatoryList}
+              onChange={(e) => {
+                handleCurrentCoordSignatoryChange(e);
+              }}
+            ></CustomSelect>
+          </div>
+        </div>
+
+        {/* <div key={activeCoordinate.name} className="right-sidebar-section">
+          <label className="field-lbl">
+            Name<span style={{ color: "red" }}>*</span>
+          </label>
+          <input
+            defaultValue={activeCoordinate.name}
+            onChange={(event) => handleCurrentCoordNameChange(event)}
+            className="input-field"
+          />
+        </div> */}
+
+     
+
+        {!activeCoordinate.updateFromSalesforce ? (
+          activeCoordinate.mappingField.type ===
+          SalesforceFieldTypeEnum.PICKLIST ? (
+            <div className="right-sidebar-section">
+              <label className="field-lbl">Default Value</label>
+              <CustomSelect
+                value={{
+                  label: activeCoordinate.value,
+                  value: activeCoordinate.value,
+                }}
+                name="picklistValue"
+                options={activeCoordinate.mappingField.picklistOption}
+                useFor="MAPPING"
+                onChange={(e) => {
+                  handleCurrentCoordValueChange(e.value);
+                }}
+              ></CustomSelect>
+            </div>
+          ) : (
+            <div key={activeCoordinate.value} className="right-sidebar-section">
+              <label className="field-lbl">Default Value</label>
+              <input
+                defaultValue={activeCoordinate.value}
+                onBlur={(event) => {
+                  handleCurrentCoordValueChange(event.target.value);
+                }}
+                className="input-field"
+              />
+            </div>
+          )
+        ) : null}
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            paddingLeft:"0 !important"
+          }}
+          className="right-sidebar-section"
+        >
+          <CustomToggle
+            title="Required"
+            defaultValue={activeCoordinate.isRequired}
+            onChange={(value) => {
+              handleCurrentCoordIsRequiredChange(value);
+            }}
+          />
+          <CustomToggle
+            title="Writeback to Salesforce"
+            defaultValue={activeCoordinate.writeBack}
+            onChange={(value) => {
+              handleCurrentCoordWriteBackSettingsChange(value);
+            }}
+          />
+         
+          <CustomToggle
+            title="Update from Salesforce"
+            defaultValue={activeCoordinate.updateFromSalesforce}
+            onChange={(value) => {
+              handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+            }}
+              
+          />
+           {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
+               <>
+               <hr style={{width:"100vw", margin:"5px 0"}} />
+             <div id="textbox-input" className="right-sidebar-section">
+            <label className="field-lbl">Map with {sobjectAPIName}'s field</label> 
+     <CustomSelect
+              value={activeCoordinate.mappingField}
+              name="signer"
+              options={salesforceFieldsMetadata.filter(
+                (field) =>
+                  field.type === SalesforceFieldTypeEnum.STRING ||
+                  field.type === SalesforceFieldTypeEnum.TEXTAREA
+              )}
+              useFor="MAPPING"
+              onChange={(e) => {
+                handleCurrentCoordMappingFieldChange(e);
+              }}
+            ></CustomSelect>
+          </div>
+          </>
+        ) : null}
+        </div>
+        </>
+      )}
+      <div className="mobile-dropdown" style={{ marginTop: "4px"}}>
+          <div onClick={toggleDropdown} className="dropdown-toggle-btn">
+            < IoMdArrowDropdown
+      
+              style={{
+                margin: "10px",
+                marginTop : "16px",
+                position : "absolute",
+                top : "0",
+                fontSize : "x-large",
+                left : "0",
+                padding: "0px",
+                // backgroundColor: "#4D4D4D",
+                color: "black",
+                borderRadius: "100%",
+                // fontSize: "medium",
+              }}
+            />
+            <hr />
+          </div>
+        </div>
+      </div>
+      <div className="right-sidebar-tool-detail-desktop">
         <div className="right-sidebar-tool-header">
           <div>
             <BsTextareaT
@@ -365,6 +554,7 @@
           />
         </div>
       </div>
+      </>
     );
   }
 
