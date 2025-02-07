@@ -23,6 +23,9 @@ function CheckboxButtonContainer({ documentBounding }) {
   );
 
   const onDragEnd = (event) => {
+    try{
+
+    
     const field = supportedFields.find(
       (field) => field.type === FieldTypeEnum.CHECKBOX
     );
@@ -58,7 +61,13 @@ function CheckboxButtonContainer({ documentBounding }) {
     dispatch(
       setActiveCoordinate({ activeCoordinate: newEle, isSelectionMode: true })
     );
+  }catch(e){
+    console.log('@@@ ERROR::'+e.message);  
+    localStorage.setItem('unexpected-error',e.stack)
+    window.location.href='/unexpected-error'    
+    throw new Error(e.message);
   };
+}
 
   return (
     <button type="button" className="tool-btn" onDragEnd={onDragEnd} draggable>

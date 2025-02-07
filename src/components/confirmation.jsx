@@ -1,5 +1,5 @@
 import { hover } from '@testing-library/user-event/dist/hover';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
 
 
@@ -48,8 +48,19 @@ const Confirmation = (props) => {
         setAgreeToConditions(false);
       }
     }
+    
+
+    useEffect(()=>{
+      if((writebackFields.length<=0 || writebackFields[0]===undefined)&& (updateFields.length<=0 || updateFields[0]===undefined)){
+        sendEvent();
+      }
+    },[])
 
   return (
+    <div style={{width:'100vw',height:'100vh',position:'fixed',top:'0',left:'0',alignContent:'center'}}>
+    { (
+
+      
     <div className='inner-confirmationDiv'>
       <div className='return-btn'  onClick={()=>{returnEvent()}} ><RxCross2 />
       </div>
@@ -114,6 +125,9 @@ const Confirmation = (props) => {
         </div>
         
     </div>
+  )
+  }
+  </div>
   )
 }
 
