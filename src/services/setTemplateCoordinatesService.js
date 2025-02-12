@@ -22,7 +22,7 @@ const SetTemplateCoordinatesService = async (finalCoordData, uuid, tiUUID) => {
     console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
     localStorage.setItem('unexpected-error',error.stack)
 
-    // window.location.href='/unexpected-error'    
+    window.location.href='/unexpected-error'    
     throw new Error("Something went wrong, failed to fetch data from server.");
   }
 };

@@ -668,10 +668,14 @@ function validateCoordinates(finalCoordData) {
               template_instance_uuid == null ? "Create Template" : "Create TI",
             errorMessage: JSON.stringify(error),
           };
-          window.parent.postMessage(message, "*");
-          // console.log("@@@ Saved coordinate: " + JSON.stringify(error));
-          ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
           setIsLoading(false);
+          // localStorage.setItem('unexpected-error',error.stack)
+          // window.location.href='/unexpected-error'    
+          window.parent.postMessage(message, "*");
+          // throw new Error("Something went wrong, failed to fetch data from server.");
+          console.log("@@@ Saved coordinate: " + JSON.stringify(error));
+          ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
+          
         }
   };
 
