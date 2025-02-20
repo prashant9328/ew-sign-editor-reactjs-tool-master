@@ -460,6 +460,7 @@
     height: 26px;
     /* margin-top: 0; */
     align-items: center;
+    align-content: center;
     /* z-index: 999; */
         
     }
@@ -635,6 +636,39 @@
     }
     .tool-btn{
         width: 45% !important;
+    }
+    .done-btn{
+    background-color: #19ab27;
+    color: #ffffff;
+    cursor: pointer;
+    margin-top: 18.5px;
+    /* padding: 16px 75px; */
+    /* padding: 10px 32px; */
+    font-size: small;
+    position: absolute;
+    /* right: 100px; */
+    right: 20px;
+    /* top: 0px; */
+    padding : 8px;
+    border-radius: 5px;
+    bottom: 50;
+    border: 1px solid #f9f9f9;
+    border-width: 0px 1px 0px 1px;
+    text-transform: uppercase;
+    /* width: 26px; */
+    width: 40%;
+    display: flex;
+    /* margin-top: 0; */
+    align-items: center;
+    align-content: center !important;
+    align-self: center;
+    z-index: 0;
+        
+    }
+    .done-btn svg{
+        width: 20px;
+        /* height: 18.5px; */
+        margin:0px 0px 0px 0px !important;
     }
 }
 @media only screen and (min-width: 768px){
@@ -825,20 +859,45 @@
         width: 100vw !important;
         height: auto !important;
     }
+    
 }
-@media only screen and (min-width:768px) and (max-width: 1200px){
+
+
+
+@media only screen and (min-width:1200px){
+    .backdrop-focus{
+        background-color:#5f5f5f50;
+        position: fixed;
+        z-index:999;
+        top:50px;
+        /* left:100px; */
+        left: 0;
+        width:78vw; 
+        height: 100vh; 
+        /* right: 50% !important; */
+        /* margin-right: 200px !important; */
+    }
+    .backdrop-navbar{
+        background-color:#5f5f5f50;
+        position: fixed;
+        z-index:999;
+        top:0;
+        left:0;
+        width:100vw; 
+        height: 50px; 
+    }
     .container{
         grid-template-columns : auto
     }
     .left-sidebar-desktop{
-        width: 30vw !important;
+        width: 22vw !important;
     }
     .right-sidebar-desktop{
         width: 22vw !important;
         padding: 0 !important;
     }
     .document{
-        width: 40vw !important;
+        width: 50vw !important;
         margin: 10px auto 0 auto;
         align-items: center;
         align-self: center;
@@ -848,7 +907,72 @@
         height: auto !important;
         margin: 0 auto;
     }
+    
+    .paggination, .flexbox-item{
+        width: 15vw !important;
+        margin : 0 8.5vw 0 auto;
+        position: relative;
+    }
+    .page-count{
+        position: absolute !important;
+        right:-0px !important
+    }
 }
+@media only screen and (min-width:768px) and (max-width: 1200px){
+    .container{
+        grid-template-columns : auto
+    }
+    .left-sidebar-desktop{
+        width: 27vw !important;
+    }
+    .right-sidebar-desktop{
+        /* min-width: 25vw !important; */
+        width: 27vw !important;
+        padding: 0 !important;
+        z-index: 100;
+    }
+    .document{
+        width: 45vw !important;
+        margin: 0px auto 0 auto;
+        align-items: center;
+        align-self: center;
+    }
+    .document canvas {
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 auto;
+    }
+    .backdrop-focus{
+        background-color:#5f5f5f50;
+        position: fixed;
+        z-index:99;
+        top:50px;
+        left:0;
+        width: 74%; 
+        height: 100vh; 
+    }
+    .backdrop-navbar{
+        background-color:#5f5f5f50;
+        position: fixed;
+        z-index:999;
+        top:0;
+        left:0;
+        width:100vw; 
+        height: 50px; 
+    }
+    .paggination, .flexbox-item{
+        width: 20vw !important;
+        margin : 0 auto 0 auto;
+        position: relative;
+    }
+    .page-count{
+        position: absolute !important;
+        right:-0px !important
+    }
+    
+    
+}
+
 
 .field-container{
     display: flex;
@@ -927,6 +1051,8 @@
     right: 24px;
     /* top: 0px; */
     top: 5px;
+    /* right: 0; */
+    /* top : 0; */
     border: 1px solid #f9f9f9;
     border-radius: 4px;
     border-width: 0px 1px 0px 1px;

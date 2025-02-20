@@ -466,7 +466,7 @@ function SelectedDateContainer({sendSalesforceData}) {
           DATE
         </span>
       </div>
-      <MdDelete
+      {/* <MdDelete
         style={{
           cursor: "pointer",
           fontSize: "16px",
@@ -474,7 +474,7 @@ function SelectedDateContainer({sendSalesforceData}) {
           color: "#555d65",
         }}
         onClick={handleEleDelete}
-        />
+        /> */}
     </div>
 
     <div className="right-sidebar-section">
@@ -577,6 +577,34 @@ function SelectedDateContainer({sendSalesforceData}) {
         }}
         />
         </div>
+        <button onClick={handleEleDelete} style={{
+                      cursor: "pointer",
+                      fontSize: "small",
+                      marginRight: "0px",
+                      color: "#ffffff",
+                      backgroundColor:'#4d4d4d',
+                      borderRadius:'5px',
+                      position:'absolute',
+                      bottom : '-49px',
+                      border:'0',
+                      shadown:'0',
+                      alignItems:'center',
+                      alignSelf:'center',
+                      right:'50%',
+                      padding:'8px',
+                      marginTop:'10px',
+                      // bottom:'-60%',
+                      width:'40%',
+                      display:'flex',
+                      zIndex:0
+                    }}>
+                  <MdDelete
+                    
+                    
+                  />
+                  
+                  DELETE
+                  </button>
     </div>
   </div>
   </>

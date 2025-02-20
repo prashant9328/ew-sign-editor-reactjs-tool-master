@@ -40,7 +40,7 @@ const SelectionModeContainer = ({handleSalesforceFields}) => {
       case FieldTypeEnum.SIGNATURE:
         return <SelectedSignatureContainer />;
       case FieldTypeEnum.TEXT:
-        return <SelectedTextBoxContainer />;
+        return <SelectedTextBoxContainer  />;
       case FieldTypeEnum.DATE:
         return <SelectedDateContainer sendSalesforceData={handleSalesforceData} />;
       case FieldTypeEnum.CHECKBOX:

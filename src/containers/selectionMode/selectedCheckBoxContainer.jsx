@@ -404,15 +404,7 @@ function SelectedCheckBoxContainer({}) {
           CHECKBOX
         </span>
       </div>
-      <MdDelete
-        style={{
-          cursor: "pointer",
-          fontSize: "16px",
-          marginRight: "10px",
-          color: "#555d65",
-        }}
-        onClick={handleEleDelete}
-      />
+      
     </div>
 
     <div className="right-sidebar-section">
@@ -502,6 +494,33 @@ function SelectedCheckBoxContainer({}) {
           handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
         }}
       />
+      <button onClick={handleEleDelete} style={{
+                    cursor: "pointer",
+                    fontSize: "small",
+                    marginRight: "0px",
+                    color: "#ffffff",
+                    backgroundColor:'#4d4d4d',
+                    borderRadius:'5px',
+                    position:'absolute',
+                    bottom : '-50px',
+                    border:'0',
+                    shadown:'0',
+                    alignItems:'center',
+                    alignSelf:'center',
+                    right:'50%',
+                    padding:'8px',
+                    marginTop:'10px',
+                    width:'40%',
+                    display:'flex',
+                    zIndex:'0'
+                  }}>
+                <MdDelete
+                  
+                  
+                />
+                
+                DELETE
+                </button>
     </div>
   </div>
   </>

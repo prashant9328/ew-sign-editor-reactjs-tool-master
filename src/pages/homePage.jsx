@@ -38,7 +38,7 @@ import { setActivePageNumber } from "redux/slices/activePageNumberReducer";
 import { setActiveCoordinate } from "redux/slices/activeCoordinateReducer";
 import { setSupportedFields } from "redux/slices/supportedFieldsReducer";
 import { setSignatoryList } from "redux/slices/signatoryListReducer";
-import { setSalesforceFieldsMetadata } from "redux/slices/salesforceFieldsMetadataReducer";
+import { salesforceFieldsMetadataSlice, setSalesforceFieldsMetadata } from "redux/slices/salesforceFieldsMetadataReducer";
 //
 import { ToastTypeEnum } from "constants/toastTypeEnum";
 
@@ -137,6 +137,7 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
   const [finalCountDownTime, setFinalCountDownTime] = React.useState(0);
   // const sessionTime = 10; // 10 seconds
   const sessionTime = 3600 * 2; // 2 hours session
+  const [salesforceFieldsData,setSalesforceFieldsData]=useState();
   
   const uuid = searchParams.get("uuid");
   const template_instance_uuid =
@@ -183,6 +184,14 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
       const sobjectAPIName = apiResult.sobjectAPIName;
       console.log("homepage sobject",sobjectAPIName);
       const signatoryList = apiResult.signatoryList;
+      console.log('sobject fiels @@@@@ : ',data.sobjectFields);
+      try{
+        setSalesforceFieldsData({'apiName' : sobjectAPIName,'fields': data.sobjectFields});
+        // templist = templist;
+        
+      }catch(e){
+        console.error(e.message)
+      }
       dispatch(
         setSalesforceFieldsMetadata({
           sobjectAPIName: sobjectAPIName,
@@ -332,6 +341,7 @@ function validateCoordinates(finalCoordData) {
       salesforceFieldData.item = item;
     }
   });
+
 
   if (!salesforceFieldData.isValidate) {
     dispatch(
@@ -514,7 +524,6 @@ function validateCoordinates(finalCoordData) {
   //   console.log('setTNC TO TRUE')
   //   console.log(agreeToTnC)
   // }
-
   const continueHandleContinue = async () => {
     let finalCoordData = [
       ...signatureCoordinates,
@@ -698,15 +707,52 @@ function validateCoordinates(finalCoordData) {
   //   console.log(dateList.length)
   // };
   const [dateFieldList,setDateFieldList]=useState([])
+  const [writebackFieldList , setWritebackFieldList]=useState([]);
+
+  useEffect(()=>{
+    console.log('@@@@@writebackFieldList : ',writebackFieldList);
+    
+    console.log('@@@@@salesforceFieldList : ',salesforceFieldsData);
+    const temp = salesforceFieldsData;
+    const apiNameToRemove = writebackFieldList?.map(item => item.apiName)
+    console.log('Api Name remove : ', apiNameToRemove)
+    setSalesforceFieldsData({'apiName': temp?.apiName,'fields':temp?.fields.filter(item=> !apiNameToRemove.includes(item.apiName))})
+    // salesforceFieldsData.fields = temp?.fields.filter(item=> !apiNameToRemove.includes(item.apiName))
+    
+    
+  },[writebackFieldList])
+
+  useEffect(()=>{
+    console.log('updated salesforce Fields Data : @@@@',salesforceFieldsData)
+    dispatch(
+      setSalesforceFieldsMetadata({
+        sobjectAPIName: salesforceFieldsData?.apiName,
+        salesforceFieldsMetadata: salesforceFieldsData?.fields,
+      })
+    );
+
+  },[salesforceFieldsData])
+
   const updateSalesforceData = async () => {
 
     // let dateList = []; // Initialize the dateList array
     // Parse obj2 from the Salesforce fields
-    const obj2 = JSON.parse(salesforceFields);
-    console.log(obj2.writeback);
-    console.log(obj2.updateFromSalesforce);
+    const obj2 = (salesforceFields);
+    console.log('@@@@@writeback',activeCoordinate);
+    if(activeCoordinate.writeBack){
+      setWritebackFieldList(writebackFieldList.every(value => value!==activeCoordinate.mappingField)?[...writebackFieldList,activeCoordinate.mappingField]:writebackFieldList);
+    }
+
+    const temp = salesforceFieldsData;
     
-    console.log("Type of datelist : ", typeof(datelist))
+    // console.log('@@@@@writeback',writebackFieldList);
+
+
+    
+    
+    // console.log(obj2.updateFromSalesforce);
+    
+    // console.log("Type of datelist : ", typeof(datelist))
     // Check if the first element of dateList is undefined or null
     if (dateFieldList[0]) {
       console.log("Checking for existing apiName...");
@@ -766,16 +812,6 @@ function validateCoordinates(finalCoordData) {
   useEffect(() => {
     generatePdfUrl(); // Call the function when the component mounts
   }, [uuid, template_instance_uuid]); // Dependencies if uuid/template_instance_uuid change
-
-  
-
-
-
-
-
-
-
-
 
   
 
@@ -844,8 +880,21 @@ function validateCoordinates(finalCoordData) {
           </div>
         </div>
       ) : (
+        
         <div className="container">
-          <div className="navbar">
+          <div style={isSelectionMode?{'cursor':'not-allowed'}:{}} className="navbar">
+          <div>
+            {isSelectionMode && 
+            <div style={{position:'fixed',zIndex:'999'}}>
+            <div className="backdrop-focus" >
+              &nbsp;
+            </div>
+            <div className="backdrop-navbar">
+              &nbsp;
+            </div>
+            </div>
+            }
+            
             <div className="nav-flex">
             <div>
             <img
@@ -864,23 +913,10 @@ function validateCoordinates(finalCoordData) {
                   : "SEND TO SIGN"}
               </button>
             )}
-            {isSelectionMode && (
-              <button
-              className="continue-btn"
-              onClick={() => {
-                updateSalesforceData()
-                dispatch(
-                    setActiveCoordinate({
-                      activeCoordinate: {},
-                      isSelectionMode: false,
-                    })
-                  );
-                }}
-                >
-                Done
-              </button>
-            )}
+           
             </div>
+            </div>
+
             </div>
           </div>
           <div className="mobile-navbar">
@@ -912,7 +948,9 @@ function validateCoordinates(finalCoordData) {
               {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
             </div>
           </div>
-          <div className="left-sidebar-desktop">
+          <div className="left-sidebar-desktop" style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}  >
+            <div style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}} >
+
             <div className="tools-title">Signer</div>
             <CustomSelect
               value={activeSignatory}
@@ -943,6 +981,7 @@ function validateCoordinates(finalCoordData) {
                 : null
               }
           </div>
+            </div>
           {confirmationPopup && ( 
             <div className="confirmationDiv">
                   <Confirmation
@@ -953,9 +992,17 @@ function validateCoordinates(finalCoordData) {
                  />
                  </div>
               )}
-          
-          <div>
+          <div style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}>
+            <div style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}} >
+
+            
+            
+          <div  >
+            <div style={{backgroundColor:"black"}}>
+
+            </div>
             <div
+              style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}}
               className="document"
               id="center-img-div"
               ref={scrollContainer}
@@ -971,6 +1018,7 @@ function validateCoordinates(finalCoordData) {
                 event.target.style.cursor = "auto";
                 handleDragLeave();
               }}
+              style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}
             >
             
 
@@ -988,7 +1036,7 @@ function validateCoordinates(finalCoordData) {
                 scale={scale}
               >
                 {({ zoomIn, zoomOut }) => (
-                  <React.Fragment>
+                  <React.Fragment >
                     {!(isLoading || isPDFLoading) && !isSelectionMode ? (
                       <footer className="footer">
                         <Paggination
@@ -999,7 +1047,7 @@ function validateCoordinates(finalCoordData) {
                         ></Paggination>
                       </footer>
                     ) : null}
-                    <TransformComponent>
+                    <TransformComponent >
                       <SignatureCoordinatesContainer
                         scrollContainer={scrollContainer}
                       />
@@ -1013,6 +1061,7 @@ function validateCoordinates(finalCoordData) {
                         scrollContainer={scrollContainer}
                       />
                       <div
+                      
                         ref={documentContainer}
                         onClick={() => resetSelectionMode()}
                         style={{
@@ -1028,9 +1077,10 @@ function validateCoordinates(finalCoordData) {
                         }}
                       ></div>
                       {/* {console.log(template_instance_uuid != null && template_instance_uuid.length>0 ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}` : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`)}    */}
-                      <div className="testing">
+                      <div  className="testing">
                        
                       <PdfViewer
+                      
                           pdf={
                             template_instance_uuid != null &&
                             template_instance_uuid.length > 0
@@ -1057,6 +1107,8 @@ function validateCoordinates(finalCoordData) {
               </TransformWrapper>
             </div>
           </div>
+          </div>
+          </div>
           <div
             className="right-sidebar-desktop"
             id="right-sidebar-div"
@@ -1064,13 +1116,34 @@ function validateCoordinates(finalCoordData) {
           > 
             {/* <SelectionModeContainer handleSalesforceFields={handleSalesforceFields} style={{display:"none"}} /> */}
             {isSelectionMode && activeCoordinate && <SelectionModeContainer handleSalesforceFields={handleSalesforceFields} />
-          }
+
+}
+{isSelectionMode && (
+ <button
+ className="done-btn"
+ onClick={() => {
+   updateSalesforceData()
+   dispatch(
+       setActiveCoordinate({
+         activeCoordinate: {},
+         isSelectionMode: false,
+       })
+     );
+   }}
+   >
+    <TiTick style={{margin:'0 auto 0 auto',alignSelf:'center'}}/>
+   Done
+ </button>
+)}
             <div
               ref={scrollImage}
               style={{
                 position: "absolute",
                 overflowY: "hidden",
                 height: "92vh",
+                minWidth:'25vw',
+                maxWidth:'27vw',
+                zIndex:'-99'
               }}
             >
               {!isSelectionMode && totalPage !== 0 &&
