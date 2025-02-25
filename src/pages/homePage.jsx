@@ -1228,15 +1228,13 @@ function validateCoordinates(finalCoordData) {
                 position: "absolute",
                 overflowX:"hidden",
                 height: "92vh",
-                minWidth:'25vw',
-                maxWidth:'27vw',
+                width:"inherit",
                 zIndex:'-1'
               }:{
                 position: "absolute",
                 overflowX:"hidden",
                 height: "92vh",
-                minWidth:'25vw',
-                maxWidth:'27vw',
+                width:"inherit",
                 zIndex:'0'
               }}
             >
