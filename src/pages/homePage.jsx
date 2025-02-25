@@ -1033,7 +1033,7 @@ function validateCoordinates(finalCoordData) {
             </div>
           </div>
           <div className="left-sidebar-desktop" style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}  >
-            <div style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}} >
+            <div className="left-sidebar-desktop-inner" style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}} >
 
             <div className="tools-title">Signer</div>
             <CustomSelect
@@ -1082,9 +1082,11 @@ function validateCoordinates(finalCoordData) {
             
             
           <div  >
-            <div style={{backgroundColor:"black"}}>
-
+            {isSelectionMode && (
+            <div className="mobile-backdrop">
+              &nbsp;
             </div>
+            )}
             <div
               style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}}
               className="document"
@@ -1196,7 +1198,7 @@ function validateCoordinates(finalCoordData) {
           <div
             className="right-sidebar-desktop"
             id="right-sidebar-div"
-            style={{ position: "relative", paddingRight: "10px" }}
+            style={{ position: "relative", paddingRight: "10px",overflowY:"scroll",overflowX:'hidden' }}
           > 
             {/* <SelectionModeContainer handleSalesforceFields={handleSalesforceFields} style={{display:"none"}} /> */}
             {isSelectionMode && activeCoordinate && <SelectionModeContainer handleSalesforceFields={handleSalesforceFields} />
@@ -1223,7 +1225,7 @@ function validateCoordinates(finalCoordData) {
               ref={scrollImage}
               style={{
                 position: "absolute",
-                overflowY: "hidden",
+                overflowX:"hidden",
                 height: "92vh",
                 minWidth:'25vw',
                 maxWidth:'27vw',
