@@ -1193,7 +1193,7 @@ function validateCoordinates(finalCoordData) {
                   );
                 })}
             </div>
-}
+
             
           </div>
           <div className="right-sidebar-mobile">
