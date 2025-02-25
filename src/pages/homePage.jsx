@@ -277,87 +277,6 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
     };
   }, []);
 
-// function validateCoordinates(finalCoordData) {
-//   console.log("finalCoordData", finalCoordData);
-//   console.log("finalCoordData", JSON.stringify(finalCoordData));
-
-//   if (finalCoordData.length === 0) {
-//     return {
-//       isValidate: false,
-//       msg: "Please add at least one field for each user.",
-//     };
-//   }
-
-//   const finalCoordSignatoryIdList = finalCoordData.map(coord => coord.signatory_id);
-
-//   let isValidSignatories = finalCoordSignatoryIdList.every(signatoryId =>
-//     signatoryList.some(signatory => signatory.id === signatoryId)
-//   );
-
-//   if (!isValidSignatories) {
-//     return {
-//       isValidate: false,
-//       msg: "Please add at least one field for each user.",
-//     };
-//   }
-
-//   let missingRequiredCoordinate = false;
-//   let signatoryIdx = 0;
-
-//   for (let i = 0; i < finalCoordSignatoryIdList.length; i++) {
-//     const signatoryId = finalCoordSignatoryIdList[i];
-    
-//     for (let j = 0; j < finalCoordData.length; j++) {
-//       const coord = finalCoordData[j];
-
-//       if (coord.signatory_id === signatoryId) {
-//         if (coord.isRequired === true) {
-//           missingRequiredCoordinate = true;
-//           break; 
-//         }
-//       }
-//     }
-
-//     if (!missingRequiredCoordinate) {
-//       return {
-//         isValidate: false,
-//         msg: "Please add at least one required field for each user.",
-//       };
-//     }
-
-//     missingRequiredCoordinate = false;
-//   }
-
-//   let salesforceFieldData = { isValidate: true, item: "" };
-
-//   finalCoordData.forEach((item) => {
-//     if (
-//       (item.writeBack || item.updateFromSalesforce) &&
-//       Object.values(item.mappingField).filter(
-//         (innerItem) => innerItem.length === 0
-//       ).length > 0
-//     ) {
-//       salesforceFieldData.isValidate = false;
-//       salesforceFieldData.item = item;
-//     }
-//   });
-
-//   if (!salesforceFieldData.isValidate) {
-//     dispatch(
-//       setActiveCoordinate({
-//         activeCoordinate: salesforceFieldData.item,
-//         isSelectionMode: true,
-//       })
-//     );
-
-//     return {
-//       isValidate: false,
-//       msg: "Please add field mapping for this field",
-//     };
-//   }
-
-//   return { isValidate: true, msg: "done" };
-// }
 function validateCoordinates(finalCoordData) {
   console.log("finalCoordData", finalCoordData);
   console.log("finalCoordData", JSON.stringify(finalCoordData));
@@ -371,27 +290,42 @@ function validateCoordinates(finalCoordData) {
 
   const finalCoordSignatoryIdList = finalCoordData.map(coord => coord.signatory_id);
 
-  // Ensure every signatory in signatoryList has at least one field
-  const allSignatoryIds = signatoryList.map(signatory => signatory.id);
-  let missingSignatory = allSignatoryIds.some(signatoryId => !finalCoordSignatoryIdList.includes(signatoryId));
-  let signatoryId = 0;
-  if (missingSignatory) {
+  let isValidSignatories = finalCoordSignatoryIdList.every(signatoryId =>
+    signatoryList.some(signatory => signatory.id === signatoryId)
+  );
+
+  if (!isValidSignatories) {
     return {
       isValidate: false,
-      msg: "Each signatory must add at least one field.",
+      msg: "Please add at least one field for each user.",
     };
   }
 
-  // Ensure each signatory has at least one required field
-  let missingRequiredSignatory = allSignatoryIds.some(signatoryId => {
-    return !finalCoordData.some(coord => coord.signatory_id === signatoryId && coord.isRequired === true);
-  });
+  let missingRequiredCoordinate = false;
+  let signatoryIdx = 0;
 
-  if (missingRequiredSignatory) {
-    return {
-      isValidate: false,
-      msg: "Each signatory must add at least one required field.",
-    };
+  for (let i = 0; i < finalCoordSignatoryIdList.length; i++) {
+    const signatoryId = finalCoordSignatoryIdList[i];
+    
+    for (let j = 0; j < finalCoordData.length; j++) {
+      const coord = finalCoordData[j];
+
+      if (coord.signatory_id === signatoryId) {
+        if (coord.isRequired === true) {
+          missingRequiredCoordinate = true;
+          break; 
+        }
+      }
+    }
+
+    if (!missingRequiredCoordinate) {
+      return {
+        isValidate: false,
+        msg: "Please add at least one required field for each user.",
+      };
+    }
+
+    missingRequiredCoordinate = false;
   }
 
   let salesforceFieldData = { isValidate: true, item: "" };
@@ -399,7 +333,9 @@ function validateCoordinates(finalCoordData) {
   finalCoordData.forEach((item) => {
     if (
       (item.writeBack || item.updateFromSalesforce) &&
-      Object.values(item.mappingField).some(innerItem => innerItem.length === 0)
+      Object.values(item.mappingField).filter(
+        (innerItem) => innerItem.length === 0
+      ).length > 0
     ) {
       salesforceFieldData.isValidate = false;
       salesforceFieldData.item = item;
@@ -417,13 +353,12 @@ function validateCoordinates(finalCoordData) {
 
     return {
       isValidate: false,
-      msg: "Please add field mapping for this field.",
+      msg: "Please add field mapping for this field",
     };
   }
 
   return { isValidate: true, msg: "done" };
 }
-
 
   
 
@@ -599,39 +534,41 @@ function validateCoordinates(finalCoordData) {
 
     const validation = validateCoordinates(finalCoordData);
 
+    
     if (!validation.isValidate) {
       setIsLoading(false);
       ShowToast(ToastTypeEnum.ERROR, validation.msg);
       return;
     }
-
+    
     // try {
-    //   await SetTemplateCoordinatesService(finalCoordData, uuid, template_instance_uuid);
-    //   ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
-    //   const message = {
-    //     messageFrom: "EW Sign Editor",
-    //     status: true,
-    //     action:
-    //       template_instance_uuid == null ? "Create Template" : "Create TI",
-    //   };
-
-    //   if (template_instance_uuid != null) {
-    //     console.log("TI NOT NULL");
-    //     console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
+      //   await SetTemplateCoordinatesService(finalCoordData, uuid, template_instance_uuid);
+      //   ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
+      //   const message = {
+        //     messageFrom: "EW Sign Editor",
+        //     status: true,
+        //     action:
+        //       template_instance_uuid == null ? "Create Template" : "Create TI",
+        //   };
+        
+        //   if (template_instance_uuid != null) {
+          //     console.log("TI NOT NULL");
+          //     console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
     //     message.signatureFlow = generalDocumentData.signatureFlow;
     //     message.uuid = uuid;
     //     message.template_instance_uuid = template_instance_uuid;
     //   }
     //   console.log("POST MESSAGE: " + JSON.stringify(message));
     //   window.parent.postMessage(message, "*");
-
+    
     //   setIsLoading(false);
     //   setConfirmationPopup(false); // Close the popup after save
     // } catch (error) {
-    //   ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
-    //   setIsLoading(false);
-    // }
-    try {
+      //   ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
+      //   setIsLoading(false);
+      // }
+      try {
+          console.log('@@@@finalcoorddata : ', finalCoordData)
           await SetTemplateCoordinatesService(
             finalCoordData,
             uuid,
@@ -668,35 +605,16 @@ function validateCoordinates(finalCoordData) {
               template_instance_uuid == null ? "Create Template" : "Create TI",
             errorMessage: JSON.stringify(error),
           };
-          setIsLoading(false);
-          // localStorage.setItem('unexpected-error',error.stack)
-          // window.location.href='/unexpected-error'    
           window.parent.postMessage(message, "*");
-          // throw new Error("Something went wrong, failed to fetch data from server.");
-          console.log("@@@ Saved coordinate: " + JSON.stringify(error));
+          // console.log("@@@ Saved coordinate: " + JSON.stringify(error));
           ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
-          
+          setIsLoading(false);
         }
   };
 
   const handleContinue = async () => {
     setIsFetching(false);
-    
     if (confirmationPopup === false) {
-      let finalCoordData = [
-        ...signatureCoordinates,
-        ...textBoxCoordinates,
-        ...dateCoordinates,
-        ...checkBoxCoordinates,
-      ];
-  
-      const validation = validateCoordinates(finalCoordData);
-  
-      if (!validation.isValidate) {
-        setIsLoading(false);
-        ShowToast(ToastTypeEnum.ERROR, validation.msg);
-        return;
-      }
       setConfirmationPopup(true); // Open confirmation popup
     } else {
       setConfirmationPopup(false); // Close confirmation popup
@@ -1219,7 +1137,8 @@ function validateCoordinates(finalCoordData) {
    Done
  </button>
 )}
-            <div
+{!isSelectionMode && 
+  <div
               ref={scrollImage}
               style={{
                 position: "absolute",
@@ -1227,7 +1146,7 @@ function validateCoordinates(finalCoordData) {
                 height: "92vh",
                 minWidth:'25vw',
                 maxWidth:'27vw',
-                zIndex:'-99'
+                // zIndex:'-1'
               }}
             >
               {!isSelectionMode && totalPage !== 0 &&
@@ -1267,6 +1186,8 @@ function validateCoordinates(finalCoordData) {
                   );
                 })}
             </div>
+}
+            
           </div>
           <div className="right-sidebar-mobile">
           {isSelectionMode && activeCoordinate && <SelectionModeContainer handleSalesforceFields={handleSalesforceFields}  />}
