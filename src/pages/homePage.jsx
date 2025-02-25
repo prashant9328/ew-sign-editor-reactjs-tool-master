@@ -1221,15 +1221,23 @@ function validateCoordinates(finalCoordData) {
    Done
  </button>
 )}
+    
             <div
               ref={scrollImage}
-              style={{
+              style={isSelectionMode?{
                 position: "absolute",
                 overflowX:"hidden",
                 height: "92vh",
                 minWidth:'25vw',
                 maxWidth:'27vw',
-                zIndex:'-99'
+                zIndex:'-1'
+              }:{
+                position: "absolute",
+                overflowX:"hidden",
+                height: "92vh",
+                minWidth:'25vw',
+                maxWidth:'27vw',
+                zIndex:'0'
               }}
             >
               {!isSelectionMode && totalPage !== 0 &&
