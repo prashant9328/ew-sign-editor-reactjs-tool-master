@@ -922,7 +922,7 @@
     }
     
     .paggination, .flexbox-item{
-        width: 15vw !important;
+        /* width: 15vw !important; */
         margin : 0 8.5vw 0 auto;
         position: relative;
     }
@@ -991,7 +991,7 @@
         height: 50px; 
     }
     .paggination, .flexbox-item{
-        width: 20vw !important;
+        /* width: 20vw !important; */
         margin : 0 auto 0 auto;
         position: relative;
     }
@@ -1127,7 +1127,8 @@
 
 .flexbox-container {
     display: flex;
-    margin-top: 15px;
+    /* margin-top: 15px; */
+    margin: 15px auto 0 auto;
 }
 
 .flexbox-container.head{
@@ -1135,9 +1136,9 @@
 }
 
 .flexbox-item {
-    flex-grow: 1;
-    margin: 0px 17px;
-    padding: 0px 4px;
+    /* flex-grow: 1; */
+    margin: auto;
+    /* padding: 0px 4px; */
 }
 
 .flexbox-item canvas {
