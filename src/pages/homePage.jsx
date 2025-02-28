@@ -1170,7 +1170,7 @@ function validateCoordinates(finalCoordData) {
                           pdf={
                             template_instance_uuid != null &&
                             template_instance_uuid.length > 0
-                              ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}`
+                              ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&uuid_template_instance=${template_instance_uuid}`
                               : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
                           }
                           activePage={activePageNumber}
