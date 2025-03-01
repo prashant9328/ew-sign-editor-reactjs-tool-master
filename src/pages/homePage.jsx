@@ -135,6 +135,7 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
   const [isSessionEndedModalOpen, setIsSessionEndedModalOpen] = React.useState(false);
   const [isFinalCountdownActive, setIsFinalCountdownActive] = React.useState(false);
   const [finalCountDownTime, setFinalCountDownTime] = React.useState(0);
+  const [finalCountDownTimeRemaining , setFinalCountDownTimeRemaining] = React.useState();
   // const sessionTime = 10; // 10 seconds
   const sessionTime = 3600 * 2; // 2 hours session
   const [salesforceFieldsData,setSalesforceFieldsData]=useState();
@@ -259,6 +260,11 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
     getDocumentData(reqBody, iv, orgId, token);
   }, []);
 
+  React.useEffect(()=>{
+    if(isSessionEnded){
+      navigate("/session-expired",{replace:true});
+    }
+  },[])
   React.useEffect(() => {
     const intervalStamp = setInterval(() => {
       if (document.getElementsByTagName("canvas")[0]?.style.height) {
@@ -660,6 +666,7 @@ function validateCoordinates(finalCoordData) {
           window.parent.postMessage(message, "*");
           setIsLoading(false);
           setConfirmationPopup(false)
+          localStorage.clear()
         } catch (error) {
           const message = {
             messageFrom: "EW Sign Editor",
@@ -726,23 +733,33 @@ function validateCoordinates(finalCoordData) {
 
   const handleSessionExpired = () => {
     console.log('Session expired...');
-    // session has expired
-    // warn user to click "Send To Sign" button in 10 minutes other you will loose all your changes.
-
     setIsSessionEndedModalOpen(true);
   }
   
+
   const closeModal = () => {
-    setFinalCountDownTime((10 * 60) + sessionTime);
-    setIsSessionEnded(true);
+    
+    // localStorage.setItem('SessionTimer',Number(localStorage.getItem('SessionTimer')) + 1*60*1000)
+    // localStorage.setItem('Status','Extended');
+    // setIsFinalCountdownActive(true);
+    // // setFinalCountDownTime((10 * 60) + sessionTime);
     setIsSessionEndedModalOpen(false);
-    setIsFinalCountdownActive(true);
-    setTimeout(() => {
-      // Reload the page
-      navigate("/session-expired", { replace: true });
-      return;
-    }, 200);
+    // localStorage.clear();
+    
+    // if(shouldExpire){
+      //   setIsSessionEnded(true);
+      // }
+    }
+    const clearSession=()=>{
+    
+    setIsSessionEnded(true);
+    localStorage.clear();
+    navigate('/session-expired',{replace:true});
   }
+
+  // useEffect(()=>{},[finalCountDownTime])
+
+  
 
   const modalChildren = <p style={{padding: "20px"}}>Your editor access session will expire in 10 minutes. Please save your work before then, as you won't be able to save it after that time and risk losing all of your changes. The system will be reloaded automatically after 10 minutes.</p>;
 
@@ -1056,12 +1073,12 @@ function validateCoordinates(finalCoordData) {
             </div>
             
               {!isSessionEnded ? 
-                <SessionTimer timeInSeconds={sessionTime} onSessionExpired={handleSessionExpired} />
+                <SessionTimer onSessionClear={clearSession} onSessionExpired={handleSessionExpired} />
                 : null
               }
             
               {isFinalCountdownActive ? 
-                <SessionTimer timeInSeconds={finalCountDownTime} onSessionExpired={() => {}} />
+                <SessionTimer onSessionClear={()=>{}} onSessionExpired={() => {}} />
                 : null
               }
           </div>
