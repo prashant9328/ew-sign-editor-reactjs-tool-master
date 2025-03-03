@@ -16,7 +16,7 @@ export default function SessionTimer({ onSessionExpired, onSessionClear }) {
     } else {
       if(localStorage.getItem('Status')!=='Expired'){
         
-        const newExpiration = Date.now() + 2 * 60 * 1000; 
+        const newExpiration = Date.now() + 130 * 60 * 1000; 
         localStorage.setItem("SessionTimer", newExpiration);
         localStorage.setItem("Status", "Pending");
         expirationTime = newExpiration;
@@ -26,7 +26,7 @@ export default function SessionTimer({ onSessionExpired, onSessionClear }) {
     const updateTimer = () => {
       const timeLeftMs = expirationTime - Date.now();
       console.log(timeLeftMs)
-      if (timeLeftMs <= 1*60*1000) {
+      if (timeLeftMs <= 10*60*1000) {
         if(timeLeftMs <=0){
           onSessionExpired();
 
@@ -47,9 +47,9 @@ export default function SessionTimer({ onSessionExpired, onSessionClear }) {
       });
         return;
       }else{
-        const hours = Math.floor((timeLeftMs-1*60) / (1000 * 60 * 60));
-        const minutes = Math.floor(((timeLeftMs-1*60) % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor(((timeLeftMs-1*60) % (1000 * 60)) / 1000);
+        const hours = Math.floor((timeLeftMs-10*60*1000) / (1000 * 60 * 60));
+        const minutes = Math.floor(((timeLeftMs-10*60*1000) % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor(((timeLeftMs-10*60*1000) % (1000 * 60)) / 1000);
   
         setTimeLeft({
           hours: String(hours).padStart(2, "0"),
