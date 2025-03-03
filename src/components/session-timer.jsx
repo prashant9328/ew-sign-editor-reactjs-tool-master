@@ -25,7 +25,7 @@ export default function SessionTimer({ onSessionExpired, onSessionClear }) {
 
     const updateTimer = () => {
       const timeLeftMs = expirationTime - Date.now();
-      console.log(timeLeftMs)
+      // console.log(timeLeftMs)
       if (timeLeftMs <= 10*60*1000) {
         if(timeLeftMs <=0){
           onSessionExpired();

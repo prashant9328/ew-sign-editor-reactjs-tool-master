@@ -120,7 +120,7 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
 
   const [scale, setScale] = React.useState(1.0);
   const [panningState, setPanningState] = React.useState({ disabled: false });
-
+  const [isDefaultChanged,setIsDefaultChanged] = React.useState(false);
   // const draggableEle = React.useRef(null);
   const scrollContainer = React.useRef(null);
   const scrollImage = React.useRef(null);
@@ -983,9 +983,10 @@ function validateCoordinates(finalCoordData) {
       ) : (
         
         <div className="container">
-          <div style={isSelectionMode?{'cursor':'not-allowed'}:{}} className="navbar">
+          <div  className="navbar"> 
+            {/* style={isDefaultChanged?{'cursor':'not-allowed'}:{}} */}
           <div>
-            {isSelectionMode && 
+            {/* {isSelectionMode && 
             <div style={{position:'fixed',zIndex:'999'}}>
             <div className="backdrop-focus" >
               &nbsp;
@@ -994,7 +995,7 @@ function validateCoordinates(finalCoordData) {
               &nbsp;
             </div>
             </div>
-            }
+            } */}
             
             <div className="nav-flex">
             <div>
@@ -1049,8 +1050,10 @@ function validateCoordinates(finalCoordData) {
               {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
             </div>
           </div>
-          <div className="left-sidebar-desktop" style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}  >
-            <div className="left-sidebar-desktop-inner" style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}} >
+          <div className="left-sidebar-desktop" >
+          {/* style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}   */}
+            <div className="left-sidebar-desktop-inner" >
+              {/* style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}}  */}
 
             <div className="tools-title">Signer</div>
             <CustomSelect
@@ -1093,19 +1096,23 @@ function validateCoordinates(finalCoordData) {
                  />
                  </div>
               )}
-          <div style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}>
-            <div style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}} >
+          <div >
+            <div  >
+            {/* style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}  */}
+              {/* style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}} */}
 
             
             
           <div  >
-            {isSelectionMode && (
+            {/* {isSelectionMode && (
             <div className="mobile-backdrop">
               &nbsp;
             </div>
-            )}
+            )} */}
+
+{/* style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}} */}
             <div
-              style={isSelectionMode?{'pointerEvents':'none'}:{'cursor':'auto'}}
+              
               className="document"
               id="center-img-div"
               ref={scrollContainer}
@@ -1121,9 +1128,9 @@ function validateCoordinates(finalCoordData) {
                 event.target.style.cursor = "auto";
                 handleDragLeave();
               }}
-              style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}}
+             
             >
-            
+             {/* style={isSelectionMode?{'cursor':'not-allowed'}:{'cursor':'auto'}} */}
 
               <TransformWrapper
              

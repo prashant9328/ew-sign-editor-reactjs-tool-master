@@ -2,7 +2,7 @@
   import { BsTextareaT } from "react-icons/bs";
   import { MdDelete } from "react-icons/md";
   import { useDispatch, useSelector } from "react-redux";
-  import { useState } from "react";
+  import { useState,useEffect } from "react";
   import { TbMenu2 } from  "react-icons/tb";
   import { IoMdArrowDropdown } from "react-icons/io";
 
@@ -40,7 +40,8 @@
     const salesforceFieldsMetadata = useSelector(
       (state) => state.salesforceFieldsMetadata.salesforceFieldsMetadata
     );
-
+    const [isDefaultChanged,setIsDefaultChanged]=useState(false)
+    const [defaultValue, setDefaultValue] = useState(activeCoordinate.value || "");
     
 
     const handleEleDelete = () => {
@@ -109,8 +110,34 @@
       );
     };
 
+    // const handleCurrentCoordValueChange = () => {
+    //   console.log("handleCurrentCoordValueChange!!!");
+    //   dispatch(
+    //     setTextBoxCoordinates({
+    //       textBoxCoordinates: updateCoordinateValue(
+    //         textBoxCoordinates,
+    //         activeCoordinate.eleId,
+    //         defaultValue
+    //       ),
+    //     })
+    //   );
+      
+    //   const updatedActiveCoordinates = {
+    //     ...activeCoordinate,
+    //     value: defaultValue
+    //   };
+    //   console.log("updatedActiveCoordinates");
+    //   dispatch(
+    //     setActiveCoordinate({
+    //       activeCoordinate: updatedActiveCoordinates,
+    //       isSelectionMode: true,
+    //     })
+    //   );
+    // };
+
     const handleCurrentCoordValueChange = (value) => {
-      console.log("handleCurrentCoordValueChange");
+      console.log("handleCurrentCoordValueChange!!!", value);
+      
       dispatch(
         setTextBoxCoordinates({
           textBoxCoordinates: updateCoordinateValue(
@@ -120,20 +147,22 @@
           ),
         })
       );
-      
+    
       const updatedActiveCoordinates = {
         ...activeCoordinate,
         value: value,
       };
-      console.log("updatedActiveCoordinates");
+    
       dispatch(
         setActiveCoordinate({
           activeCoordinate: updatedActiveCoordinates,
           isSelectionMode: true,
         })
       );
-    };
 
+      setIsDefaultChanged(false)
+    };
+    
     const handleCurrentCoordIsRequiredChange = (value) => {
       console.log("handleCurrentCoordIsRequiredChange");
       dispatch(
@@ -245,6 +274,11 @@
       }
     }
     console.log("salesforce",JSON.stringify(salesforceFieldsMetadata));
+
+    useEffect(() => {
+      setDefaultValue(activeCoordinate.value || ""); 
+    }, [activeCoordinate.value]);
+
     return (
       <>
       <div className="right-sidebar-tool-detail-mobile">
@@ -307,6 +341,9 @@
           />
         </div> */}
 
+              <div style={{position:'absolute',width:'100vw',height:'100vh',zIndex:'9999',backgroundColor:'black'}}>
+                &nbsp;
+              </div>
      
 
         {!activeCoordinate.updateFromSalesforce ? (
@@ -323,7 +360,7 @@
                 options={activeCoordinate.mappingField.picklistOption}
                 useFor="MAPPING"
                 onChange={(e) => {
-                  handleCurrentCoordValueChange(e.value);
+                  handleCurrentCoordValueChange();
                 }}
               ></CustomSelect>
             </div>
@@ -331,9 +368,10 @@
             <div key={activeCoordinate.value} className="right-sidebar-section">
               <label className="field-lbl">Default Value</label>
               <input
-                defaultValue={activeCoordinate.value}
-                onBlur={(event) => {
-                  handleCurrentCoordValueChange(event.target.value);
+                defaultValue={defaultValue}
+                onChange={(e)=>{setDefaultValue(e.target.value)}}
+                onBlur={(e) => {
+                  handleCurrentCoordValueChange();
                 }}
                 className="input-field"
               />
@@ -484,7 +522,11 @@
             ></CustomSelect>
           </div>
         ) : null}
-
+            {isDefaultChanged && (
+              <div style={{position:'fixed',width:'100vw',height:'100vh',zIndex:'9999',left:'0',top:'0'}}>
+                &nbsp;
+              </div>
+              )}
         {!activeCoordinate.updateFromSalesforce ? (
           activeCoordinate.mappingField.type ===
           SalesforceFieldTypeEnum.PICKLIST ? (
@@ -499,20 +541,27 @@
                 options={activeCoordinate.mappingField.picklistOption}
                 useFor="MAPPING"
                 onChange={(e) => {
-                  handleCurrentCoordValueChange(e.value);
+                  handleCurrentCoordValueChange();
                 }}
               ></CustomSelect>
             </div>
           ) : (
             <div key={activeCoordinate.value} className="right-sidebar-section">
+              {/* <form onFocus={handleCurrentCoordValueChange()}> */}
               <label className="field-lbl">Default Value</label>
               <input
-                defaultValue={activeCoordinate.value}
-                onBlur={(event) => {
-                  handleCurrentCoordValueChange(event.target.value);
-                }}
-                className="input-field"
-              />
+  value={defaultValue}
+  onChange={(e) => {
+    setDefaultValue(e.target.value)
+    setIsDefaultChanged(true);
+  }}
+  onBlur={(e) => handleCurrentCoordValueChange(e.target.value)}
+  className="input-field"
+/>
+
+              {/* </form> */}
+              
+              
             </div>
           )
         ) : null}

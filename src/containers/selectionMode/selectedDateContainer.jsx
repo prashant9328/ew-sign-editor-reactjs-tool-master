@@ -529,7 +529,7 @@ function SelectedDateContainer({sendSalesforceData}) {
         <label className="field-lbl">Default Value</label>
         <input
           type="date"
-          defaultValue={activeCoordinate.value}
+          value={activeCoordinate.value}
           onChange={(event) =>
             handleCurrentCoordValueChange(event.target.value)
           }
