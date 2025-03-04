@@ -1076,12 +1076,12 @@ function validateCoordinates(finalCoordData) {
             </div>
             
               {!isSessionEnded ? 
-                <SessionTimer onSessionClear={clearSession} onSessionExpired={handleSessionExpired} />
+                <SessionTimer tiuuid={template_instance_uuid} onSessionClear={clearSession} onSessionExpired={handleSessionExpired} />
                 : null
               }
             
               {isFinalCountdownActive ? 
-                <SessionTimer onSessionClear={()=>{}} onSessionExpired={() => {}} />
+                <SessionTimer tiuuid={template_instance_uuid} onSessionClear={()=>{}} onSessionExpired={() => {}} />
                 : null
               }
           </div>

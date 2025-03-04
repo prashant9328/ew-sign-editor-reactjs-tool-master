@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-export default function SessionTimer({ onSessionExpired, onSessionClear }) {
+export default function SessionTimer({ tiuuid,onSessionExpired, onSessionClear }) {
   const [timeLeft, setTimeLeft] = useState({ hours: "00", minutes: "00", seconds: "00" });
   // let sessionExtended = false
   const [sessionExtended,setSessionExtended] = useState(false);
   useEffect(() => {
-    let expirationTime = localStorage.getItem("SessionTimer");
+    let expirationTime=JSON.parse(localStorage.getItem("SessionTimer"))?.tiuuid===tiuuid?JSON.parse(localStorage.getItem("SessionTimer")).expiringAt:undefined;
 
-    if (expirationTime) {
+    if (expirationTime && JSON.parse(localStorage.getItem("SessionTimer")).tiuuid===tiuuid) {
       expirationTime = Number(expirationTime); 
 
       if (Date.now() >= expirationTime) {
@@ -16,8 +16,8 @@ export default function SessionTimer({ onSessionExpired, onSessionClear }) {
     } else {
       if(localStorage.getItem('Status')!=='Expired'){
         
-        const newExpiration = Date.now() + 130 * 60 * 1000; 
-        localStorage.setItem("SessionTimer", newExpiration);
+        const newExpiration = Date.now() + 130*60*1000; //130 * 60 * 1000
+        localStorage.setItem("SessionTimer", JSON.stringify({"tiuuid":tiuuid,"expiringAt" : newExpiration}));
         localStorage.setItem("Status", "Pending");
         expirationTime = newExpiration;
       }
@@ -26,7 +26,7 @@ export default function SessionTimer({ onSessionExpired, onSessionClear }) {
     const updateTimer = () => {
       const timeLeftMs = expirationTime - Date.now();
       // console.log(timeLeftMs)
-      if (timeLeftMs <= 10*60*1000) {
+      if (timeLeftMs <= 10*60*1000) { // 10*60*1000
         if(timeLeftMs <=0){
           onSessionExpired();
 
@@ -39,7 +39,9 @@ export default function SessionTimer({ onSessionExpired, onSessionClear }) {
       const hours = Math.floor((timeLeftMs) / (1000 * 60 * 60));
       const minutes = Math.floor(((timeLeftMs) % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor(((timeLeftMs) % (1000 * 60)) / 1000);
-
+      // const hours = Math.floor(timeLeftMs);
+      // const minutes = Math.floor((timeLeftMs)/ (1000 * 60));
+      // const seconds = Math.floor((timeLeftMs) / 1000);
       setTimeLeft({
         hours: String(hours).padStart(2, "0"),
         minutes: String(minutes).padStart(2, "0"),
