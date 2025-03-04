@@ -5,9 +5,9 @@ export default function SessionTimer({ tiuuid,onSessionExpired, onSessionClear }
   // let sessionExtended = false
   const [sessionExtended,setSessionExtended] = useState(false);
   useEffect(() => {
-    let expirationTime=JSON.parse(localStorage.getItem("SessionTimer"))?.tiuuid===tiuuid?JSON.parse(localStorage.getItem("SessionTimer")).expiringAt:undefined;
+    let expirationTime=JSON.parse(localStorage.getItem(tiuuid))?.tiuuid===tiuuid?JSON.parse(localStorage.getItem(tiuuid)).expiringAt:undefined;
 
-    if (expirationTime && JSON.parse(localStorage.getItem("SessionTimer")).tiuuid===tiuuid) {
+    if (expirationTime && JSON.parse(localStorage.getItem(tiuuid)).tiuuid===tiuuid) {
       expirationTime = Number(expirationTime); 
 
       if (Date.now() >= expirationTime) {
@@ -17,7 +17,7 @@ export default function SessionTimer({ tiuuid,onSessionExpired, onSessionClear }
       if(localStorage.getItem('Status')!=='Expired'){
         
         const newExpiration = Date.now() + 130*60*1000; //130 * 60 * 1000
-        localStorage.setItem("SessionTimer", JSON.stringify({"tiuuid":tiuuid,"expiringAt" : newExpiration}));
+        localStorage.setItem(tiuuid, JSON.stringify({"tiuuid":tiuuid,"expiringAt" : newExpiration}));
         localStorage.setItem("Status", "Pending");
         expirationTime = newExpiration;
       }
