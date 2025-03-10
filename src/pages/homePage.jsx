@@ -497,105 +497,15 @@ function validateCoordinates(finalCoordData) {
 
   const [agreeToTnC, setAgreeToTnC]=useState(false)
 
- // const continueHandleContinue = async () =>{
-  //   let finalCoordData = [
-  //     ...signatureCoordinates,
-  //     ...textBoxCoordinates,
-  //     ...dateCoordinates,
-  //     ...checkBoxCoordinates,
-  //   ];
-  //   console.log("HANDLE CONTINUE: " + JSON.stringify(finalCoordData));
-
-  //   const validation = validateCoordinates(finalCoordData);
-
-  //   if (!validation.isValidate) {
-  //     setIsLoading(false);
-  //     ShowToast(ToastTypeEnum.ERROR, validation.msg);
-  //     return;
-  //   }
-
-  //   if (template_instance_uuid == null) {
-  //     //
-  //     finalCoordData = changeSignatoryIdToNull(finalCoordData);
-  //   }
-
-  //   console.log("@@@ finalCoordData: " + JSON.stringify(finalCoordData));
-
-  //   try {
-  //     await SetTemplateCoordinatesService(
-  //       finalCoordData,
-  //       uuid,
-  //       template_instance_uuid
-  //     );
-  //     let state="SENT";
-  //     // await updateInstanceStatus(template_instance_uuid,state);
-
-  //     ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
-
-  //     const message = {
-  //       messageFrom: "EW Sign Editor",
-  //       status: true,
-  //       action:
-  //         template_instance_uuid == null ? "Create Template" : "Create TI",
-  //     };
-
-  //     if (template_instance_uuid != null) {
-  //       console.log("TI NOT NULL");
-  //       console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
-  //       message.signatureFlow = generalDocumentData.signatureFlow;
-  //       message.uuid = uuid;
-  //       message.template_instance_uuid = template_instance_uuid;
-  //     }
-  //     console.log("POST MESSAGE: " + JSON.stringify(message));
-  //     window.parent.postMessage(message, "*");
-  //     setIsLoading(false);
-  //     setConfirmationPopup(false)
-  //   } catch (error) {
-  //     const message = {
-  //       messageFrom: "EW Sign Editor",
-  //       status: false,
-  //       action:
-  //         template_instance_uuid == null ? "Create Template" : "Create TI",
-  //       errorMessage: JSON.stringify(error),
-  //     };
-  //     window.parent.postMessage(message, "*");
-  //     // console.log("@@@ Saved coordinate: " + JSON.stringify(error));
-  //     ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
-  //     setIsLoading(false);
-  //   }
-
-  // }
-  // const handleContinue = async () => {
-  //   setIsFetching(false);
-  //   if(confirmationPopup===false){
-  //     setConfirmationPopup(true)
-  //   }else{
-
-  //     setConfirmationPopup(false);
-  //   }
-  //   handleAgreeToTnc()
-
-  // };
-  // const handleAgreeToTnc=()=>{
-  //   if(agreeToTnC===true){
-  //     setIsLoading(true);
-  //     continueHandleContinue()
-  //     // setConfirmationPopup(false)
-  //   }
-  // }
-  // const closePopup=()=>{  
-  //   setConfirmationPopup(false)
-  // }
-  // useEffect(()=>{
-  //   handleAgreeToTnc();
-  // },[agreeToTnC])
-
-  // const getContinueEventFromConfirmation=(evt)=>{
-  //   setAgreeToTnC(evt)
-  //   console.log('setTNC TO TRUE')
-  //   console.log(agreeToTnC)
-  // }
   const continueHandleContinue = async () => {
+
+    signatureCoordinates = signatureCoordinates.map(coord => {
+      console.log('@@@ coord::'+coord);
+      coord.x = coord.x + 7;
+      coord.y = coord.y + 39;
+      return coord;
+    });
+
     let finalCoordData = [
       ...signatureCoordinates,
       ...textBoxCoordinates,
@@ -611,41 +521,12 @@ function validateCoordinates(finalCoordData) {
       return;
     }
 
-    // try {
-    //   await SetTemplateCoordinatesService(finalCoordData, uuid, template_instance_uuid);
-    //   ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
-    //   const message = {
-    //     messageFrom: "EW Sign Editor",
-    //     status: true,
-    //     action:
-    //       template_instance_uuid == null ? "Create Template" : "Create TI",
-    //   };
-
-    //   if (template_instance_uuid != null) {
-    //     console.log("TI NOT NULL");
-    //     console.log("@@@ signatureFlow: " + generalDocumentData.signatureFlow);
-    //     message.signatureFlow = generalDocumentData.signatureFlow;
-    //     message.uuid = uuid;
-    //     message.template_instance_uuid = template_instance_uuid;
-    //   }
-    //   console.log("POST MESSAGE: " + JSON.stringify(message));
-    //   window.parent.postMessage(message, "*");
-
-    //   setIsLoading(false);
-    //   setConfirmationPopup(false); // Close the popup after save
-    // } catch (error) {
-    //   ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
-    //   setIsLoading(false);
-    // }
     try {
           await SetTemplateCoordinatesService(
             finalCoordData,
             uuid,
             template_instance_uuid
           );
-          let state="SENT";
-          // await updateInstanceStatus(template_instance_uuid,state);
-    
           ShowToast(ToastTypeEnum.SUCCESS, "Template saved.");
     
           const message = {
@@ -697,6 +578,7 @@ function validateCoordinates(finalCoordData) {
         ...checkBoxCoordinates,
       ];
   
+      console.log('@@@ finalCoordData::'+ JSON.stringify(finalCoordData));
       const validation = validateCoordinates(finalCoordData);
   
       if (!validation.isValidate) {
