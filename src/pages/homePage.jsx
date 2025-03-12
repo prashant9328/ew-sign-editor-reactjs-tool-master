@@ -499,15 +499,23 @@ function validateCoordinates(finalCoordData) {
 
   const continueHandleContinue = async () => {
 
-    signatureCoordinates = signatureCoordinates.map(coord => {
-      console.log('@@@ coord::'+coord);
-      coord.x = coord.x + 7;
-      coord.y = coord.y + 39;
+    let signatureCoordinatesTemp = signatureCoordinates
+    signatureCoordinatesTemp = signatureCoordinatesTemp.map(coord => {
+      console.log('@@@ coord::'+ JSON.stringify(coord));
+      // if(coord.x) {
+      //   coord = { ...coord, x: coord.x + 9};
+      // }
+
+      // if(coord.y) {
+      //   coord = { ...coord, y: coord.y + 40};
+      // }
+
       return coord;
     });
+    console.log('@@@ signatureCoordinatesTemp::'+ JSON.stringify(signatureCoordinatesTemp));
 
     let finalCoordData = [
-      ...signatureCoordinates,
+      ...signatureCoordinatesTemp,
       ...textBoxCoordinates,
       ...dateCoordinates,
       ...checkBoxCoordinates,

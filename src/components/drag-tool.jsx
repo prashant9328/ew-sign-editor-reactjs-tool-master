@@ -80,10 +80,10 @@ const DragTool = ({
     >
         {isEditMode ? 
         <>
-      <div className="resize-circle tl-resize"></div>
-      <div className="resize-circle tr-resize"></div>
-      <div className="resize-circle br-resize"></div>
-      <div className="resize-circle bl-resize"></div>
+          <div className="resize-circle tl-resize"></div>
+          <div className="resize-circle tr-resize"></div>
+          <div className="resize-circle br-resize"></div>
+          <div className="resize-circle bl-resize"></div>
         </>
         : null}
       {toolIcon}
