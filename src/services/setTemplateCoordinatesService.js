@@ -16,8 +16,16 @@ const SetTemplateCoordinatesService = async (finalCoordData, uuid, tiUUID) => {
         templateInstanceUUID: tiUUID
       }
     );
+    if(response.status===200){
 
-    return response;
+      return response;
+    }else{
+      console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(response));
+      localStorage.setItem('unexpected-error',response)
+
+      window.location.href='/unexpected-error'    
+      throw new Error("Something went wrong, failed to fetch data from server.");
+    }
   } catch (error) {
     console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
     localStorage.setItem('unexpected-error',error.stack)

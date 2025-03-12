@@ -49,8 +49,8 @@ const DragTool = ({
       position={{ x: currentState.x<0 ? '0':currentState.x > 595-currentState.width? 595-currentState.width: currentState.x, y: currentState.y<0? '0':currentState.y> 840 - currentState.height ? 840 - currentState.height : currentState.y }}
       minWidth={minWidth}
       minHeight={minHeight}
-      maxHeight={maxHeight}
-      maxWidth={maxWidth}
+      // maxHeight={maxHeight}
+      // maxWidth={maxWidth}
       onDragStart={(e, d) => {                
         handleDragStart(toolType, e);
       }}

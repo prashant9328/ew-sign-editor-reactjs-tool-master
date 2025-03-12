@@ -571,6 +571,11 @@ function validateCoordinates(finalCoordData) {
           // throw new Error("Something went wrong, failed to fetch data from server.");
           console.log("@@@ Saved coordinate: " + JSON.stringify(error));
           ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
+          console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
+          localStorage.setItem('unexpected-error',error.stack)
+
+          window.location.href='/unexpected-error'    
+          throw new Error("Something went wrong, failed to fetch data from server.");
           
         }
   };
