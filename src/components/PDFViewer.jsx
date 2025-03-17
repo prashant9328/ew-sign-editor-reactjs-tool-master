@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PDF, { usePdf } from "react-pdf-js";
 
 const PdfViewer = ({ pdf, activePage, setPDFLoading, setPageCount, scale }) => {
@@ -9,6 +9,9 @@ const PdfViewer = ({ pdf, activePage, setPDFLoading, setPageCount, scale }) => {
       setPDFLoading(false);
     }
   };
+  useEffect(()=>{
+    setPDFLoading(true);
+  },[])
   // const canvasEl = useRef(null)
 
   // const [loading, numPages] = usePdf({ref});
@@ -16,6 +19,9 @@ const PdfViewer = ({ pdf, activePage, setPDFLoading, setPageCount, scale }) => {
   // const [loading, numPages] = usePdf({ canvasEl, file: pdf,activePage });
   // console.log('@@@ REF '+loading);
   // console.log('@@@ REF '+ JSON.stringify(canvasEl));
+
+  
+
   const onDocumentError = (err) => {
     console.error("pdf viewer error:", err);
   };

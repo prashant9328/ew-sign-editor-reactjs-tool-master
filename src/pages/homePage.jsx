@@ -121,6 +121,8 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
   const [scale, setScale] = React.useState(1.0);
   const [panningState, setPanningState] = React.useState({ disabled: false });
   const [isDefaultChanged,setIsDefaultChanged] = React.useState(false);
+  const [loadingImages,setLoadingImages] = React.useState(false);
+
   // const draggableEle = React.useRef(null);
   const scrollContainer = React.useRef(null);
   const scrollImage = React.useRef(null);
@@ -903,7 +905,7 @@ function validateCoordinates(finalCoordData) {
             </div>
             <div>
 
-            {!isSelectionMode && (
+            {((!isSelectionMode && !loadingImages)) && (
               <button className="continue-btn" onClick={handleContinue}>
                 {template_instance_uuid == null
                   ? "SAVE TEMPLATE"
@@ -1093,7 +1095,7 @@ function validateCoordinates(finalCoordData) {
                               : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
                           }
                           activePage={activePageNumber}
-                          setPDFLoading={setIsPDFLoading}
+                          setPDFLoading={setLoadingImages}
                           setPageCount={settotalPage}
                           scale={defaultCanvasScale}
                         />
@@ -1183,7 +1185,7 @@ function validateCoordinates(finalCoordData) {
                                 : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
                             }
                             activePage={i}
-                            setPDFLoading={setIsPDFLoading}
+                            setPDFLoading={setLoadingImages}
                             setPageCount={settotalPage}
                             scale={scaleForImages}
                           />
@@ -1258,7 +1260,7 @@ function validateCoordinates(finalCoordData) {
                                 : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
                             }
                             activePage={i}
-                            setPDFLoading={setIsPDFLoading}
+                            setPDFLoading={setLoadingImages}
                             setPageCount={settotalPage}
                             scale={0.2}
                           />
