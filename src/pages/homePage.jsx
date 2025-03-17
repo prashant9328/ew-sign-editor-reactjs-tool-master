@@ -1143,13 +1143,13 @@ function validateCoordinates(finalCoordData) {
             <div
               ref={scrollImage}
               style={isSelectionMode?{
-                position: "absolute",
+                // position: "absolute",
                 overflowX:"hidden",
                 height: "92vh",
                 width:"inherit",
                 zIndex:'-1'
               }:{
-                position: "absolute",
+                // position: "absolute",
                 overflowX:"hidden",
                 height: "92vh",
                 width:"inherit",

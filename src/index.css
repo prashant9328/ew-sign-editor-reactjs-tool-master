@@ -627,7 +627,7 @@
     .left-sidebar-desktop {
         background-color: #f9f9f9;
         grid-area: leftBar;
-        width: 350px;
+        width: calc(100%-600px);
         padding: 0px 10px;
         height: 100%;
         overflow: auto;
@@ -672,12 +672,23 @@
         /* height: 18.5px; */
         margin:0px 0px 0px 0px !important;
     }
+    .page-img {
+        margin: 0px;
+        width: 90%;
+        box-shadow: 0 2px 10px #ccc;
+        canvas{
+            width: 90% !important;
+            height: auto !important;
+        }
+    }
 }
 @media only screen and (min-width: 768px){
     .right-sidebar-desktop {
         background-color: #f9f9f9;
         grid-area: rightBar;
         overflow-x: visible;
+        width: calc(80%-600px) !important;
+        padding: 10px;
         border-left: 1px solid #eee;
     }
     .right-sidebar-mobile {
@@ -905,7 +916,7 @@
         grid-template-columns : auto
     }
     .left-sidebar-desktop{
-        width: 22vw !important;
+        /* width: 22vw !important; */
     }
     .right-sidebar-desktop{
         width: 22vw !important;
@@ -952,12 +963,12 @@
         max-height: 86vh;
     }
     .left-sidebar-desktop{
-        width: 27vw !important;
+        /* width: 27vw !important; */
     }
     .right-sidebar-desktop{
-        /* min-width: 25vw !important; */
-        width: 27vw !important;
-        padding: 0 !important;
+        /* min-width: 10vw !important; */
+        width: calc(80%-600px) !important;
+        padding: 10px;
         /* z-index: 100; */
     }
     .document{
@@ -1105,7 +1116,7 @@
 }
 
 .page-img canvas {
-    width: 30%;
+    width: 25%;
 }
 
 .page-count {
