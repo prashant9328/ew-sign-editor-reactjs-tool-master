@@ -129,7 +129,7 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
   const documentContainer = React.useRef(null);
   const [searchParams] = useSearchParams();
   const [popup, setPopup]= useState(false) 
-  const [isPDFLoading, setIsPDFLoading] = React.useState(true);
+  const [isPDFLoading, setIsPDFLoading] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFetching, setIsFetching] = React.useState(true);
   const [isFileShared, setIsFileShared] = React.useState(false);

@@ -627,7 +627,9 @@
     .left-sidebar-desktop {
         background-color: #f9f9f9;
         grid-area: leftBar;
-        width: calc(100%-600px);
+        /* width: calc(100%-600px); */
+        min-width: 10vw !important;
+        width: 20vw !important;
         padding: 0px 10px;
         height: 100%;
         overflow: auto;
@@ -687,7 +689,9 @@
         background-color: #f9f9f9;
         grid-area: rightBar;
         overflow-x: visible;
-        width: calc(80%-600px) !important;
+        /* width: calc(80%-600px) !important; */
+        min-width: 10vw !important;
+        width: 20vw !important;
         padding: 10px;
         border-left: 1px solid #eee;
     }
@@ -967,7 +971,7 @@
     }
     .right-sidebar-desktop{
         /* min-width: 10vw !important; */
-        width: calc(80%-600px) !important;
+        /* width: calc(80%-600px) !important; */
         padding: 10px;
         /* z-index: 100; */
     }
