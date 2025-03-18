@@ -629,7 +629,7 @@
         grid-area: leftBar;
         /* width: calc(100%-600px); */
         min-width: 10vw !important;
-        width: 20vw !important;
+        /* width: 20vw !important; */
         padding: 0px 10px;
         height: 100%;
         overflow: auto;
@@ -691,7 +691,7 @@
         overflow-x: visible;
         /* width: calc(80%-600px) !important; */
         min-width: 10vw !important;
-        width: 20vw !important;
+        /* width: 20vw !important; */
         padding: 10px;
         border-left: 1px solid #eee;
     }
