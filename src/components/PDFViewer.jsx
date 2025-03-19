@@ -32,7 +32,20 @@ const PdfViewer = ({ pdf, activePage, setPDFLoading, setPageCount, scale }) => {
 
   return (
     <div className="pdff">
-      <PDF
+      {pdf ? (
+        <PDF
+          scale={scale}
+          rotate={0}
+          file={pdf} // Pass the Blob URL instead of the raw URL
+          onDocumentComplete={onDocumentComplete}
+          onDocumentError={onDocumentError}
+          page={activePage + 1}
+          onPageComplete={onPageComplete}
+        />
+      ) : (
+        <p>Loading PDF...</p>
+      )}
+      {/* <PDF
         // style={{width:"100vw"}}
          
         scale={scale}
@@ -42,7 +55,7 @@ const PdfViewer = ({ pdf, activePage, setPDFLoading, setPageCount, scale }) => {
         onDocumentError={onDocumentError}
         page={activePage + 1}
         onPageComplete={onPageComplete}
-      />
+      /> */}
     </div>
   );
 };

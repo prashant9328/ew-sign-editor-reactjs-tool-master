@@ -786,6 +786,7 @@ function validateCoordinates(finalCoordData) {
   };
 
   const [pdfUrl, setPdfUrl] = useState('');
+  const [pdfBlob, setPdfBlob] = useState(null);
   const [isError, setIsError] = useState(false); // For error handling
 
   const generatePdfUrl = () => {
@@ -793,7 +794,7 @@ function validateCoordinates(finalCoordData) {
       let url;
       // Assuming uuid and template_instance_uuid are available here
       if (template_instance_uuid != null && template_instance_uuid.length > 0) {
-        url = `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}`;
+        url = `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&uuid_template_instance=${template_instance_uuid}`;
       } else {
         url = `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`;
       }
@@ -811,6 +812,34 @@ function validateCoordinates(finalCoordData) {
     generatePdfUrl(); // Call the function when the component mounts
   }, [uuid, template_instance_uuid]); // Dependencies if uuid/template_instance_uuid change
 
+
+  useEffect(() => {
+    const fetchPDF = async () => {
+        try {
+            // setLoading(true);
+            setIsLoading(true)
+            console.log("Fetching pdf from : ",pdfUrl)
+            const response = await fetch(pdfUrl);
+            if (!response.ok) throw new Error("Failed to fetch PDF");
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            setPdfBlob(blobUrl);
+        } catch (error) {
+            console.error("Error fetching PDF:", error);
+        } finally {
+            // setLoading(false);
+            setIsLoading(false)
+        }
+    };
+
+    if (pdfUrl) fetchPDF();
+
+    return () => {
+        if (pdfBlob) {
+            URL.revokeObjectURL(pdfBlob); // Clean up URL object
+        }
+    };
+}, [pdfUrl]);
   
 
   return (
@@ -1089,10 +1118,11 @@ function validateCoordinates(finalCoordData) {
                       <PdfViewer
                       
                           pdf={
-                            template_instance_uuid != null &&
-                            template_instance_uuid.length > 0
-                              ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&uuid_template_instance=${template_instance_uuid}`
-                              : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
+                            // template_instance_uuid != null &&
+                            // template_instance_uuid.length > 0
+                            //   ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&uuid_template_instance=${template_instance_uuid}`
+                            //   : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
+                            pdfBlob
                           }
                           activePage={activePageNumber}
                           setPDFLoading={setLoadingImages}
@@ -1179,10 +1209,11 @@ function validateCoordinates(finalCoordData) {
                         >
                           <PdfViewer
                             pdf={
-                              template_instance_uuid != null &&
-                              template_instance_uuid.length > 0
-                                ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}`
-                                : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
+                              // template_instance_uuid != null &&
+                              // template_instance_uuid.length > 0
+                              //   ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}`
+                              //   : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
+                              pdfBlob
                             }
                             activePage={i}
                             setPDFLoading={setLoadingImages}
@@ -1254,10 +1285,11 @@ function validateCoordinates(finalCoordData) {
                         >
                           <PdfViewer
                             pdf={
-                              template_instance_uuid != null &&
-                              template_instance_uuid.length > 0
-                                ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}`
-                                : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
+                              // template_instance_uuid != null &&
+                              // template_instance_uuid.length > 0
+                              //   ? `${process.env.REACT_APP_API_URL}/fetchpdf?&uuid=${uuid}&tiUUID=${template_instance_uuid}`
+                              //   : `${process.env.REACT_APP_API_URL}/fetchpdf?uuid=${uuid}`
+                              pdfBlob
                             }
                             activePage={i}
                             setPDFLoading={setLoadingImages}
