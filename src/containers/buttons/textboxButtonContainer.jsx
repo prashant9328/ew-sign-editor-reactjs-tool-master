@@ -48,6 +48,7 @@ function TextBoxButtonContainer({ documentBounding }) {
       isRequired: true,
       writeBack: false,
       updateFromSalesforce: false,
+      editable:true,
       mappingField: { label: "", value: "", type: "" },
     };
 

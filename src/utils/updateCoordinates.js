@@ -42,6 +42,19 @@ const updateCoordinateUpdateFromSalesforceSettings = (coordList, id, value) => {
   });
 };
 
+const updateCoordinateEditable = (coordList, id, value) => {
+  return coordList.map((item) => {
+    if (item.eleId === id) {
+      return {
+        ...item,
+        editable: value,
+      };
+    } else {
+      return item;
+    }
+  });
+};
+
 const updateCoordinateWriteBackSettings = (coordList, id, value) => {
   return coordList.map((item) => {
     if (item.eleId === id) {
@@ -138,6 +151,7 @@ export {
   updateCoordinateUpdateFromSalesforceSettings,
   updateCoordinateWriteBackSettings,
   updateCoordinateName,
+  updateCoordinateEditable,
   updateCoordinateSignatory,
   updateCoordinateSize,
   updateCoordinatePosition,

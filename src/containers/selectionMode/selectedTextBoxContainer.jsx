@@ -14,6 +14,7 @@
     updateCoordinateSignatory,
     updateCoordinateWriteBackSettings,
     updateCoordinateUpdateFromSalesforceSettings,
+    updateCoordinateEditable,
     updateCoordinateIsRequired,
   } from "../../utils/updateCoordinates";
   import { setTextBoxCoordinates } from "../../redux/slices/textBoxCoordinatesReducer";
@@ -221,6 +222,7 @@
           ),
         })
       );
+      
 
       const updatedActiveCoordinates = {
         ...activeCoordinate,
@@ -233,7 +235,31 @@
         })
       );
     };
+    const handleCurrentCoordIsEditableChange = (value) => {
 
+      console.log("@@@@ Editable : ",value)
+      
+      dispatch(
+        setTextBoxCoordinates({
+          textBoxCoordinates: updateCoordinateEditable(
+            textBoxCoordinates,
+            activeCoordinate.eleId,
+            ((textBoxCoordinates.updateFromSalesforce)&&(!textBoxCoordinates.writeBack)&&(!textBoxCoordinates.value && textBoxCoordinates.value.length>0))?value:true
+          ),
+        })
+      );
+
+      const updatedActiveCoordinates = {
+        ...activeCoordinate,
+        editable: value,
+      };
+      dispatch(
+        setActiveCoordinate({
+          activeCoordinate: updatedActiveCoordinates,
+          isSelectionMode: true,
+        })
+      );
+    };
     const handleCurrentCoordMappingFieldChange = (e) => {
       console.log("VALUE: " + JSON.stringify(e));
 
@@ -341,9 +367,7 @@
           />
         </div> */}
 
-              <div style={{position:'absolute',width:'100vw',height:'100vh',zIndex:'9999',backgroundColor:'black'}}>
-                &nbsp;
-              </div>
+             
      
 
         {!activeCoordinate.updateFromSalesforce ? (
@@ -410,6 +434,16 @@
             }}
               
           />
+          {(activeCoordinate.value!=="" || activeCoordinate.updateFromSalesforce) &&
+          <CustomToggle
+            title="Editable"
+            defaultValue={activeCoordinate.updateFromSalesforce}
+            onChange={(value) => {
+              handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+            }}
+              
+          />
+          }
            {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
                <>
                <hr style={{width:"100vw", margin:"5px 0"}} />
@@ -592,8 +626,20 @@
             defaultValue={activeCoordinate.updateFromSalesforce}
             onChange={(value) => {
               handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+              // handleCurrentCoordIsEditableChange(false);
+
             }}
           />
+          {(defaultValue!=="" || activeCoordinate.updateFromSalesforce) &&
+          <CustomToggle
+            title="Editable"
+            defaultValue={activeCoordinate.editable}
+            onChange={(value) => {
+              handleCurrentCoordIsEditableChange(value);
+            }}
+              
+          />
+          }
           <button onClick={handleEleDelete} style={{
               cursor: "pointer",
               fontSize: "small",
