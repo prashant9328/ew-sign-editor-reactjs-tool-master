@@ -13,6 +13,7 @@ import {
   updateCoordinateValue,
   updateCoordinateName,
   updateCoordinateSignatory,
+  updateCoordinateEditable,
   updateCoordinateWriteBackSettings,
   updateCoordinateUpdateFromSalesforceSettings,
   updateCoordinateIsRequired,
@@ -224,6 +225,32 @@ function SelectedCheckBoxContainer({}) {
       })
     );
   };
+  const handleCurrentCoordIsEditableChange = (value) => {
+  
+      console.log("@@@@ Editable : ",value)
+      
+      dispatch(
+        setCheckBoxCoordinates({
+          checkBoxCoordinates: updateCoordinateEditable(
+            checkBoxCoordinates,
+            activeCoordinate.eleId,
+            value
+          ),
+        })
+      );
+  
+      const updatedActiveCoordinates = {
+        ...activeCoordinate,
+        editable: value,
+      };
+      dispatch(
+        setActiveCoordinate({
+          activeCoordinate: updatedActiveCoordinates,
+          isSelectionMode: true,
+        })
+      );
+    };
+  
 
     const [dropdown,setDropdown]=useState(true);
   
@@ -344,6 +371,15 @@ function SelectedCheckBoxContainer({}) {
             handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
           }}
         />
+        {activeCoordinate.updateFromSalesforce &&
+          <CustomToggle
+          title="Editable"
+          defaultValue={activeCoordinate.editable}
+          onChange={(value) => {
+            handleCurrentCoordIsEditableChange(value);
+          }}
+        />
+        }
         <div>
       {activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack ? (
         <div className="right-sidebar-section" style={{width:"95vw", margin:"0 auto"}}>
@@ -494,6 +530,15 @@ function SelectedCheckBoxContainer({}) {
           handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
         }}
       />
+      {activeCoordinate.updateFromSalesforce &&
+          <CustomToggle
+          title="Editable"
+          defaultValue={activeCoordinate.editable}
+          onChange={(value) => {
+            handleCurrentCoordIsEditableChange(value);
+          }}
+        />
+        }
       <button onClick={handleEleDelete} style={{
                     cursor: "pointer",
                     fontSize: "small",

@@ -10,6 +10,7 @@ import {
   updateCoordinateValue,
   updateCoordinateName,
   updateCoordinateSignatory,
+  updateCoordinateEditable,
   updateCoordinateWriteBackSettings,
   updateCoordinateUpdateFromSalesforceSettings,
   updateCoordinateIsRequired,
@@ -43,6 +44,7 @@ function SelectedDateContainer({sendSalesforceData}) {
   );
 
   const [dropdown,setDropdown]=useState(true);
+  const [defaultValue,setDefaultValue]=useState("");
 
   const handleEleDelete = () => {
     const updatedCoords = removeCoordinate(
@@ -100,6 +102,31 @@ function SelectedDateContainer({sendSalesforceData}) {
     const updatedActiveCoordinates = {
       ...activeCoordinate,
       name: name,
+    };
+    dispatch(
+      setActiveCoordinate({
+        activeCoordinate: updatedActiveCoordinates,
+        isSelectionMode: true,
+      })
+    );
+  };
+  const handleCurrentCoordIsEditableChange = (value) => {
+
+    console.log("@@@@ Editable : ",value)
+    
+    dispatch(
+      setDateCoordinates({
+        dateCoordinates: updateCoordinateEditable(
+          dateCoordinates,
+          activeCoordinate.eleId,
+          value
+        ),
+      })
+    );
+
+    const updatedActiveCoordinates = {
+      ...activeCoordinate,
+      editable: value,
     };
     dispatch(
       setActiveCoordinate({
@@ -530,8 +557,10 @@ function SelectedDateContainer({sendSalesforceData}) {
         <input
           type="date"
           value={activeCoordinate.value}
-          onChange={(event) =>
+          onChange={(event) =>{
+            setDefaultValue(event.target.value);
             handleCurrentCoordValueChange(event.target.value)
+          }
           }
           className="input-field"
         />
@@ -576,6 +605,16 @@ function SelectedDateContainer({sendSalesforceData}) {
           handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
         }}
         />
+        {(defaultValue!=="" || activeCoordinate.updateFromSalesforce) &&
+          <CustomToggle
+            title="Editable"
+            defaultValue={activeCoordinate.editable}
+            onChange={(value) => {
+              handleCurrentCoordIsEditableChange(value);
+            }}
+              
+          />
+          }
         </div>
         <button onClick={handleEleDelete} style={{
                       cursor: "pointer",
