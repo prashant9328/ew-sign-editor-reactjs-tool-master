@@ -244,7 +244,7 @@
           textBoxCoordinates: updateCoordinateEditable(
             textBoxCoordinates,
             activeCoordinate.eleId,
-            ((textBoxCoordinates.updateFromSalesforce)&&(!textBoxCoordinates.writeBack)&&(!textBoxCoordinates.value && textBoxCoordinates.value.length>0))?value:true
+            value
           ),
         })
       );
@@ -626,7 +626,6 @@
             defaultValue={activeCoordinate.updateFromSalesforce}
             onChange={(value) => {
               handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
-              // handleCurrentCoordIsEditableChange(false);
 
             }}
           />
