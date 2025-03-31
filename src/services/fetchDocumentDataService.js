@@ -55,8 +55,8 @@ const fetchDocumentDataService = async (reqBody) => {
     // throw new Error("Something went wrong, failed to fetch data from server.");
 
     console.log('@@@ ERROR::'+error.message);  
-    localStorage.setItem('unexpected-error',error.stack)
-    window.location.href='/unexpected-error'    
+    // localStorage.setItem('unexpected-error',error.stack)
+    // window.location.href='/unexpected-error'    
     throw new Error(error.message);
   }
 };

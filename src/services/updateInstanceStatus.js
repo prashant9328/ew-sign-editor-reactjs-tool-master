@@ -19,8 +19,8 @@ const updateInstanceStatus = async (tiUUID,state) => {
     // return response;
   } catch (error) {
     console.log("@@@ FAILED FROM SERVER: EDITOR: " + JSON.stringify(error));
-    localStorage.setItem('unexpected-error',error.stack)
-    window.location.href='/unexpected-error'    
+    // localStorage.setItem('unexpected-error',error.stack)
+    // window.location.href='/unexpected-error'    
 
     throw new Error("Something went wrong, failed to fetch data from server.");
   } 
