@@ -31,6 +31,9 @@ function SignatureButtonContainer({ documentBounding }) {
 
     const pagex = event.pageX - documentBounding.left - field.width / 2;
     const pagey = event.pageY - documentBounding.top - field.height / 2;
+    const pageScreenY = event.screenY;
+    const pageScreenX = event.screenX;
+
 
     let newEle = {
       field_id: field.id,
@@ -42,6 +45,8 @@ function SignatureButtonContainer({ documentBounding }) {
       pageId: activePageNumber,
       x: pagex,
       y: pagey,
+      screenX: pageScreenX,
+      screenY: pageScreenY,
       width: field.width,
       height: field.height,
       isRequired: true,
