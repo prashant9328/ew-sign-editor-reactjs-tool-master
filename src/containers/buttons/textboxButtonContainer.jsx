@@ -49,8 +49,13 @@ function TextBoxButtonContainer({ documentBounding }) {
     const pagey = event.pageY - documentBounding.top - field.height / 2;
     console.log('page y' + pagey);
 
-    const pageScreenY = event.screenY;
-    const pageScreenX = event.screenX;
+    // const pageScreenY = event.screenY;
+    const pageScreenX = event.screenX - documentBounding.left - field.width / 2;
+    const pageScreenY = event.screenY - documentBounding.top - field.width / 2;
+
+    // const pageScreenX = event.screenX;
+    console.log('page screen x text' + pageScreenX);
+    console.log('page screen y text' + pageScreenY);
 
     // console.log('page screen' + pageScreen);
     
