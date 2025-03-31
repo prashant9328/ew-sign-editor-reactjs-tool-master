@@ -4,6 +4,7 @@ import { BsTextareaT } from "react-icons/bs";
 import { setTextBoxCoordinates } from "../../redux/slices/textBoxCoordinatesReducer";
 import { setActiveCoordinate } from "../../redux/slices/activeCoordinateReducer";
 import { FieldTypeEnum } from "../../constants/fieldTypeEnum";
+import { log } from "react-modal/lib/helpers/ariaAppHider";
 
 function TextBoxButtonContainer({ documentBounding }) {
   const dispatch = useDispatch();
@@ -22,7 +23,21 @@ function TextBoxButtonContainer({ documentBounding }) {
     (state) => state.textBoxCoordinates.textBoxCoordinates
   );
 
+  let eventObg = {}
+
   const onDragEnd = (event) => {
+    event.persist(); 
+    for (let key in event) {
+      try {
+        eventObg[key] = event[key];
+      } catch (err) {
+        eventObg[key] = `Unable to clone property: ${err.message}`;
+      }
+    }
+
+    console.log("Cloned Event Object:", eventObg);
+    
+    
     try{
     const field = supportedFields.find(
       (field) => field.type === FieldTypeEnum.TEXT
@@ -30,7 +45,21 @@ function TextBoxButtonContainer({ documentBounding }) {
     const coordsLength = textBoxCoordinates.length;
 
     const pagex = event.pageX - documentBounding.left - field.width / 2;
+    
     const pagey = event.pageY - documentBounding.top - field.height / 2;
+    console.log('page y' + pagey);
+
+    // const pageScreenY = event.screenY;
+    const pageScreenX = event.screenX - documentBounding.left - field.width / 2;
+    const pageScreenY = event.screenY - documentBounding.top - field.width / 2;
+
+    // const pageScreenX = event.screenX;
+    console.log('page screen x text' + pageScreenX);
+    console.log('page screen y text' + pageScreenY);
+
+    // console.log('page screen' + pageScreen);
+    
+    
 
     let newEle = {
       field_id: field.id,
@@ -43,6 +72,8 @@ function TextBoxButtonContainer({ documentBounding }) {
       pageId: activePageNumber,
       x: pagex,
       y: pagey,
+      screenX: pageScreenX,
+      screenY: pageScreenY,
       width: field.width,
       height: field.height,
       isRequired: true,
@@ -50,6 +81,7 @@ function TextBoxButtonContainer({ documentBounding }) {
       updateFromSalesforce: false,
       editable:true,
       mappingField: { label: "", value: "", type: "" },
+
     };
 
     dispatch(
