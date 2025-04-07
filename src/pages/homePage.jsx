@@ -6,7 +6,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import CustomSelect from "components/custom-select";
 import PdfViewer from "components/PDFViewer";
 import { Paggination } from "components/common/paggination";
-//
+//  
 import { ShowToast } from "utils/showToast";
 //
 import { TiTick } from "react-icons/ti";
@@ -19,7 +19,7 @@ import {
   CheckboxButtonContainer,
   DateButtonContainer,
   DateSignedButtonContainer,
-  EmailButtonContainer,
+  EmailBoxButtonContainer,
   SignatureButtonContainer,
   TextBoxButtonContainer,
   //
@@ -27,6 +27,7 @@ import {
   CheckBoxCoordinatesContainer,
   DateCoordinatesContainer,
   TextBoxCoordinatesContainer,
+  EmailBoxCoordinatesContainer,
 } from "containers";
 //
 import SelectionModeContainer from "containers/selectionMode/selectionModeContainer";
@@ -56,12 +57,13 @@ export default function Home() {
   );
 
   const activeSignatory = useSelector(
-    (state) => state.activeSignatory.activeSignatory
+    (state) => state.activeSignatory.activeSignatory  
   );
 
   const activeCoordinate = useSelector(
     (state) => state.activeCoordinate.activeCoordinate
   );
+
 
   const activePageNumber = useSelector(
     (state) => state.activePageNumber.activePageNumber
@@ -78,6 +80,15 @@ export default function Home() {
   const textBoxCoordinates = useSelector(
     (state) => state.textBoxCoordinates.textBoxCoordinates
   );
+  
+  const emailBoxCoordinates = useSelector(
+    (state) => state.emailBoxCoordinatesReducer?.emailBoxCoordinates || []
+  );
+
+  const allInvalidEmailCount = useSelector(
+    (state) => state.emailBoxCoordinatesReducer.allInvalidEmailCount 
+  );
+
 
   const dateCoordinates = useSelector(
     (state) => state.dateCoordinates.dateCoordinates
@@ -96,7 +107,8 @@ export default function Home() {
     ...textBoxCoordinates,
     ...dateCoordinates,
     ...checkBoxCoordinates,
-  ];
+    ...emailBoxCoordinates,
+  ];  
   const writebackFields = allCoordinates.filter((coord) => coord.writeBack);
   const updateFromSalesforceFields = allCoordinates.filter((coord) => coord.updateFromSalesforce);
   console.log("updateFromSalesforceFields",updateFromSalesforceFields);
@@ -521,6 +533,7 @@ function validateCoordinates(finalCoordData) {
       ...textBoxCoordinates,
       ...dateCoordinates,
       ...checkBoxCoordinates,
+      ...emailBoxCoordinates,
     ];
 
     const validation = validateCoordinates(finalCoordData);
@@ -582,7 +595,12 @@ function validateCoordinates(finalCoordData) {
         }
   };
 
-  const handleContinue = async () => {
+  const handleContinue = async () => { 
+    // if(allInvalidEmailCount || 0){
+    //   //show toat for enter all valid default email
+    //   ShowToast(ToastTypeEnum.ERROR, "Please enter all valid default email addresses. "+ allInvalidEmailCount);
+    // }
+    // return;
     setIsFetching(false);
     
     if (confirmationPopup === false) {
@@ -591,11 +609,11 @@ function validateCoordinates(finalCoordData) {
         ...textBoxCoordinates,
         ...dateCoordinates,
         ...checkBoxCoordinates,
+        ...emailBoxCoordinates,
       ];
-  
-      console.log('@@@ finalCoordData::'+ JSON.stringify(finalCoordData));
+      
       const validation = validateCoordinates(finalCoordData);
-  
+      
       if (!validation.isValidate) {
         setIsLoading(false);
         ShowToast(ToastTypeEnum.ERROR, validation.msg);
@@ -972,7 +990,7 @@ function validateCoordinates(finalCoordData) {
               <TextBoxButtonContainer documentBounding={documentBounding} />
               <DateButtonContainer documentBounding={documentBounding} />
               <CheckboxButtonContainer documentBounding={documentBounding} />
-              {/* <EmailButtonContainer onDragEnd={() => {}} /> */}
+              <EmailBoxButtonContainer documentBounding={documentBounding} />
               {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
             </div>
           </div>
@@ -997,7 +1015,7 @@ function validateCoordinates(finalCoordData) {
               <TextBoxButtonContainer documentBounding={documentBounding} />
               <DateButtonContainer documentBounding={documentBounding} />
               <CheckboxButtonContainer documentBounding={documentBounding} />
-              {/* <EmailButtonContainer onDragEnd={() => {}} /> */}
+              <EmailBoxButtonContainer documentBounding={documentBounding} />
               {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
             </div>
             
@@ -1096,6 +1114,9 @@ function validateCoordinates(finalCoordData) {
                       <CheckBoxCoordinatesContainer
                         scrollContainer={scrollContainer}
                       />
+                      <EmailBoxCoordinatesContainer
+                        scrollContainer={scrollContainer}
+                      />
                       <div
                       
                         ref={documentContainer}
@@ -1157,7 +1178,7 @@ function validateCoordinates(finalCoordData) {
 }
 {isSelectionMode && (
  <button
- className="done-btn"
+ className = "done-btn"
  onClick={() => {
    updateSalesforceData()
    dispatch(
