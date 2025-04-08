@@ -4,7 +4,10 @@ import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
+import { ShowToast } from "utils/showToast";
 import { emailRegex } from "../../constants/validation_constants";
+import { ToastTypeEnum } from "constants/toastTypeEnum";
+
 
 import {
   removeCoordinate,
@@ -54,14 +57,20 @@ function SelectedEmailBoxContainer({}) {
   );
 
   const checkEmailValidation = (value) => {
-    let count = allInEmailsValidEmailCount;
+    // let count = allInEmailsValidEmailCount;
 
-    if (!emailRegex.test(value) && value !== "") {
-      setIsValidDefaultEmailvalue(false);
-      count++;
-    } else {
+    if (emailRegex.test(value) && value !== "" && value !== undefined) {
       setIsValidDefaultEmailvalue(true);
-      count--;
+
+      console.log("Email Validation : ",true)
+      // count++;
+      return true;
+    } else {
+      setIsValidDefaultEmailvalue(false);
+      console.log("Email Validation : ",false)
+
+      // count--;
+      return false;
     }
 
     // dispatch(setAllDefaultInvalidEmailCount(Math.max(count, 0)));
@@ -115,36 +124,67 @@ function SelectedEmailBoxContainer({}) {
   const handleCurrentCoordValueChange = (value) => {
     //
     // check email validation after clicking on email field
-    checkEmailValidation(value);
+    const isEmailValid = checkEmailValidation(defaultValue)
+    console.log(isEmailValid);
+    if (!isEmailValid) {
 
-    if (isValidDefaultEmailvalue) {
+      console.log("validation email : ", defaultValue)
       // alert("Invalid Email!");
+      ShowToast(ToastTypeEnum.ERROR,"Invalid Email!");
+
+      dispatch(
+        setEmailBoxCoordinates({
+          emailBoxCoordinates: updateCoordinateValue(
+            emailBoxCoordinates,
+            activeCoordinate.eleId,
+            ""
+          ),
+        })
+      );
+      const updatedActiveCoordinates = {
+        ...activeCoordinate,
+        value: '',
+      };
+
+      dispatch(
+        setActiveCoordinate({
+          activeCoordinate: updatedActiveCoordinates,
+          isSelectionMode: true,
+        })
+      );
+  
+      setIsDefaultChanged(false);
+
       // return
+    }else{
+
+      dispatch(
+        setEmailBoxCoordinates({
+          emailBoxCoordinates: updateCoordinateValue(
+            emailBoxCoordinates,
+            activeCoordinate.eleId,
+            defaultValue
+          ),
+        })
+      );
+  
+      const updatedActiveCoordinates = {
+        ...activeCoordinate,
+        value: defaultValue,
+      };
+  
+      dispatch(
+        setActiveCoordinate({
+          activeCoordinate: updatedActiveCoordinates,
+          isSelectionMode: true,
+        })
+      );
+  
+      setIsDefaultChanged(false);
+
     }
 
-    dispatch(
-      setEmailBoxCoordinates({
-        emailBoxCoordinates: updateCoordinateValue(
-          emailBoxCoordinates,
-          activeCoordinate.eleId,
-          value
-        ),
-      })
-    );
 
-    const updatedActiveCoordinates = {
-      ...activeCoordinate,
-      value: value,
-    };
-
-    dispatch(
-      setActiveCoordinate({
-        activeCoordinate: updatedActiveCoordinates,
-        isSelectionMode: true,
-      })
-    );
-
-    setIsDefaultChanged(false);
   };
 
   const handleCurrentCoordIsRequiredChange = (value) => {
@@ -303,7 +343,8 @@ function SelectedEmailBoxContainer({}) {
                 ></CustomSelect>
               </div>
             </div>
-
+                
+            {(activeCoordinate.isSelectionMode && isValidDefaultEmailvalue) && 
             <div
               style={{
                 position: "absolute",
@@ -315,6 +356,7 @@ function SelectedEmailBoxContainer({}) {
             >
               &nbsp;
             </div>
+            }
 
             {!activeCoordinate.updateFromSalesforce ? (
               activeCoordinate.mappingField.type ===
@@ -346,7 +388,9 @@ function SelectedEmailBoxContainer({}) {
                       setDefaultValue(e.target.value);
                     }}
                     onBlur={(e) => {
-                      handleCurrentCoordValueChange();
+                      
+                        handleCurrentCoordValueChange();
+                      
                     }}
                     className="input-field"
                   />
@@ -521,19 +565,7 @@ function SelectedEmailBoxContainer({}) {
             <div key={activeCoordinate.value} className="right-sidebar-section">
               <form /* onFocus={handleCurrentCoordValueChange()} */>
                 <label className="field-lbl">Default Value</label>
-                <span
-                  // id={value}
-                  style={{
-                    position: "absolute",
-                    fontWeight: "bold",
-                    color: isValidDefaultEmailvalue ? "#00b005" : "#BB2525",
-                    fontSize: "1rem",
-                    top: "20px",
-                    right: "0px",
-                  }}
-                >
-                  {isValidDefaultEmailvalue ? "" : "Invalid Email!"}
-                </span>
+               
                 <input
                   type="email"
                   value={defaultValue}
@@ -542,8 +574,10 @@ function SelectedEmailBoxContainer({}) {
                     setIsDefaultChanged(true);
                   }}
                   onBlur={(e) => {
-                    handleCurrentCoordValueChange(e.target.value);
-                  }}
+                    
+                    handleCurrentCoordValueChange();
+                  }
+                  }
                   className="input-field"
                 />
               </form>
