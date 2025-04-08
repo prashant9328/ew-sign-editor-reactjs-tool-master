@@ -470,6 +470,27 @@
     z-index: 99;
         
     }
+    .done-btn-disabled {
+        background-color: gray;
+        color: #ffffff;
+        cursor: pointer;
+        margin-top: 18.5px;
+        font-size: small;
+        position: absolute;
+        right: 20px;
+        padding : 8px;
+        border-radius: 5px;
+        bottom: 50;
+        border: 1px solid #f9f9f9;
+        border-width: 0px 1px 0px 1px;
+        text-transform: uppercase;
+        width: 40%;
+        display: flex;
+        align-items: center;
+        align-content: center !important;
+        align-self: center;
+        z-index: 0;  
+    }
     .nav-flex{
         width: 100vw;
         margin: 0;
@@ -673,6 +694,34 @@
     z-index: 0;
         
     }
+    .done-btn-disabled {
+        background-color: gray;
+        color: #ffffff;
+        cursor: pointer;
+        margin-top: 18.5px;
+        /* padding: 16px 75px; */
+        /* padding: 10px 32px; */
+        font-size: small;
+        position: absolute;
+        /* right: 100px; */
+        right: 20px;
+        /* top: 0px; */
+        padding : 8px;
+        border-radius: 5px;
+        bottom: 50;
+        border: 1px solid #f9f9f9;
+        border-width: 0px 1px 0px 1px;
+        text-transform: uppercase;
+        /* width: 26px; */
+        width: 40%;
+        display: flex;
+        /* margin-top: 0; */
+        align-items: center;
+        align-content: center !important;
+        align-self: center;
+        z-index: 0;
+    }
+     
     .done-btn svg{
         width: 20px;
         /* height: 18.5px; */

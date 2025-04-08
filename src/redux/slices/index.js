@@ -6,6 +6,7 @@ import signatoryListReducer from "./signatoryListReducer";
 import supportedFieldsReducer from "./supportedFieldsReducer";
 import signatureCoordinatesReducer from "./signatureCoordinatesReducer";
 import textBoxCoordinatesReducer from "./textBoxCoordinatesReducer";
+import emailBoxCoordinatesReducer from "./emailBoxCoordinatesReducer";
 import dateCoordinatesReducer from "./dateCoordinatesReducer";
 import checkBoxCoordinatesReducer from "./checkBoxCoordinatesReducer";
 import generalDocumentReducer from "./generalDocumentReducer";
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
     signatoryList: signatoryListReducer,
     supportedFields: supportedFieldsReducer,
     signatureCoordinates: signatureCoordinatesReducer,
+    emailBoxCoordinatesReducer: emailBoxCoordinatesReducer,
     textBoxCoordinates: textBoxCoordinatesReducer,
     dateCoordinates: dateCoordinatesReducer,
     checkBoxCoordinates: checkBoxCoordinatesReducer,

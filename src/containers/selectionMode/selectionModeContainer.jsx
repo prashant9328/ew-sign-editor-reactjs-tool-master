@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { FieldTypeEnum } from "../../constants/fieldTypeEnum";
 import SelectedSignatureContainer from "./selectedSignatureContainer";
 import SelectedTextBoxContainer from "./selectedTextBoxContainer";
+import SelectedEmailBoxContainer from "./selectedEmailBoxContainer";
 import SelectedDateContainer from "./selectedDateContainer";
 import SelectedCheckBoxContainer from "./selectedCheckBoxContainer";
 import { useState } from "react";
@@ -45,6 +46,8 @@ const SelectionModeContainer = ({handleSalesforceFields}) => {
         return <SelectedDateContainer sendSalesforceData={handleSalesforceData} />;
       case FieldTypeEnum.CHECKBOX:
         return <SelectedCheckBoxContainer />;
+      case FieldTypeEnum.EMAIL:
+        return <SelectedEmailBoxContainer />;
       default:
         return null;
     }
