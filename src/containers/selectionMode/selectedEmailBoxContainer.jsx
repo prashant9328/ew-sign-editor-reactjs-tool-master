@@ -15,6 +15,7 @@ import {
   updateCoordinateValue,
   updateCoordinateName,
   updateCoordinateSignatory,
+  updateCoordinateEditable,
   updateCoordinateWriteBackSettings,
   updateCoordinateUpdateFromSalesforceSettings,
   updateCoordinateIsRequired,
@@ -257,6 +258,29 @@ function SelectedEmailBoxContainer({}) {
     );
   };
 
+  const handleCurrentCoordIsEditableChange = (value) => {  
+    dispatch(
+      setEmailBoxCoordinates({
+        emailBoxCoordinates: updateCoordinateEditable(
+          emailBoxCoordinates,
+          activeCoordinate.eleId,
+          value
+        ),
+      })
+    );
+  
+    const updatedActiveCoordinates = {
+      ...activeCoordinate,
+      editable: value,
+    };
+    dispatch(
+      setActiveCoordinate({
+        activeCoordinate: updatedActiveCoordinates,
+        isSelectionMode: true,
+      })
+    );
+  };
+
   const handleCurrentCoordMappingFieldChange = (e) => {
     dispatch(
       setEmailBoxCoordinates({
@@ -428,6 +452,15 @@ function SelectedEmailBoxContainer({}) {
                   handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
                 }}
               />
+              {(activeCoordinate.value!=="" || activeCoordinate.updateFromSalesforce) &&
+                <CustomToggle
+                  title="Editable"
+                  defaultValue={activeCoordinate.updateFromSalesforce}
+                  onChange={(value) => {
+                    handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+                  }}
+                />
+              }
               {activeCoordinate.updateFromSalesforce ||
               activeCoordinate.writeBack ? (
                 <>
@@ -613,6 +646,15 @@ function SelectedEmailBoxContainer({}) {
               handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
             }}
           />
+          {(defaultValue!=="" || activeCoordinate.updateFromSalesforce) &&
+            <CustomToggle
+              title="Editable"
+              defaultValue={activeCoordinate.editable}
+              onChange={(value) => {
+                handleCurrentCoordIsEditableChange(value);
+              }}
+            />
+          }
           <button
             onClick={handleEleDelete}
             style={{
