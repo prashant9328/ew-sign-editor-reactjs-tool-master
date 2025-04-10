@@ -552,8 +552,8 @@ function SelectedEmailBoxContainer({}) {
               name="signer"
               options={salesforceFieldsMetadata.filter(
                 (field) =>
-                  field.type === SalesforceFieldTypeEnum.STRING ||
-                  field.type === SalesforceFieldTypeEnum.TEXTAREA
+                  field.type === SalesforceFieldTypeEnum.EMAIL
+                  // field.type === SalesforceFieldTypeEnum.EMAIL
               )}
               useFor="MAPPING"
               onChange={(e) => {
