@@ -114,3 +114,118 @@
   height: 16px;
   margin-right: 8px;
 } 
+.add-update-btn {
+  background-color: #555;
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  justify-self: end;
+  transition: background-color 0.2s ease;
+  margin: 5px;
+}
+.picklist-actions{
+  display: flex;
+  justify-self: end;
+}
+
+.add-update-btn:hover {
+  background-color: #989898;
+}
+
+.add-update-btn:active {
+  transform: scale(0.97);
+}
+.input-field {
+  padding: 6px;
+  margin-right: 8px;
+}
+
+.picklist-ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 5px;
+  max-width: 400px;
+}
+
+.picklist-li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  margin-bottom: 2px;
+  background-color: #f8f9fa;
+  border: 1px solid #c7c7c7;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.picklist-li:hover {
+  background-color: #eef1f4;
+}
+
+.picklist-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 6px;
+  font-size: 1.1rem;
+  color: #555;
+  transition: color 0.2s ease;
+}
+
+.picklist-btn:hover {
+  color: #989898;
+}
+
+.picklist-btn:active {
+  transform: scale(0.95);
+}
+
+.picklist-btn.delete {
+  color: #d9534f;
+}
+
+.picklist-btn.delete:hover {
+  color: #c9302c;
+}
+
+.picklist-input-row {
+  display: flex;
+  align-items: center;
+ margin-bottom: 0px;
+}
+
+.input-field {
+  flex: 1;
+  padding: 8px;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.add-update-btn {
+  background-color: #555;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-update-btn:hover {
+  background-color: #ccc;
+}
+.picklist-group {
+  margin-top: 5px;
+  border: #989898 1px solid;
+  padding: 5px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}

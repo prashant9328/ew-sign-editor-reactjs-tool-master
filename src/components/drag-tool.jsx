@@ -20,7 +20,8 @@ const DragTool = ({
   handleDragStart,
   handleDragStop,
   handleResize,
-}) => {
+  iconPlacement = "flex-start",
+}) => {  
   const currentElementref = useRef(null);
   const [currentState, setCurrentState] = useState({
     id: eleId,
@@ -39,7 +40,8 @@ const DragTool = ({
         position: "absolute", 
         display: "flex",
         alignItems: "center",
-        paddingLeft: "10px",
+        justifyContent: iconPlacement,
+        padding:  "0px 10px",
         border: "solid 1px #000000",
         background: `${bgColor}`,
         zIndex: 9999

@@ -4,4 +4,5 @@ export const FieldTypeEnum = {
   DATE: "Date",
   CHECKBOX: "Checkbox",
   EMAIL: "Email",
+  PICKLIST: "PickList",
 };

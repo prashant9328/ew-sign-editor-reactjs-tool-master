@@ -4,6 +4,7 @@ import { FieldTypeEnum } from "../../constants/fieldTypeEnum";
 import SelectedSignatureContainer from "./selectedSignatureContainer";
 import SelectedTextBoxContainer from "./selectedTextBoxContainer";
 import SelectedEmailBoxContainer from "./selectedEmailBoxContainer";
+import SelectedPicklistContainer from "./selectedPicklistContainer";
 import SelectedDateContainer from "./selectedDateContainer";
 import SelectedCheckBoxContainer from "./selectedCheckBoxContainer";
 import { useState } from "react";
@@ -16,6 +17,7 @@ const SelectionModeContainer = ({handleSalesforceFields}) => {
   const supportedFields = useSelector(
     (state) => state.supportedFields.supportedFields
   );
+
   const activeCoordinate = useSelector(
     (state) => state.activeCoordinate.activeCoordinate
   );
@@ -48,6 +50,8 @@ const SelectionModeContainer = ({handleSalesforceFields}) => {
         return <SelectedCheckBoxContainer />;
       case FieldTypeEnum.EMAIL:
         return <SelectedEmailBoxContainer />;
+      case FieldTypeEnum.PICKLIST:
+        return <SelectedPicklistContainer />;
       default:
         return null;
     }

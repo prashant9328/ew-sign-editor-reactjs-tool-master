@@ -22,11 +22,13 @@ import {
   EmailBoxButtonContainer,
   SignatureButtonContainer,
   TextBoxButtonContainer,
+  PicklistButtonContainer,
   //
   SignatureCoordinatesContainer,
   CheckBoxCoordinatesContainer,
   DateCoordinatesContainer,
   TextBoxCoordinatesContainer,
+  PicklistCoordinatesContainer,
   EmailBoxCoordinatesContainer,
 } from "containers";
 //
@@ -85,8 +87,8 @@ export default function Home() {
     (state) => state.emailBoxCoordinatesReducer?.emailBoxCoordinates || []
   );
 
-  const allInvalidEmailCount = useSelector(
-    (state) => state.emailBoxCoordinatesReducer.allInvalidEmailCount 
+  const picklistCoordinates = useSelector(
+    (state) => state.picklistCoordinates.picklistCoordinates
   );
 
 
@@ -108,6 +110,7 @@ export default function Home() {
     ...dateCoordinates,
     ...checkBoxCoordinates,
     ...emailBoxCoordinates,
+    ...picklistCoordinates,
   ];  
   const writebackFields = allCoordinates.filter((coord) => coord.writeBack);
   const updateFromSalesforceFields = allCoordinates.filter((coord) => coord.updateFromSalesforce);
@@ -228,6 +231,99 @@ console.log("updateFromSalesforceFieldsData",JSON.stringify(updateFromSalesforce
         })
       );
       dispatch(setSupportedFields({ supportedFields: data.allFieldsData }));
+
+     /*  const fields = {
+        supportedFields: [
+          {
+            id: 1,
+            name: "Signature",
+            type: "Signature",
+            is_required: 1,
+            height: 57,
+            width: 152,
+            minWidth: 12,
+            minHeight: 12,
+            maxWidth: 300,
+            maxHeight: 130,
+          },
+          {
+            id: 2,
+            name: "Text",
+            type: "Text",
+            is_required: 1,
+            height: 36,
+            width: 104,
+            minWidth: 12,
+            minHeight: 12,
+            maxWidth: 500,
+            maxHeight: 30,
+          },
+          {
+            id: 3,
+            name: "Date",
+            type: "Date",
+            is_required: 1,
+            height: 36,
+            width: 104,
+            minWidth: 12,
+            minHeight: 12,
+            maxWidth: 120,
+            maxHeight: 30,
+          },
+          {
+            id: 4,
+            name: "Checkbox",
+            type: "Checkbox",
+            is_required: 1,
+            height: 12,
+            width: 12,
+            minWidth: 12,
+            minHeight: 12,
+            maxWidth: 25,
+            maxHeight: 25,
+          },
+          {
+            id: 5,
+            name: "Initials",
+            type: "Initials",
+            is_required: 1,
+            height: 29,
+            width: 60,
+            minWidth: 60,
+            minHeight: 29,
+            maxWidth: 60,
+            maxHeight: 29,
+          },
+          {
+            id: 7,
+            name: "Email",
+            type: "Email",
+            is_required: 1,
+            height: 36,
+            width: 104,
+            minWidth: 12,
+            minHeight: 12,
+            maxWidth: 500,
+            maxHeight: 30,
+          },
+          {
+            id: 8,
+            name: "PickList",
+            type: "PickList",
+            is_required: 1,
+            height: 36,
+            width: 120,
+            minWidth: 12,
+            minHeight: 12,
+            maxWidth: 500,
+            maxHeight: 30,
+          },
+        ],
+      };
+      dispatch(setSupportedFields({ supportedFields: fields.supportedFields }));      
+       
+      */
+      
       dispatch(setSignatoryList({ signatoryList: signatoryList }));
       dispatch(
         setActiveSignatory({
@@ -534,6 +630,7 @@ function validateCoordinates(finalCoordData) {
       ...dateCoordinates,
       ...checkBoxCoordinates,
       ...emailBoxCoordinates,
+      ...picklistCoordinates,
     ];
 
     const validation = validateCoordinates(finalCoordData);
@@ -596,11 +693,6 @@ function validateCoordinates(finalCoordData) {
   };
 
   const handleContinue = async () => { 
-    // if(allInvalidEmailCount || 0){
-    //   //show toat for enter all valid default email
-    //   ShowToast(ToastTypeEnum.ERROR, "Please enter all valid default email addresses. "+ allInvalidEmailCount);
-    // }
-    // return;
     setIsFetching(false);
     
     if (confirmationPopup === false) {
@@ -610,8 +702,26 @@ function validateCoordinates(finalCoordData) {
         ...dateCoordinates,
         ...checkBoxCoordinates,
         ...emailBoxCoordinates,
+        ...picklistCoordinates,
       ];
       
+      let picklistNames = [];
+      picklistCoordinates.map((picklist) => {
+        picklistNames.push(picklist.picklistName);
+      });
+      
+      const hasEmptyName = picklistNames.some(
+        (name) => !name || name.trim() === ''
+      );
+      const hasDuplicatePicklistNames = new Set(picklistNames).size !== picklistNames.length;
+      if(hasEmptyName){
+        ShowToast(ToastTypeEnum.ERROR, "PickList name is required! Check all PickList names");
+        return;
+      }else if(hasDuplicatePicklistNames){
+        ShowToast(ToastTypeEnum.ERROR, "Duplicate PickList names found! Each PickList name should be unique.");
+        return;
+      }
+
       const validation = validateCoordinates(finalCoordData);
       
       if (!validation.isValidate) {
@@ -991,6 +1101,7 @@ function validateCoordinates(finalCoordData) {
               <DateButtonContainer documentBounding={documentBounding} />
               <CheckboxButtonContainer documentBounding={documentBounding} />
               <EmailBoxButtonContainer documentBounding={documentBounding} />
+              <PicklistButtonContainer documentBounding={documentBounding} />
               {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
             </div>
           </div>
@@ -1016,6 +1127,7 @@ function validateCoordinates(finalCoordData) {
               <DateButtonContainer documentBounding={documentBounding} />
               <CheckboxButtonContainer documentBounding={documentBounding} />
               <EmailBoxButtonContainer documentBounding={documentBounding} />
+              <PicklistButtonContainer documentBounding={documentBounding} />
               {/* <DateSignedButtonContainer onDragEnd={() => {}} /> */}
             </div>
             
@@ -1115,6 +1227,9 @@ function validateCoordinates(finalCoordData) {
                         scrollContainer={scrollContainer}
                       />
                       <EmailBoxCoordinatesContainer
+                        scrollContainer={scrollContainer}
+                      />
+                      <PicklistCoordinatesContainer
                         scrollContainer={scrollContainer}
                       />
                       <div

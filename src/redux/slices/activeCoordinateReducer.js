@@ -9,7 +9,7 @@ export const activeCoordinateSlice = createSlice({
   reducers: {
     setActiveCoordinate: (currentState, action) => {
       const { activeCoordinate, isSelectionMode } = action.payload;
-      console.log(JSON.stringify(action.payload));
+      console.log("setActiveCoordinate payload-> "+JSON.stringify(action.payload));
       currentState.activeCoordinate = activeCoordinate;
       currentState.isSelectionMode = isSelectionMode;
     }
