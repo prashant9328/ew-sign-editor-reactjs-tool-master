@@ -99,7 +99,7 @@ function SelectedPicklistContainer({}) {
           ...item,
           value: "",
           options: updatedOptions,
-          picklistName: picklistName,
+          name: picklistName,
         };
         console.log("tempItem---->", tempItem);
         return tempItem;
@@ -123,7 +123,7 @@ function SelectedPicklistContainer({}) {
       ...activeCoordinate,
       value: "",
       options: updatedOptions,
-      picklistName: picklistName,
+      name: picklistName,
     };
 
     dispatch(
@@ -281,7 +281,7 @@ function SelectedPicklistContainer({}) {
   useEffect(() => {
     setDefaultValue(activeCoordinate.value || "");
     setCurrentCoordOptions(activeCoordinate.options || []);
-    setPicklistName(activeCoordinate.picklistName || "");
+    setPicklistName(activeCoordinate.name || "");
   }, [activeCoordinate.value]);
 
   return (

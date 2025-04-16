@@ -707,7 +707,7 @@ function validateCoordinates(finalCoordData) {
       
       let picklistNames = [];
       picklistCoordinates.map((picklist) => {
-        picklistNames.push(picklist.picklistName);
+        picklistNames.push(picklist.name);
       });
       
       const hasEmptyName = picklistNames.some(
