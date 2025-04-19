@@ -81,6 +81,19 @@ const updateCoordinateValue = (coordList, id, value) => {
   });
 };
 
+const updateCoordinateOptions = (coordList, id, options) => {
+  return coordList.map((item) => {
+    if (item.eleId === id) {
+      return {
+        ...item,
+        options: options, //.join()
+      };
+    } else {
+      return item;
+    }
+  });
+};
+
 const updateCoordinateName = (coordList, id, name) => {
   return coordList.map((item) => {
     if (item.eleId === id) {
@@ -147,6 +160,7 @@ export {
   updateCoordinateMappingField,
   removeCoordinate,
   updateCoordinateValue,
+  updateCoordinateOptions,
   updateCoordinateIsRequired,
   updateCoordinateUpdateFromSalesforceSettings,
   updateCoordinateWriteBackSettings,

@@ -9,6 +9,7 @@ import {
   removeCoordinate,
   updateCoordinateMappingField,
   updateCoordinateValue,
+  updateCoordinateOptions,
   updateCoordinateName,
   updateCoordinateSignatory,
   updateCoordinateWriteBackSettings,
@@ -39,7 +40,6 @@ function SelectedPicklistContainer({}) {
   const salesforceFieldsMetadata = useSelector(
     (state) => state.salesforceFieldsMetadata.salesforceFieldsMetadata
   );
-  const [isDefaultChanged, setIsDefaultChanged] = useState(false);
 
   const [defaultValue, setDefaultValue] = useState(
     activeCoordinate.value || ""
@@ -47,6 +47,7 @@ function SelectedPicklistContainer({}) {
   const [inputValue, setInputValue] = useState("");
   const [currentCoordOptions, setCurrentCoordOptions] = useState([]);
   const [picklistName, setPicklistName] = useState("");
+  const [picklistNameEdited, setPicklistNameEdited] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
 
   const handleEleDelete = () => {
@@ -78,9 +79,10 @@ function SelectedPicklistContainer({}) {
 
     const updatedActiveCoordinates = {
       ...activeCoordinate,
+      value:'',
       signatory_id: e.id,
       user_index_id: e.index,
-      options: currentCoordOptions,
+      options: currentCoordOptions?.join(),
       bgColor: e.bgColor,
     };
 
@@ -92,12 +94,14 @@ function SelectedPicklistContainer({}) {
     );
   };
 
-  const handleCurrentCoordValueChange = (updatedOptions) => {
+  const handleCurrentCoordOptionsChange = (updatedOptions) => {
+    console.log("Picklist name at 97 : ",picklistName);
+    setTimeout(1000);
     const updatedPicklistCoordinates = picklistCoordinates.map((item) => {
       if (item.eleId === activeCoordinate.eleId) {
         const tempItem = {
           ...item,
-          value: "",
+          // value: "",
           options: updatedOptions,
           name: picklistName,
         };
@@ -111,7 +115,7 @@ function SelectedPicklistContainer({}) {
 
     dispatch(
       setPicklistCoordinates({
-        picklistCoordinates: updateCoordinateValue(
+        picklistCoordinates: updateCoordinateOptions(
           updatedPicklistCoordinates,
           activeCoordinate.eleId,
           updatedOptions
@@ -121,7 +125,7 @@ function SelectedPicklistContainer({}) {
 
     const updatedActiveCoordinates = {
       ...activeCoordinate,
-      value: "",
+      value: '',
       options: updatedOptions,
       name: picklistName,
     };
@@ -133,7 +137,8 @@ function SelectedPicklistContainer({}) {
       })
     );
 
-    setIsDefaultChanged(false);
+    // setIsDefaultChanged(false);
+    setPicklistNameEdited(false);
   };
 
   const handleCurrentCoordIsRequiredChange = (value) => {
@@ -229,25 +234,19 @@ function SelectedPicklistContainer({}) {
   };
 
   useEffect(() => {
-    setCurrentCoordOptions(activeCoordinate.options || []);
-  }, [currentCoordOptions]);
+    setCurrentCoordOptions((activeCoordinate.options)?.toString()?.split(",") || []);
+  }, [activeCoordinate.options]);
 
   const handleAddOrUpdate = () => {
     if (inputValue.trim() === "") return;
 
     let updatedOptions;
 
-    if (editIndex !== null) {
-      // Update
-      updatedOptions = [...currentCoordOptions];
-      updatedOptions[editIndex] = inputValue;
-      setEditIndex(null);
-    } else {
-      // Add
-      updatedOptions = [...currentCoordOptions, inputValue];
-    }
-    setCurrentCoordOptions(updatedOptions);
-    handleCurrentCoordValueChange(updatedOptions);
+      updatedOptions = currentCoordOptions?.join();
+      updatedOptions = updatedOptions.length>0?(updatedOptions+","+inputValue):inputValue; //.substring(1)
+        
+    setCurrentCoordOptions(updatedOptions?.toString()?.split(","));
+    handleCurrentCoordOptionsChange(updatedOptions?.toString());
     setInputValue("");
   };
 
@@ -258,12 +257,12 @@ function SelectedPicklistContainer({}) {
 
   const handleDelete = (index) => {
     const updatedOptions = currentCoordOptions.filter((_, i) => i !== index);
-    setCurrentCoordOptions(updatedOptions);
+    setCurrentCoordOptions((updatedOptions)?.toString().split(","));
     if (editIndex === index) {
       setEditIndex(null);
       setInputValue("");
     }
-    handleCurrentCoordValueChange(updatedOptions);
+    handleCurrentCoordOptionsChange(updatedOptions);
   };
 
   const [dropdown, setDropdown] = useState(true);
@@ -280,7 +279,7 @@ function SelectedPicklistContainer({}) {
 
   useEffect(() => {
     setDefaultValue(activeCoordinate.value || "");
-    setCurrentCoordOptions(activeCoordinate.options || []);
+    setCurrentCoordOptions((activeCoordinate.options)?.toString()?.split(",") || []);
     setPicklistName(activeCoordinate.name || "");
   }, [activeCoordinate.value]);
 
@@ -522,7 +521,7 @@ function SelectedPicklistContainer({}) {
             />
           </div>
         ) : null} */}
-        {isDefaultChanged && (
+        {picklistNameEdited && (
           <div
             style={{
               position: "fixed",
@@ -550,7 +549,7 @@ function SelectedPicklistContainer({}) {
                 options={activeCoordinate.mappingField.picklistOption}
                 useFor="MAPPING"
                 onChange={(e) => {
-                  handleCurrentCoordValueChange();
+                  handleCurrentCoordOptionsChange();
                 }}
               />
             </div>
@@ -564,8 +563,15 @@ function SelectedPicklistContainer({}) {
                   className="input-field"
                   value={picklistName}
                   onChange={(e) => {
+                    // console.log("picklist value : ",e.target.value);
                     setPicklistName(e.target.value);
-                    handleCurrentCoordValueChange(currentCoordOptions);
+                    setPicklistNameEdited(true)
+                    
+                  }}
+                  onBlur={()=>{
+                    // setTimeout(1000);
+                    handleCurrentCoordOptionsChange(currentCoordOptions);
+
                   }}
                   placeholder="Enter picklist name"
                 />
@@ -587,7 +593,8 @@ function SelectedPicklistContainer({}) {
                 </div>
 
                 <ul className="picklist-ul">
-                  {currentCoordOptions.map((item, index) => (
+                  {
+                  currentCoordOptions.map((item, index) => (
                     <li className="picklist-li" key={index}>
                       {item}{" "}
                       <div className="picklist-actoins">
