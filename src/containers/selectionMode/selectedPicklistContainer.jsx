@@ -167,6 +167,7 @@ function SelectedPicklistContainer({}) {
 
 
    const handleCurrentCoordWriteBackSettingsChange = (value) => {
+    
       dispatch(
         setPicklistCoordinates({
           picklistCoordinates: updateCoordinateWriteBackSettings(
@@ -187,6 +188,9 @@ function SelectedPicklistContainer({}) {
           isSelectionMode: true,
         })
       );
+      console.log("log at 191 : ",value)
+
+      
     };
 
   const handleCurrentCoordUpdateFromSalesforceSettingsChange = (value) => {
@@ -211,28 +215,7 @@ function SelectedPicklistContainer({}) {
       })
     );
   };
-  const handleCurrentCoordIsEditableChange = (value) => {
-    dispatch(
-      setPicklistCoordinates({
-        picklistCoordinates: updateCoordinateEditable(
-          picklistCoordinates,
-          activeCoordinate.eleId,
-          value
-        ),
-      })
-    );
-
-    const updatedActiveCoordinates = {
-      ...activeCoordinate,
-      editable: value,
-    };
-    dispatch(
-      setActiveCoordinate({
-        activeCoordinate: updatedActiveCoordinates,
-        isSelectionMode: true,
-      })
-    );
-  };
+ 
   const handleCurrentCoordMappingFieldChange = (e) => {
     dispatch(
       setPicklistCoordinates({
@@ -362,45 +345,7 @@ function SelectedPicklistContainer({}) {
               </div>
             </div>
 
-            {/* {!activeCoordinate.updateFromSalesforce ? (
-              activeCoordinate.mappingField.type ===
-              SalesforceFieldTypeEnum.PICKLIST ? (
-                <div className="right-sidebar-section">
-                  <label className="field-lbl">Default PickList</label>
-                  <CustomSelect
-                    value={{
-                      label: activeCoordinate.value,
-                      value: activeCoordinate.value,
-                    }}
-                    name="picklistValue"
-                    options={activeCoordinate.mappingField.picklistOption}
-                    useFor="MAPPING"
-                    onChange={(e) => {
-                      handleCurrentCoordValueChange();
-                    }}
-                  />
-                </div>
-              ) : (
-                <div
-                  key={activeCoordinate.value}
-                  className="right-sidebar-section"
-                >
-                  <label className="field-lbl">Default PickList</label>
-
-                  <CustomSelect
-                    value={activeCoordinate.mappingField}
-                    name="signer"
-                    options={salesforceFieldsMetadata.filter(
-                      (field) => field.type === SalesforceFieldTypeEnum.PICKLIST
-                    )}
-                    useFor="MAPPING"
-                    onChange={(e) => {
-                      // handleCurrentCoordMappingFieldChange(e);
-                    }}
-                  />
-                </div>
-              )
-            ) : null} */}
+           
 
             <div
               style={{
@@ -410,18 +355,15 @@ function SelectedPicklistContainer({}) {
               }}
               className="right-sidebar-section"
             >
-              {/* <CustomToggle
-                title="Required"
-                defaultValue={activeCoordinate.isRequired}
-                onChange={(value) => {
-                  handleCurrentCoordIsRequiredChange(value);
-                }}
-              /> */}
+          
               <CustomToggle
                 title="Writeback to Salesforce"
                 defaultValue={activeCoordinate.writeBack}
                 onChange={(value) => {
                   handleCurrentCoordWriteBackSettingsChange(value);
+                 if(value && !activeCoordinate.updateFromSalesforce){
+                    handleCurrentCoordUpdateFromSalesforceSettingsChange(value)
+                 }
                 }}
               />
 
@@ -429,7 +371,13 @@ function SelectedPicklistContainer({}) {
                 title="Update from Salesforce"
                 defaultValue={activeCoordinate.updateFromSalesforce}
                 onChange={(value) => {
-                  handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+                  if(activeCoordinate.writeBack){
+
+                    handleCurrentCoordUpdateFromSalesforceSettingsChange(true);
+                  }else{
+                    handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+
+                  }
                 }}
               />
               
@@ -550,7 +498,7 @@ function SelectedPicklistContainer({}) {
             &nbsp;
           </div>
         )}
-        {!activeCoordinate.updateFromSalesforce ? (
+        {(!activeCoordinate.updateFromSalesforce && !activeCoordinate.writeBack) ? (
           activeCoordinate.mappingField.type ===
           SalesforceFieldTypeEnum.PICKLIST ? (
             <div className="right-sidebar-section">
@@ -670,15 +618,25 @@ function SelectedPicklistContainer({}) {
           <CustomToggle
             title="Writeback to Salesforce"
             defaultValue={activeCoordinate.writeBack}
+            
             onChange={(value) => {
               handleCurrentCoordWriteBackSettingsChange(value);
+              if(value && !activeCoordinate.updateFromSalesforce){
+                handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+
+              }
             }}
           />
           <CustomToggle
             title="Update from Salesforce"
             defaultValue={activeCoordinate.updateFromSalesforce}
             onChange={(value) => {
-              handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+              if(activeCoordinate.writeBack){
+                handleCurrentCoordUpdateFromSalesforceSettingsChange(true);
+              }else{
+                
+                handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
+              }
             }}
           />
 

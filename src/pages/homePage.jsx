@@ -1313,7 +1313,7 @@ function validateCoordinates(finalCoordData) {
               style={isSelectionMode?{
                 // position: "absolute",
                 overflowX:"hidden",
-                height: "92vh",
+                height: "22vh",
                 width:"inherit",
                 zIndex:'-1'
               }:{
