@@ -217,15 +217,17 @@ function SelectedPicklistContainer({}) {
   };
  
   const handleCurrentCoordMappingFieldChange = (e) => {
-    dispatch(
-      setPicklistCoordinates({
-        picklistCoordinates: updateCoordinateMappingField(
-          picklistCoordinates,
-          activeCoordinate.eleId,
-          e
-        ),
-      })
-    );
+    if(activeCoordinate.updateFromSalesforce || activeCoordinate.writeBack){
+      dispatch(
+        setPicklistCoordinates({
+          picklistCoordinates: updateCoordinateMappingField(
+            picklistCoordinates,
+            activeCoordinate.eleId,
+            e
+          ),
+        })
+      );
+    
 
     const updatedActiveCoordinates = {
       ...activeCoordinate,
@@ -238,6 +240,7 @@ function SelectedPicklistContainer({}) {
         isSelectionMode: true,
       })
     );
+    }
   };
 
   useEffect(() => {
@@ -402,7 +405,7 @@ function SelectedPicklistContainer({}) {
                         handleCurrentCoordMappingFieldChange(e);
                       }}
                     />
-                  </div>
+                  </div>f
                 </>
               ) : null}
             </div>
@@ -498,9 +501,75 @@ function SelectedPicklistContainer({}) {
             &nbsp;
           </div>
         )}
-        {(!activeCoordinate.updateFromSalesforce && !activeCoordinate.writeBack) ? (
+        {(!activeCoordinate.updateFromSalesforce && !activeCoordinate.writeBack) && 
+        <>
+        <div key={activeCoordinate.value} className="right-sidebar-section">
+            <label className="field-lbl">Set PickList</label>
+            <div className="picklist-group">
+              {/* for picklist name */}
+              <input
+                className="input-field"
+                value={picklistName}
+                onChange={(e) => {
+                  // console.log("picklist value : ",e.target.value);
+                  setPicklistName(e.target.value);
+                  setPicklistNameEdited(true)
+                  
+                }}
+                onBlur={()=>{
+                  // setTimeout(1000);
+                  handleCurrentCoordOptionsChange(currentCoordOptions);
+
+                }}
+                placeholder="Enter picklist name"
+              />
+              <div className="picklist-input-row">
+                <input
+                  className="input-field"
+                  value={inputValue}
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                  }}
+                  placeholder="Enter picklist value"
+                />
+                <button
+                  className="add-update-btn"
+                  onClick={handleAddOrUpdate}
+                >
+                  {editIndex !== null ? "Update" : "Add"}
+                </button>
+              </div>
+
+              <ul className="picklist-ul">
+                {
+                currentCoordOptions.map((item, index) => (
+                  <li className="picklist-li" key={index}>
+                    {item}{" "}
+                    <div className="picklist-actoins">
+                      <button
+                        className="picklist-btn"
+                        onClick={() => handleEdit(index)}
+                      >
+                        <BsPencilSquare />
+                      </button>
+                      <button
+                        className="picklist-btn"
+                        onClick={() => handleDelete(index)}
+                      >
+                        <BsTrashFill />
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+          </div>
+          
+        {
           activeCoordinate.mappingField.type ===
-          SalesforceFieldTypeEnum.PICKLIST ? (
+          SalesforceFieldTypeEnum.PICKLIST && (
+            
             <div className="right-sidebar-section">
               <label className="field-lbl">Default PickList</label>
               <CustomSelect
@@ -516,91 +585,12 @@ function SelectedPicklistContainer({}) {
                 }}
               />
             </div>
-          ) : (
-            // TODO: need to change
-            <div key={activeCoordinate.value} className="right-sidebar-section">
-              <label className="field-lbl">Set PickList</label>
-              <div className="picklist-group">
-                {/* for picklist name */}
-                <input
-                  className="input-field"
-                  value={picklistName}
-                  onChange={(e) => {
-                    // console.log("picklist value : ",e.target.value);
-                    setPicklistName(e.target.value);
-                    setPicklistNameEdited(true)
-                    
-                  }}
-                  onBlur={()=>{
-                    // setTimeout(1000);
-                    handleCurrentCoordOptionsChange(currentCoordOptions);
-
-                  }}
-                  placeholder="Enter picklist name"
-                />
-                <div className="picklist-input-row">
-                  <input
-                    className="input-field"
-                    value={inputValue}
-                    onChange={(e) => {
-                      setInputValue(e.target.value);
-                    }}
-                    placeholder="Enter picklist value"
-                  />
-                  <button
-                    className="add-update-btn"
-                    onClick={handleAddOrUpdate}
-                  >
-                    {editIndex !== null ? "Update" : "Add"}
-                  </button>
-                </div>
-
-                <ul className="picklist-ul">
-                  {
-                  currentCoordOptions.map((item, index) => (
-                    <li className="picklist-li" key={index}>
-                      {item}{" "}
-                      <div className="picklist-actoins">
-                        <button
-                          className="picklist-btn"
-                          onClick={() => handleEdit(index)}
-                        >
-                          <BsPencilSquare />
-                        </button>
-                        <button
-                          className="picklist-btn"
-                          onClick={() => handleDelete(index)}
-                        >
-                          <BsTrashFill />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-{/* 
-               <CustomSelect
-                value={defaultValue}
-                name="signer"
-                options={salesforceFieldsMetadata.filter(
-                  (field) => field.type === SalesforceFieldTypeEnum.PICKLIST
-                )}
-                useFor="MAPPING"
-                onChange={(e) => {
-                  console.log("e.target ", e.target.value);
-                  const val = e.target.value;
-                    alert(e.target.value);
-                  alert(val);
-                  setDefaultValue(val);
-                 
-                  setIsDefaultChanged(true);
-                  handleCurrentCoordMappingFieldChange(e);
-                }}
-              /> */}
-            </div>
-          )
-        ) : null}
-
+          )} 
+        </>
+        }
+        
+            
+          
         <div
           style={{
             display: "flex",

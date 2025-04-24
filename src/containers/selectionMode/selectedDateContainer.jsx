@@ -605,7 +605,7 @@ function SelectedDateContainer({sendSalesforceData}) {
           handleCurrentCoordUpdateFromSalesforceSettingsChange(value);
         }}
         />
-        {(defaultValue!=="" || activeCoordinate.updateFromSalesforce) &&
+        {(activeCoordinate.value!=="" || activeCoordinate.updateFromSalesforce) &&
           <CustomToggle
             title="Editable"
             defaultValue={activeCoordinate.editable}
