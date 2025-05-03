@@ -66,9 +66,7 @@ const TextBoxCoordinatesContainer = ({ scrollContainer }) => {
     setTimeout(() => {
       dispatch(setTextBoxCoordinates({ textBoxCoordinates: updatedCoords }));
     }, 0);
-    dispatch(
-      setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
-    );  
+    
   }
 
   return (
