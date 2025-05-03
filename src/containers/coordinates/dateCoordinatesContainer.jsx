@@ -9,7 +9,7 @@ import {
 } from "../../utils/updateCoordinates";
 import { setDateCoordinates } from "../../redux/slices/dateCoordinatesReducer";
 
-const DateCoordinatesContainer = (scrollContainer) => {
+const DateCoordinatesContainer = ({scrollContainer}) => {
   const dispatch = useDispatch();
   const supportedFields = useSelector(
     (state) => state.supportedFields.supportedFields
@@ -41,15 +41,26 @@ const DateCoordinatesContainer = (scrollContainer) => {
   }
 
   function handleDragStop(id, data) {
-    const updatedCoords = updateCoordinatePosition(
-      dateCoordinates,
-      id,
-      data.x,
-      data.y
-    );
+    if (!dateCoordinates) {
+      console.error("dateCoordinates is undefined or null");
+      return;
+    }
+  
+    const dateCoordinate = dateCoordinates.find((ele) => ele.eleId === id);
+  
+    if (!dateCoordinate) {
+      console.error("Date coordinate not found for id:", id);
+      return;
+    }
+  
+    const { x = 0, y = 0 } = dateCoordinate; // Default to 0 if x or y is missing
+    console.log("Date coordinate found:", dateCoordinate);
+    
+    const updatedCoords = updateCoordinatePosition(dateCoordinates, id, data.x, data.y);
     dispatch(setDateCoordinates({ dateCoordinates: updatedCoords }));
   }
-
+  
+  
   function handleResize(id, data) {
     const updatedCoords = updateCoordinateSize(
       dateCoordinates,
@@ -83,7 +94,7 @@ const DateCoordinatesContainer = (scrollContainer) => {
           maxWidth={field.maxWidth}
           maxHeight={field.maxHeight}
           handleDragStart={(toolType, e) => handleDragStart(ele.eleId)}
-          handleDragStop={(data, e) => handleDragStop(ele.eleId, data)}
+          handleDragStop={(e, d) => handleDragStop(ele.eleId, { x: d.x, y: d.y })}
           handleResize={(data, e) => handleResize(ele.eleId, data)}
           toolIcon={
             <BsCalendar2Date

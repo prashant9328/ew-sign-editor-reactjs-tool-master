@@ -8,24 +8,23 @@ import {
 } from "../../utils/updateCoordinates";
 import { setEmailBoxCoordinates } from "../../redux/slices/emailBoxCoordinatesReducer";
 
-const EmailBoxCoordinatesContainer = (scrollContainer) => {
+const EmailBoxCoordinatesContainer = ({ scrollContainer }) => {
   const dispatch = useDispatch();
+
   const supportedFields = useSelector(
     (state) => state.supportedFields.supportedFields
   );
   const activePageNumber = useSelector(
     (state) => state.activePageNumber.activePageNumber
   );
-
   const activeCoordinate = useSelector(
     (state) => state.activeCoordinate.activeCoordinate
   );
-
   const emailBoxCoordinates = useSelector(
     (state) => state.emailBoxCoordinatesReducer?.emailBoxCoordinates || []
   );
 
-  function handleDragStart(id) {
+  const handleDragStart = (id) => {
     const emailBoxCoordinate = emailBoxCoordinates.find(
       (ele) => ele.eleId === id
     );
@@ -38,9 +37,14 @@ const EmailBoxCoordinatesContainer = (scrollContainer) => {
         })
       );
     }
-  }
+  };
 
-  function handleDragStop(id, data) {
+  const handleDragStop = (id, data) => {
+    if (!data || typeof data.x !== "number" || typeof data.y !== "number") {
+      console.error("Invalid drag data:", data);
+      return;
+    }
+
     const updatedCoords = updateCoordinatePosition(
       emailBoxCoordinates,
       id,
@@ -48,9 +52,18 @@ const EmailBoxCoordinatesContainer = (scrollContainer) => {
       data.y
     );
     dispatch(setEmailBoxCoordinates({ emailBoxCoordinates: updatedCoords }));
-  }
+  };
 
-  function handleResize(id, data) {
+  const handleResize = (id, data) => {
+    if (
+      !data ||
+      typeof data.width !== "number" ||
+      typeof data.height !== "number"
+    ) {
+      console.error("Invalid resize data:", data);
+      return;
+    }
+
     const updatedCoords = updateCoordinateSize(
       emailBoxCoordinates,
       id,
@@ -58,41 +71,42 @@ const EmailBoxCoordinatesContainer = (scrollContainer) => {
       data.height
     );
     dispatch(setEmailBoxCoordinates({ emailBoxCoordinates: updatedCoords }));
-  }
+  };
 
-  return emailBoxCoordinates.map((ele, index) => {
-    if (ele.pageId === activePageNumber) {
-      const toolName = "Email";
-      const bgColor = ele.bgColor;
-      const field = supportedFields.find((field) => field.type === toolName);
-      return (
-        <DragTool
-          key={index}
-          isEditMode={activeCoordinate && ele.eleId === activeCoordinate.eleId}
-          bounds={scrollContainer}
-          bgColor={bgColor}
-          toolType={toolName}
-          id={ele.eleId}
-          pageId={ele.pageId}
-          x={ele.x}
-          y={ele.y}
-          width={ele.width}
-          height={ele.height}
-          minWidth={field.minWidth}
-          minHeight={field.minHeight}
-          maxWidth={field.maxWidth}
-          maxHeight={field.maxHeight}
-          handleDragStart={(toolType, e) => handleDragStart(ele.eleId)}
-          handleDragStop={(data, e) => handleDragStop(ele.eleId, data)}
-          handleResize={(data, e) => handleResize(ele.eleId, data)}
-          toolIcon={
-            <BsEnvelope
-              className={`${toolName.toLowerCase()}-tool-icon-position`}
-            />
-          }
-        />
-      );
-    }
+  return emailBoxCoordinates.map((ele) => {
+    if (ele.pageId !== activePageNumber) return null;
+
+    const toolName = "Email";
+    const bgColor = ele.bgColor;
+    const field = supportedFields.find((field) => field.type === toolName);
+
+    return (
+      <DragTool
+        key={ele.eleId}
+        isEditMode={activeCoordinate?.eleId === ele.eleId}
+        bounds={scrollContainer}
+        bgColor={bgColor}
+        toolType={toolName}
+        eleId={ele.eleId}
+        pageId={ele.pageId}
+        x={ele.x}
+        y={ele.y}
+        width={ele.width}
+        height={ele.height}
+        minWidth={field?.minWidth}
+        minHeight={field?.minHeight}
+        maxWidth={field?.maxWidth}
+        maxHeight={field?.maxHeight}
+        handleDragStart={() => handleDragStart(ele.eleId)}
+        handleDragStop={(e, d) => handleDragStop(ele.eleId, d)}
+        handleResize={(data, e) => handleResize(ele.eleId, data)}
+        toolIcon={
+          <BsEnvelope
+            className={`${toolName.toLowerCase()}-tool-icon-position`}
+          />
+        }
+      />
+    );
   });
 };
 
