@@ -160,7 +160,13 @@ const TextBoxCoordinatesContainer = ({ scrollContainer }) => {
       data.x,
       data.y
     );
-    dispatch(setTextBoxCoordinates({ textBoxCoordinates: updatedCoords }));
+    // dispatch(setTextBoxCoordinates({ textBoxCoordinates: updatedCoords }));
+    setTimeout(() => {
+      dispatch(setTextBoxCoordinates({ textBoxCoordinates: updatedCoords }));
+    }, 0);
+    dispatch(
+      setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
+    );
   }
 
   function handleResize(id, data) {
@@ -170,7 +176,12 @@ const TextBoxCoordinatesContainer = ({ scrollContainer }) => {
       data.width,
       data.height
     );
-    dispatch(setTextBoxCoordinates({ textBoxCoordinates: updatedCoords }));
+    setTimeout(() => {
+      dispatch(setTextBoxCoordinates({ textBoxCoordinates: updatedCoords }));
+    }, 0);
+    dispatch(
+      setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
+    );  
   }
 
   return (
