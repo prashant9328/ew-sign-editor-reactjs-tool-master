@@ -26,6 +26,14 @@ const Confirmation = (props) => {
   const { writebackFields, updateFields, getContinueEventFromConfirmation, closePopup } = props;
   console.log("writebackFields",JSON.stringify(props.writebackFields));
   console.log("updateFields",JSON.stringify(props.updateFields));
+  const formattedUpdatedFields = updateFields.map((item)=>{
+    return item.mappingField.label;
+  })
+  const formattedWritebackFields = writebackFields.map((item)=>{
+    return item.mappingField.label;
+  })
+  // const formattedUpdatedFields = updateFields.join();
+  // const formattedWritebackFields = writebackFields.join();
 
     const sendEvent = ()=>{
         props.getContinueEventFromConfirmation(true);
@@ -72,12 +80,7 @@ const Confirmation = (props) => {
             <div className='nestedSalesforceDiv'>
               <h4>Update from Salesforce</h4>
               <div className='nestedDataField' >
-              {[...new Map(updateFields.map(i => [i.mappingField.apiName, i.mappingField.label])).values()].map(label => (
-                            <div>
-                                <span key={label}>{label}, </span>
-                                
-                            </div>
-                            ))}
+              {formattedUpdatedFields.join()}
               </div>
             </div>
           )
@@ -88,12 +91,7 @@ const Confirmation = (props) => {
 
 <h4>Writeback to Salesforce</h4>
 <div className='nestedDataField' >
-{[...new Map(writebackFields.map(i => [i.mappingField.apiName, i.mappingField.label])).values()].map(label => (
-                          <div>
-                                <span key={label}>{label}, </span>
-                                
-                          </div>
-                            ))}
+            {formattedWritebackFields.join()}
 
 </div>
 </div>
@@ -105,7 +103,7 @@ const Confirmation = (props) => {
           )}
         </div>
         <div style={{marginBottom:'10vh',padding:'0px',marginLeft:'10px',alignContent:'center',alignItems:'center'}}>
-        <div style={{display:'flex'}}>
+        <div style={{display:'flex',marginBottom:"10px"}}>
           <div style={{margin:'auto'}}>
 
         <input style={{scale:'1',margin:'0px 10px 0px 10px',alignSelf:'center'}} type="checkbox" name="accept" id="accept" onChange={(e)=>toggleAgreeToConditions(e.target.value)}  />
