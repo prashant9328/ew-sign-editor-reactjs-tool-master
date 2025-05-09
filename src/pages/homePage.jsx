@@ -727,7 +727,7 @@ function validateCoordinates(finalCoordData) {
           setIsLoading(false);
           // localStorage.setItem('unexpected-error',error.stack)
           // window.location.href='/unexpected-error'    
-          window.parent.postMessage(message, "*");
+          // window.parent.postMessage(message, "*");
           // throw new Error("Something went wrong, failed to fetch data from server.");
           console.log("@@@ Saved coordinate: " + JSON.stringify(error));
           ShowToast(ToastTypeEnum.ERROR, JSON.stringify(error));
