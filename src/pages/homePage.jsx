@@ -524,7 +524,7 @@ function validateCoordinates(finalCoordData) {
         picklistValidation.isValidated = false;
         picklistValidation.item = item;
         // picklistValidation.msg = "Picklist should have atleast 2 options";
-      }else if(item.options){
+      }else if(item.options && item.options!==""){
       const opts = item.options.split(",");
       console.log("picklist validation : ",opts)
       if(opts.length < 2 || !item.options){
