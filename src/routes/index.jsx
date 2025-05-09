@@ -12,9 +12,10 @@ const AllRoutes = () => {
     <Router>
       <Routes>
         <Route path="/" Component={HomePage} />
-        <Route path="/page-not-found" Component={PageNotFound} />
+        <Route path="*" Component={PageNotFound} />
         <Route path="/session-expired" Component={SessionExpired} />
-        <Route path="/unexpected-error" Component={UnexpectedError} />
+        {/* <Route path="/session-expired" Component={SessionExpired} /> */}
+        <Route path="/unexpected-error?/:rest" Component={UnexpectedError} />
 
       </Routes>
     </Router>
