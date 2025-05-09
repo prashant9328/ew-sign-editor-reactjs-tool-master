@@ -125,67 +125,68 @@ function SelectedEmailBoxContainer({}) {
   const handleCurrentCoordValueChange = (value) => {
     //
     // check email validation after clicking on email field
-    const isEmailValid = checkEmailValidation(defaultValue)
-    console.log(isEmailValid);
-    if (!isEmailValid) {
+    if(defaultValue && defaultValue !== ""){
 
-      console.log("validation email : ", defaultValue)
-      // alert("Invalid Email!");
-      ShowToast(ToastTypeEnum.ERROR,"Invalid Email!");
+      const isEmailValid = checkEmailValidation(defaultValue)
+      console.log(isEmailValid);
+      if (!isEmailValid) {
 
-      dispatch(
-        setEmailBoxCoordinates({
-          emailBoxCoordinates: updateCoordinateValue(
-            emailBoxCoordinates,
-            activeCoordinate.eleId,
-            ""
-          ),
-        })
-      );
-      const updatedActiveCoordinates = {
-        ...activeCoordinate,
-        value: '',
-      };
-
-      dispatch(
-        setActiveCoordinate({
-          activeCoordinate: updatedActiveCoordinates,
-          isSelectionMode: true,
-        })
-      );
+        console.log("validation email : ", defaultValue)
+        // alert("Invalid Email!");
+        ShowToast(ToastTypeEnum.ERROR,"Invalid Email!");
   
-      setIsDefaultChanged(false);
-
-      // return
-    }else{
-
-      dispatch(
-        setEmailBoxCoordinates({
-          emailBoxCoordinates: updateCoordinateValue(
-            emailBoxCoordinates,
-            activeCoordinate.eleId,
-            defaultValue
-          ),
-        })
-      );
+        dispatch(
+          setEmailBoxCoordinates({
+            emailBoxCoordinates: updateCoordinateValue(
+              emailBoxCoordinates,
+              activeCoordinate.eleId,
+              ""
+            ),
+          })
+        );
+        const updatedActiveCoordinates = {
+          ...activeCoordinate,
+          value: '',
+        };
   
-      const updatedActiveCoordinates = {
-        ...activeCoordinate,
-        value: defaultValue,
-      };
+        dispatch(
+          setActiveCoordinate({
+            activeCoordinate: updatedActiveCoordinates,
+            isSelectionMode: true,
+          })
+        );
+    
+        setIsDefaultChanged(false);
   
-      dispatch(
-        setActiveCoordinate({
-          activeCoordinate: updatedActiveCoordinates,
-          isSelectionMode: true,
-        })
-      );
+        // return
+      }else{
   
-      setIsDefaultChanged(false);
-
+        dispatch(
+          setEmailBoxCoordinates({
+            emailBoxCoordinates: updateCoordinateValue(
+              emailBoxCoordinates,
+              activeCoordinate.eleId,
+              defaultValue
+            ),
+          })
+        );
+    
+        const updatedActiveCoordinates = {
+          ...activeCoordinate,
+          value: defaultValue,
+        };
+    
+        dispatch(
+          setActiveCoordinate({
+            activeCoordinate: updatedActiveCoordinates,
+            isSelectionMode: true,
+          })
+        );
+    
+        setIsDefaultChanged(false);
+  
+      }
     }
-
-
   };
 
   const handleCurrentCoordIsRequiredChange = (value) => {
@@ -368,7 +369,7 @@ function SelectedEmailBoxContainer({}) {
               </div>
             </div>
                 
-            {(activeCoordinate.isSelectionMode && isValidDefaultEmailvalue) && 
+            {(activeCoordinate.isSelectionMode) && 
             <div
               style={{
                 position: "absolute",
@@ -562,7 +563,7 @@ function SelectedEmailBoxContainer({}) {
             ></CustomSelect>
           </div>
         ) : null}
-        {isDefaultChanged && (
+        {isDefaultChanged && defaultValue!=="" && (
           <div
             style={{
               position: "fixed",

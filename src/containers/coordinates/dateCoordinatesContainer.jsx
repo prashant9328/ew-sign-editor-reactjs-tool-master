@@ -91,8 +91,8 @@ const DateCoordinatesContainer = ({scrollContainer}) => {
           height={ele.height}
           minWidth={field.minWidth}
           minHeight={field.minHeight}
-          maxWidth={field.maxWidth}
-          maxHeight={field.maxHeight}
+          // maxWidth={field.maxWidth}
+          // maxHeight={field.maxHeight}
           handleDragStart={(toolType, e) => handleDragStart(ele.eleId)}
           handleDragStop={(e, d) => handleDragStop(ele.eleId, { x: d.x, y: d.y })}
           handleResize={(data, e) => handleResize(ele.eleId, data)}

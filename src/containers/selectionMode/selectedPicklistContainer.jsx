@@ -247,8 +247,9 @@ function SelectedPicklistContainer({}) {
     setCurrentCoordOptions((activeCoordinate.options)?.toString()?.split(",") || []);
   }, [activeCoordinate.options]);
 
-  const handleAddOrUpdate = () => {
-    if (inputValue.trim() === "") return;
+  const handleAddOrUpdate = (action,oldIndex) => {
+    if(action==="Add"){
+      if (inputValue.trim() === "") return;
 
     let updatedOptions;
 
@@ -258,11 +259,35 @@ function SelectedPicklistContainer({}) {
     setCurrentCoordOptions(updatedOptions?.toString()?.split(","));
     handleCurrentCoordOptionsChange(updatedOptions?.toString());
     setInputValue("");
+    }
+    if(action==="Update"){
+      if (inputValue.trim() === "") return;
+      
+      
+        //  currentCoordOptions.push(inputValue)
+         console.log("currentCoordOptions before update : ",currentCoordOptions);
+
+        const updatedOptions = currentCoordOptions.map((item)=>{
+          if(item === currentCoordOptions[oldIndex]){
+            return inputValue;
+          }else{
+            return item
+          }
+        })
+        console.log("currentCoordOptions after update : ",updatedOptions);
+        setCurrentCoordOptions(updatedOptions);
+      handleCurrentCoordOptionsChange(updatedOptions);
+      setInputValue("");
+      setEditIndex(null);
+    }
+    
   };
 
   const handleEdit = (index) => {
+    console.log("current edit ele : ",currentCoordOptions[index])
     setInputValue(currentCoordOptions[index]);
     setEditIndex(index);
+    // handleAddOrUpdate("Update",currentCoordOptions[index]);
   };
 
   const handleDelete = (index) => {
@@ -534,7 +559,7 @@ function SelectedPicklistContainer({}) {
                 />
                 <button
                   className="add-update-btn"
-                  onClick={handleAddOrUpdate}
+                  onClick={()=>handleAddOrUpdate(editIndex !== null ? "Update" : "Add",editIndex)}
                 >
                   {editIndex !== null ? "Update" : "Add"}
                 </button>

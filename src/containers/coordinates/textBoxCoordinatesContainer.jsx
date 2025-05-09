@@ -51,9 +51,9 @@ const TextBoxCoordinatesContainer = ({ scrollContainer }) => {
     setTimeout(() => {
       dispatch(setTextBoxCoordinates({ textBoxCoordinates: updatedCoords }));
     }, 0);
-    dispatch(
-      setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
-    );
+    // dispatch(
+    //   setActiveCoordinate({ activeCoordinate: {}, isSelectionMode: false })
+    // );
   }
 
   function handleResize(id, data) {
@@ -93,8 +93,8 @@ const TextBoxCoordinatesContainer = ({ scrollContainer }) => {
             height={ele.height}
             minWidth={field?.minWidth}
             minHeight={field?.minHeight}
-            maxWidth={field?.maxWidth}
-            maxHeight={field?.maxHeight}
+            // maxWidth={field?.maxWidth}
+            // maxHeight={field?.maxHeight}
             handleDragStart={() => handleDragStart(ele.eleId)}
             handleDragStop={(e, d) => handleDragStop(ele.eleId, d)}
             handleResize={(data, e) => handleResize(ele.eleId, data)}

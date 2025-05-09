@@ -31,10 +31,11 @@ function PicklistButtonContainer({ documentBounding }) {
 
       const coordsLength = picklistCoordinates.length || 0;
 
-      const pagex =
-        event.pageX - (documentBounding.left - field.width / 2) || 0;
-      const pagey =
-        event.pageY - (documentBounding.top - field.height / 2) || 0;
+    const pagex = event.pageX - documentBounding.left - field.width / 2;
+    
+    const pagey = event.pageY - documentBounding.top - field.height / 2;
+    console.log('page y' + pagey);
+
       let newEle = {
         field_id: field.id,
         value: "",

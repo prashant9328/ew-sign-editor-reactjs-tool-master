@@ -95,8 +95,8 @@ const EmailBoxCoordinatesContainer = ({ scrollContainer }) => {
         height={ele.height}
         minWidth={field?.minWidth}
         minHeight={field?.minHeight}
-        maxWidth={field?.maxWidth}
-        maxHeight={field?.maxHeight}
+        // maxWidth={field?.maxWidth}
+        maxHeight={18}
         handleDragStart={() => handleDragStart(ele.eleId)}
         handleDragStop={(e, d) => handleDragStop(ele.eleId, d)}
         handleResize={(data, e) => handleResize(ele.eleId, data)}

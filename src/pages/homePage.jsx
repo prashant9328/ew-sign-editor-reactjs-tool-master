@@ -510,7 +510,51 @@ function validateCoordinates(finalCoordData) {
     };
   }
 
+  let picklistValidation = {
+    item:{},
+    isValidated : true
+  } 
+  finalCoordData.forEach((item) => {
+    if((!item.writeBack && !item.updateFromSalesforce) && item.field_id===8){
+      if(!item.options || item.options===""){
+
+        console.log("Picklist validation : picklist options empty");
+        // salesforceFieldData.isValidate = false;
+        // salesforceFieldData.item = item;
+        picklistValidation.isValidated = false;
+        picklistValidation.item = item;
+        // picklistValidation.msg = "Picklist should have atleast 2 options";
+      }else if(item.options){
+      const opts = item.options.split(",");
+      console.log("picklist validation : ",opts)
+      if(opts.length < 2 || !item.options){
+        picklistValidation.isValidated = false;
+        picklistValidation.item = item;
+        // picklistValidation.msg = "Picklist should have atleast 2 options";
+      }
+    }
+
+    }
+  });
+
+
+  if (!picklistValidation.isValidated) {
+    dispatch(
+      setActiveCoordinate({
+        activeCoordinate: picklistValidation.item,
+        isSelectionMode: true,
+      })
+    );
+
+    return {
+      isValidate: false,
+      msg: "Picklist should have atleast 2 options"
+    };
+  }
+
+
   let salesforceFieldData = { isValidate: true, item: "" };
+
 
   finalCoordData.forEach((item) => {
     if (
@@ -520,6 +564,7 @@ function validateCoordinates(finalCoordData) {
       salesforceFieldData.isValidate = false;
       salesforceFieldData.item = item;
     }
+    
   });
 
 
@@ -536,6 +581,9 @@ function validateCoordinates(finalCoordData) {
       msg: "Please add field mapping for this field.",
     };
   }
+
+
+  
 
   return { isValidate: true, msg: "done" };
 }
