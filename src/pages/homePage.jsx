@@ -735,7 +735,7 @@ function validateCoordinates(finalCoordData) {
           localStorage.setItem('unexpected-error',error.stack)
 
           window.location.href='/unexpected-error'    
-          throw new Error("Something went wrong, failed to fetch data from server.");
+          throw new Error("Something went wrong, failed to fetch data from server.",error.stack);
           
         }
   };

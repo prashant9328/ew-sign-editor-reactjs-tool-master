@@ -73,6 +73,9 @@ const Confirmation = (props) => {
       <div className='return-btn'  onClick={()=>{returnEvent()}} ><RxCross2 />
       </div>
         <h3 >Accept Permissions</h3>
+        <div className='flex-confirmation' style={{display:"flex",flexDirection:"column"}}>
+
+        
         <div className='salesforceFields' >
           {updateFields[0] &&
           
@@ -102,7 +105,7 @@ const Confirmation = (props) => {
             </div>
           )}
         </div>
-        <div style={{marginBottom:'10vh',padding:'0px',marginLeft:'10px',alignContent:'center',alignItems:'center'}}>
+        <div style={{padding:'0px',marginLeft:'10px',alignContent:'center',alignItems:'center'}}>
         <div style={{display:'flex',marginBottom:"10px"}}>
           <div style={{margin:'auto'}}>
 
@@ -121,7 +124,7 @@ const Confirmation = (props) => {
           CONFIRM
           </div>
         </div>
-        
+        </div>
     </div>
   )
   }
