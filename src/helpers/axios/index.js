@@ -46,7 +46,7 @@ export const postRequest = (api, authRequired, data) => {
   const state = store.getState();
   const storeData = state.generalDocumentData.generalDocumentData;
 
-  data = {...data, IV: storeData.iv, orgId: storeData.orgId};
+  data = {...data, orgId: storeData.orgId};
   console.log('@@@@ Request Body::'+JSON.stringify(data));
   return new Promise((resolve, reject) => {
     axiosInstance
